@@ -1,0 +1,173 @@
+.topbar,
+.page-shell,
+.footer,
+.portal-shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.topbar {
+  position: sticky;
+  top: 14px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+  padding: 14px 18px;
+}
+
+.nav,
+.hero-actions,
+.hero-links,
+.trust-grid,
+.tab-row,
+.button-row,
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.section {
+  padding-top: 88px;
+}
+
+.motion-strip {
+  overflow: hidden;
+  margin-top: 28px;
+  padding: 16px 0;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 40px;
+  align-items: center;
+  min-height: calc(100vh - 120px);
+}
+
+.three-grid,
+.two-grid,
+.signup-layout,
+.portal-layout,
+.journey-grid,
+.admin-panel-shell,
+.admin-main-grid,
+.scene-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.three-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.two-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.journey-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.scene-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.signup-layout { grid-template-columns: 1.05fr 0.95fr; }
+.portal-layout { grid-template-columns: 280px 1fr; align-items: start; }
+.admin-panel-shell { grid-template-columns: 220px 1fr; }
+.admin-main-grid { grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr); }
+
+.stack {
+  display: grid;
+  gap: 14px;
+}
+
+.portal-shell {
+  padding-top: 48px;
+}
+
+.portal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.portal-sidebar,
+.portal-main {
+  min-height: 680px;
+}
+
+.portal-main {
+  min-width: 0;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 56px 0 40px;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+@media (max-width: 1080px) {
+  .hero,
+  .three-grid,
+  .journey-grid,
+  .scene-grid,
+  .signup-layout,
+  .portal-layout,
+  .admin-panel-shell,
+  .admin-main-grid,
+  .footer,
+  .two-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    flex-wrap: wrap;
+    justify-content: center;
+    top: 8px;
+    padding: 12px 14px;
+  }
+
+  .nav {
+    justify-content: center;
+  }
+
+  .topbar,
+  .page-shell,
+  .footer,
+  .portal-shell {
+    width: min(100% - 20px, 1180px);
+  }
+
+  .portal-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .section {
+    padding-top: 60px;
+  }
+
+  .portal-shell {
+    padding-top: 28px;
+  }
+}
+
+@media (max-width: 560px) {
+  .topbar,
+  .page-shell,
+  .footer,
+  .portal-shell {
+    width: min(100% - 14px, 1180px);
+  }
+
+  .hero {
+    gap: 20px;
+    min-height: auto;
+  }
+
+  .motion-strip {
+    margin-top: 18px;
+  }
+}

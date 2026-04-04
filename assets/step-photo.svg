@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 120" role="img" aria-label="Upload photo illustration">
+  <rect width="180" height="120" rx="28" fill="#f1efff"/>
+  <rect x="26" y="28" width="128" height="68" rx="18" fill="#7c6ce3"/>
+  <circle cx="76" cy="62" r="14" fill="#ffbf69"/>
+  <rect x="104" y="54" width="28" height="16" rx="8" fill="#ddd7ff"/>
+  <rect x="60" y="18" width="30" height="14" rx="7" fill="#ffffff"/>
+</svg>

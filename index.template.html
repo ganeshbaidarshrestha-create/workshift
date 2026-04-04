@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkShift | Verified Daily Workers Marketplace</title>
+  <link rel="stylesheet" href="./styles/base.css?v=20260329h">
+  <link rel="stylesheet" href="./styles/layout.css?v=20260329h">
+  <link rel="stylesheet" href="./styles/components.css?v=20260329h">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#hero">
+      <span class="brand-mark">W</span>
+      <span>
+        <strong>WorkShift</strong>
+        <small>Daily Workers Marketplace</small>
+      </span>
+    </a>
+    <nav class="nav">
+      <a href="#how">How It Works</a>
+      <a href="#field-scenes">Field Scenes</a>
+      <a href="#categories">Categories</a>
+      <a href="#signup">Sign Up</a>
+    </nav>
+  </header>
+
+  <main class="page-shell" id="publicShell">
+    <section class="hero section" id="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">A living workforce marketplace</p>
+        <h1>Find the right hands, in the right place, at the right moment.</h1>
+        <p class="hero-text">
+          WorkShift is built for busy streets, hotel backrooms, warehouse nights, farm mornings, and emergency repair calls.
+          It helps workers get seen fast and lets employers hire with confidence, proof, and payment protection.
+        </p>
+        <div class="hero-ledger">
+          <span>Voice-first onboarding</span>
+          <span>AI-ranked hiring</span>
+          <span>Escrow-backed payouts</span>
+        </div>
+        <div class="hero-presence">
+          <article class="presence-card">
+            <span class="presence-label">Worker-ready onboarding</span>
+            <strong>OTP, helper, or voice-first setup</strong>
+          </article>
+          <article class="presence-card">
+            <span class="presence-label">Employer-ready hiring</span>
+            <strong>Search, shortlist, invite, and fund with proof</strong>
+          </article>
+        </div>
+        <div class="hero-actions">
+          <button class="primary-button" id="heroWorker" type="button">Register as Worker</button>
+          <button class="secondary-button" id="heroEmployer" type="button">Hire Workers</button>
+        </div>
+        <div class="hero-links">
+          <a href="#field-scenes">Explore live work scenes</a>
+          <a href="#signup">Try onboarding flow</a>
+        </div>
+        <div class="trust-grid">
+          <article class="mini-card"><strong>125K+</strong><span>Registered workers</span></article>
+          <article class="mini-card"><strong>18K+</strong><span>Jobs completed</span></article>
+          <article class="mini-card"><strong>8 min</strong><span>Average time to hire</span></article>
+          <article class="mini-card"><strong>4.8/5</strong><span>Platform rating</span></article>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-stage live-canvas">
+          <div class="hero-stage-mark">WORKSHIFT</div>
+          <div class="canvas-glow glow-a"></div>
+          <div class="canvas-glow glow-b"></div>
+          <div class="stage-ring ring-a"></div>
+          <div class="stage-ring ring-b"></div>
+
+          <article class="portrait-card portrait-a">
+            <img class="hero-photo" src="https://images.pexels.com/photos/9746797/pexels-photo-9746797.jpeg?cs=srgb&dl=pexels-jefilms-9746797.jpg&fm=jpg" alt="Construction worker on site">
+            <div class="portrait-copy">
+              <strong>Construction Work</strong>
+              <span>Safety-checked crews / urgent site staffing</span>
+            </div>
+          </article>
+
+          <article class="portrait-card portrait-b">
+            <img class="hero-photo" src="https://images.pexels.com/photos/9462759/pexels-photo-9462759.jpeg?cs=srgb&dl=pexels-liliana-drew-9462759.jpg&fm=jpg" alt="Hospitality cleaning staff at work">
+            <div class="portrait-copy">
+              <strong>Cleaning and Hospitality</strong>
+              <span>Verified housekeeping / hotel-ready staffing</span>
+            </div>
+          </article>
+
+          <article class="portrait-card portrait-c">
+            <img class="hero-photo" src="https://images.pexels.com/photos/35281163/pexels-photo-35281163.jpeg?cs=srgb&dl=pexels-nakib-35281163.jpg&fm=jpg" alt="Harvest workers in field">
+            <div class="portrait-copy">
+              <strong>Harvest Support</strong>
+              <span>Field onboarding / seasonal teams / local hiring</span>
+            </div>
+          </article>
+        </div>
+        <div class="hero-signal-strip" aria-label="Core marketplace signals">
+          <article class="hero-signal-card">
+            <span>AI Match</span>
+            <strong>96%</strong>
+            <small>Best-fit worker surfaced in seconds</small>
+          </article>
+          <article class="hero-signal-card">
+            <span>Escrow</span>
+            <strong>$280</strong>
+            <small>Protected release after completion</small>
+          </article>
+          <article class="hero-signal-card">
+            <span>Trusted Shift</span>
+            <strong>Live</strong>
+            <small>QR check-in / proof / verification loop</small>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="motion-strip" aria-label="Live marketplace activity">
+      <div class="motion-track">
+        <span>Construction crews boarding now</span>
+        <span>Hotel teams matched in minutes</span>
+        <span>Harvest workers verified in the field</span>
+        <span>Warehouse shifts staffed by proximity</span>
+        <span>Escrow released after proof of work</span>
+        <span>Low-literacy onboarding supported by voice and helpers</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <p class="eyebrow">Start Here</p>
+        <h2>Choose the right registration path</h2>
+      </div>
+      <div class="two-grid">
+        <article class="panel entry-card photo-entry-card">
+          <div class="entry-photo-wrap">
+            <img class="entry-image entry-photo" src="https://images.pexels.com/photos/35281163/pexels-photo-35281163.jpeg?cs=srgb&dl=pexels-nakib-35281163.jpg&fm=jpg" alt="Worker onboarding in the field">
+            <span class="entry-tag">Worker Access</span>
+          </div>
+          <div class="stack entry-content">
+            <h3>Register as Worker</h3>
+            <p>Phone-first signup, assisted onboarding, and job discovery after approval.</p>
+            <div class="entry-meta">
+              <span>Low-literacy friendly</span>
+              <span>ID and selfie later</span>
+            </div>
+            <div class="button-row">
+              <button class="primary-button small-button" type="button" data-cta-role="worker">Start Worker Registration</button>
+            </div>
+          </div>
+        </article>
+        <article class="panel entry-card photo-entry-card">
+          <div class="entry-photo-wrap">
+            <img class="entry-image entry-photo" src="https://images.pexels.com/photos/16045331/pexels-photo-16045331.jpeg?cs=srgb&dl=pexels-hoang-nc-483165236-16045331.jpg&fm=jpg" alt="Employer hiring logistics staff">
+            <span class="entry-tag">Employer Access</span>
+          </div>
+          <div class="stack entry-content">
+            <h3>Register as Employer</h3>
+            <p>Create a company profile, post the workers you need, and manage hiring from one portal.</p>
+            <div class="entry-meta">
+              <span>Company verification</span>
+              <span>Live hiring workspace</span>
+            </div>
+            <div class="button-row">
+              <button class="primary-button small-button" type="button" data-cta-role="employer">Start Employer Registration</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <div class="section-heading">
+        <p class="eyebrow">How It Works</p>
+        <h2>Journeys straight from the blueprint</h2>
+      </div>
+      <div class="journey-grid">
+        <article class="journey-card">
+          <div class="journey-header">
+            <span class="journey-badge">Worker Flow</span>
+            <h3>Find verified work fast</h3>
+          </div>
+          <ol class="flow-list">
+            <li>Create your account, verify identity, and build a trusted work profile.</li>
+            <li>Set skills, availability, and location sharing to unlock better nearby matches.</li>
+            <li>Apply, check in with QR, complete jobs, and withdraw earnings from wallet.</li>
+          </ol>
+        </article>
+        <article class="journey-card">
+          <div class="journey-header">
+            <span class="journey-badge employer">Employer Flow</span>
+            <h3>Hire crews with less risk</h3>
+          </div>
+          <ol class="flow-list">
+            <li>Register your company and upload business verification documents.</li>
+            <li>Post jobs with skills, pay, location, and headcount, then review AI-ranked candidates.</li>
+            <li>Fund escrow, manage live jobs, confirm completion, and rate workers in-app.</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="categories">
+      <div class="section-heading">
+        <p class="eyebrow">Operating Categories</p>
+        <h2>Structured demand across high-frequency labor sectors</h2>
+      </div>
+      <div class="three-grid">
+        <a class="panel interactive-panel category-card" href="#signup" data-cta-role="worker"><h3>Construction</h3><p>Masons, carpenters, electricians, plumbers, and urgent site labor.</p><span>Open worker access</span></a>
+        <a class="panel interactive-panel category-card" href="#signup" data-cta-role="employer"><h3>Cleaning</h3><p>Hotels, homes, events, housekeeping crews, and short-notice replacements.</p><span>Find verified crews</span></a>
+        <a class="panel interactive-panel category-card" href="#signup" data-cta-role="worker"><h3>Agriculture</h3><p>Harvest teams, packaging, farm labor, and seasonal onboarding support.</p><span>Start assisted setup</span></a>
+        <a class="panel interactive-panel category-card" href="#signup" data-cta-role="employer"><h3>Warehouse</h3><p>Inventory support, loading, logistics helpers, and night-shift staffing.</p><span>Search nearby workers</span></a>
+        <a class="panel interactive-panel category-card" href="#signup" data-cta-role="employer"><h3>Hospitality</h3><p>Hotels, restaurants, catering assistants, and overflow service teams.</p><span>Launch hiring flow</span></a>
+        <a class="panel interactive-panel category-card" href="#signup" data-cta-role="employer"><h3>Home Services</h3><p>Repair, maintenance, emergency visits, and trust-first local booking.</p><span>Request verified help</span></a>
+      </div>
+    </section>
+
+    <section class="section" id="field-scenes">
+      <div class="section-heading">
+        <p class="eyebrow">Work Environments</p>
+        <h2>Editorial scenes from the environments this marketplace is built for</h2>
+      </div>
+      <div class="scene-grid">
+        <a class="scene-card" href="#signup" data-cta-role="worker">
+          <img class="scene-art photo-scene" src="https://images.pexels.com/photos/9746797/pexels-photo-9746797.jpeg?cs=srgb&dl=pexels-jefilms-9746797.jpg&fm=jpg" alt="Construction workers on site">
+          <div class="scene-copy">
+            <h3>Construction Sites</h3>
+            <p>Verify skilled labor, short-term crews, and attendance before payout release.</p>
+            <span>Explore worker signup</span>
+          </div>
+        </a>
+        <a class="scene-card" href="#signup" data-cta-role="employer">
+          <img class="scene-art photo-scene" src="https://images.pexels.com/photos/9462759/pexels-photo-9462759.jpeg?cs=srgb&dl=pexels-liliana-drew-9462759.jpg&fm=jpg" alt="Cleaning staff in hospitality environment">
+          <div class="scene-copy">
+            <h3>Cleaning and Hospitality</h3>
+            <p>Fill urgent hotel, event, and housekeeping shifts with nearby verified workers.</p>
+            <span>See employer hiring flow</span>
+          </div>
+        </a>
+        <a class="scene-card" href="#signup" data-cta-role="employer">
+          <img class="scene-art photo-scene" src="https://images.pexels.com/photos/16045331/pexels-photo-16045331.jpeg?cs=srgb&dl=pexels-hoang-nc-483165236-16045331.jpg&fm=jpg" alt="Warehouse workers on industrial floor">
+          <div class="scene-copy">
+            <h3>Warehouse and Logistics</h3>
+            <p>Track availability, match by proximity, and staff loading or inventory shifts faster.</p>
+            <span>Open staffing tools</span>
+          </div>
+        </a>
+        <a class="scene-card" href="#signup" data-cta-role="worker">
+          <img class="scene-art photo-scene" src="https://images.pexels.com/photos/35281163/pexels-photo-35281163.jpeg?cs=srgb&dl=pexels-nakib-35281163.jpg&fm=jpg" alt="Harvest workers in field">
+          <div class="scene-copy">
+            <h3>Agriculture and Harvest</h3>
+            <p>Support seasonal crews, fast onboarding, and low-literacy worker registration in the field.</p>
+            <span>View worker-friendly setup</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <p class="eyebrow">Product Views</p>
+        <h2>Real platform surfaces for workers, employers, and operations teams</h2>
+      </div>
+      <div class="product-showcase-grid">
+        <article class="dashboard-preview dashboard-preview-wide">
+          <div class="dashboard-browserbar">
+            <span class="screen-dot"></span>
+            <span class="screen-dot"></span>
+            <span class="screen-dot"></span>
+            <small>Employer Command Center</small>
+          </div>
+          <div class="dashboard-shell employer-dash">
+            <aside class="dash-side">
+              <strong>WorkShift</strong>
+              <span>Dashboard</span>
+              <span>Hiring</span>
+              <span>Jobs</span>
+              <span>Payments</span>
+              <span>Analytics</span>
+            </aside>
+            <div class="dash-main">
+              <div class="dash-kpis">
+                <article class="dash-kpi"><strong>12</strong><span>Active jobs</span></article>
+                <article class="dash-kpi"><strong>41</strong><span>New applicants</span></article>
+                <article class="dash-kpi"><strong>$18.4K</strong><span>Monthly spend</span></article>
+              </div>
+              <div class="dash-grid">
+                <section class="dash-panel">
+                  <header><strong>Best Match Workers</strong><span>Nearby / Verified</span></header>
+                  <article class="dash-row selected"><strong>Rina Tamang</strong><span>Cleaner • 4.9 • 1.8 km</span></article>
+                  <article class="dash-row"><strong>Sujan Rai</strong><span>Warehouse • 4.8 • 2.6 km</span></article>
+                  <article class="dash-row"><strong>Prakash Lama</strong><span>Electrician • 4.7 • 3.1 km</span></article>
+                </section>
+                <section class="dash-panel">
+                  <header><strong>Selected Worker</strong><span>Hiring workspace</span></header>
+                  <div class="dash-stack">
+                    <article class="dash-note">
+                      <strong>Housekeeping Overflow Crew</strong>
+                      <p>Shift tonight / 3 workers / verified hotel account</p>
+                    </article>
+                    <div class="screen-chip-row"><span>Shortlist</span><span>Invite</span><span>Fund Escrow</span></div>
+                    <article class="dash-chat">
+                      <div><strong>Employer</strong><p>Can you reach by 7:00 PM?</p></div>
+                      <div><strong>Worker</strong><p>Yes, location confirmed.</p></div>
+                    </article>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+          <div class="screen-caption">
+            <h3>Employer hiring workspace</h3>
+            <p>Search, compare, message, and move straight into protected payment from one operational dashboard.</p>
+          </div>
+        </article>
+
+        <article class="dashboard-preview">
+          <div class="dashboard-browserbar">
+            <span class="screen-dot"></span>
+            <span class="screen-dot"></span>
+            <span class="screen-dot"></span>
+            <small>Worker Dashboard</small>
+          </div>
+          <div class="dashboard-shell worker-dash">
+            <div class="dash-mobile">
+              <div class="dash-mobile-top">
+                <strong>Good evening, Sarita</strong>
+                <span>Available</span>
+              </div>
+              <article class="dash-mobile-card featured">
+                <strong>Nearby Work</strong>
+                <p>Hotel Maintenance Helper • 2.1 km</p>
+                <div class="screen-chip-row"><span>Apply Fast</span><span>Compare</span></div>
+              </article>
+              <article class="dash-mobile-card">
+                <strong>Status Timeline</strong>
+                <p>Applied -> Shortlisted -> Invited -> Paid</p>
+              </article>
+              <article class="dash-mobile-card">
+                <strong>Wallet</strong>
+                <p>$248 available / $90 pending release</p>
+              </article>
+            </div>
+          </div>
+          <div class="screen-caption">
+            <h3>Worker marketplace experience</h3>
+            <p>Simple search, clear job status, payout visibility, and job-linked chat in one mobile-first view.</p>
+          </div>
+        </article>
+
+        <article class="dashboard-preview">
+          <div class="dashboard-browserbar">
+            <span class="screen-dot"></span>
+            <span class="screen-dot"></span>
+            <span class="screen-dot"></span>
+            <small>Admin Review Panel</small>
+          </div>
+          <div class="dashboard-shell admin-dash">
+            <div class="dash-main">
+              <div class="dash-kpis compact">
+                <article class="dash-kpi"><strong>428</strong><span>New users</span></article>
+                <article class="dash-kpi"><strong>18</strong><span>Open reviews</span></article>
+              </div>
+              <div class="dash-stack">
+                <section class="dash-panel">
+                  <header><strong>Verification Queue</strong><span>Today</span></header>
+                  <article class="dash-row selected"><strong>Worker ID Review</strong><span>Pending re-upload</span></article>
+                  <article class="dash-row"><strong>Employer Company Docs</strong><span>Medium risk</span></article>
+                </section>
+                <section class="dash-panel">
+                  <header><strong>Risk and Payments</strong><span>Live</span></header>
+                  <article class="dash-row"><strong>Suspicious payout velocity</strong><span>Queued for review</span></article>
+                  <article class="dash-row"><strong>Dispute evidence</strong><span>Awaiting employer reply</span></article>
+                </section>
+              </div>
+            </div>
+          </div>
+          <div class="screen-caption">
+            <h3>Admin review and risk panel</h3>
+            <p>Verification, payout monitoring, and dispute control stay separated from the public product surface.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <p class="eyebrow">Trust and Compliance</p>
+        <h2>Global marketplace expectations built into onboarding, hiring, and payouts</h2>
+      </div>
+      <div class="trust-layout">
+        <article class="panel trust-lead-card">
+          <p class="eyebrow">Platform Controls</p>
+          <h3>Verification-first access and protected job completion records</h3>
+          <p>Worker identity, employer company checks, wallet events, dispute evidence, and payout release logic are all part of the product story, not hidden afterthoughts.</p>
+          <div class="trust-badges">
+            <span>KYC review</span>
+            <span>Escrow release logic</span>
+            <span>Audit-ready records</span>
+            <span>Role-based access</span>
+          </div>
+        </article>
+        <div class="trust-stack">
+          <article class="panel trust-card"><h3>Verified Identity</h3><p>ID, selfie, business registration, and document re-upload review built into admin operations.</p></article>
+          <article class="panel trust-card"><h3>Payment Protection</h3><p>Escrow, release checkpoints, and transaction review reduce payout ambiguity for both sides.</p></article>
+          <article class="panel trust-card"><h3>Reputation Layer</h3><p>Ratings, reviews, completion rate, and reliability scoring help hiring decisions travel across jobs.</p></article>
+          <article class="panel trust-card"><h3>Compliance Readiness</h3><p>Privacy, support, dispute handling, and platform controls are structured for a more international rollout.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="conversion-band">
+        <div>
+          <p class="eyebrow">For Workers</p>
+          <h2>See work, compare offers, and get paid with proof</h2>
+          <p>Keep the first step simple: choose your work type, verify quickly, and open the dashboard after approval.</p>
+        </div>
+        <div class="button-row">
+          <button class="primary-button" type="button" data-cta-role="worker">Start Worker Registration</button>
+          <a class="secondary-button" href="#signup">View worker onboarding</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <p class="eyebrow">Testimonials</p>
+        <h2>Worker and employer proof points</h2>
+      </div>
+      <div class="testimonial-shell">
+        <div class="testimonial-track" id="testimonialTrack">
+          <article class="testimonial-card is-active">
+            <span class="journey-badge">Worker</span>
+            <div class="testimonial-head">
+              <img class="testimonial-avatar" src="https://images.pexels.com/photos/9462759/pexels-photo-9462759.jpeg?cs=srgb&dl=pexels-liliana-drew-9462759.jpg&fm=jpg" alt="Worker testimonial portrait">
+              <div class="testimonial-meta">
+                <h3>Sarita, Plumbing Worker</h3>
+                <span>Kathmandu metro jobs</span>
+              </div>
+            </div>
+            <p>"I found a verified plumbing job before sunrise and got paid into my wallet that same day."</p>
+          </article>
+          <article class="testimonial-card">
+            <span class="journey-badge employer">Employer</span>
+            <div class="testimonial-head">
+              <img class="testimonial-avatar" src="https://images.pexels.com/photos/16045331/pexels-photo-16045331.jpeg?cs=srgb&dl=pexels-hoang-nc-483165236-16045331.jpg&fm=jpg" alt="Employer team testimonial portrait">
+              <div class="testimonial-meta">
+                <h3>Aurora Grand Hotel</h3>
+                <span>Housekeeping overflow crew</span>
+              </div>
+            </div>
+            <p>"We filled an overflow cleaning crew in under 30 minutes without chasing phone calls."</p>
+          </article>
+          <article class="testimonial-card">
+            <span class="journey-badge">Worker</span>
+            <div class="testimonial-head">
+              <img class="testimonial-avatar" src="https://images.pexels.com/photos/9746797/pexels-photo-9746797.jpeg?cs=srgb&dl=pexels-jefilms-9746797.jpg&fm=jpg" alt="Warehouse worker testimonial portrait">
+              <div class="testimonial-meta">
+                <h3>Dawa, Warehouse Worker</h3>
+                <span>Night shift logistics</span>
+              </div>
+            </div>
+            <p>"I signed up with help, got approved, and started seeing nearby warehouse shifts on the same dashboard."</p>
+          </article>
+        </div>
+        <div class="testimonial-dots" id="testimonialDots">
+          <button class="testimonial-dot is-active" type="button" aria-label="Show testimonial 1"></button>
+          <button class="testimonial-dot" type="button" aria-label="Show testimonial 2"></button>
+          <button class="testimonial-dot" type="button" aria-label="Show testimonial 3"></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="conversion-band employer-band">
+        <div>
+          <p class="eyebrow">For Employers</p>
+          <h2>Post once, hire faster, and manage crew quality from one workspace</h2>
+          <p>Bring job post, matching, comparison, chat, and payment controls into a single operations-friendly hiring flow.</p>
+        </div>
+        <div class="button-row">
+          <button class="primary-button" type="button" data-cta-role="employer">Open Employer Registration</button>
+          <a class="secondary-button" href="#field-scenes">Explore use cases</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section signup-layout" id="signup">
+      <div class="panel">
+        <p class="eyebrow">Sign Up</p>
+        <h2 id="signupSectionTitle">Create a worker or employer account</h2>
+        <p class="helper-text">Registration changes the experience and opens a private portal that is invisible to other roles.</p>
+        <div class="tab-row" id="signupTabs">
+          <button class="role-tab active" type="button" data-signup-role="worker">Worker</button>
+          <button class="role-tab" type="button" data-signup-role="employer">Employer</button>
+        </div>
+        <div class="tab-row" id="signupModeTabs">
+          <button class="role-tab active" type="button" data-signup-mode="self">Register Myself</button>
+          <button class="role-tab" type="button" data-signup-mode="assisted">Register With Help</button>
+          <button class="role-tab" type="button" data-signup-mode="voice">Use Voice Signup</button>
+        </div>
+        <article class="info-card">
+          <strong>Onboarding Mode</strong>
+          <p id="onboardingHint">Self signup keeps onboarding fast with OTP, icon-friendly skill selection, and simple profile setup.</p>
+        </article>
+        <section class="onboarding-guide panel" id="onboardingGuide">
+          <div class="guide-header">
+            <div>
+              <p class="eyebrow">Guided Onboarding</p>
+              <h3 id="guideTitle">Quick self-registration</h3>
+            </div>
+            <span class="status-pill available" id="guideModeBadge">Self</span>
+          </div>
+          <div class="guide-cards">
+            <article class="guide-card" id="voiceGuideCard">
+              <strong>Voice session</strong>
+              <p id="voiceGuideText">Local-language prompts help workers continue without typing long forms.</p>
+              <div class="audio-meter" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="meta-row"><span id="voiceGuideLanguage">Language: Nepali</span><span id="voiceGuideTimer">Estimated call: 01:20</span></div>
+            </article>
+            <article class="guide-card" id="helperGuideCard">
+              <strong>Helper verification</strong>
+              <p id="helperGuideText">A verified helper, employer, or kiosk operator can assist this worker.</p>
+              <div class="meta-row"><span id="helperGuideName">Helper: pending</span><span id="helperGuideState">Check: waiting</span></div>
+            </article>
+            <article class="guide-card" id="reviewGuideCard">
+              <strong>Registration review</strong>
+              <p id="reviewGuideText">Complete the account details, then submit for admin review.</p>
+              <div class="meta-row"><span id="reviewGuideStatus">Status: form not submitted</span><span id="reviewGuideEta">ETA: after account creation</span></div>
+            </article>
+          </div>
+        </section>
+        <div class="easy-steps" id="workerEasySteps">
+          <button class="step-card is-active" type="button" data-step-action="work">
+            <img class="step-art-image" src="./assets/step-work.svg?v=20260327b" alt="Choose work type image">
+            <strong>1. Tap Work Type</strong>
+            <p>Choose work by icon instead of typing.</p>
+          </button>
+          <button class="step-card" type="button" data-step-action="verify">
+            <img class="step-art-image" src="./assets/step-verify.svg?v=20260327b" alt="Fast verification image">
+            <strong>2. Verify Fast</strong>
+            <p>Use OTP, helper, or voice call.</p>
+          </button>
+          <button class="step-card" type="button" data-step-action="photo">
+            <img class="step-art-image" src="./assets/step-photo.svg?v=20260327b" alt="Photo upload image">
+            <strong>3. Upload Photo</strong>
+            <p>Take ID and selfie pictures later.</p>
+          </button>
+        </div>
+        <form id="signupForm" class="stack">
+          <div class="two-grid">
+            <label>
+              <span>Full Name</span>
+              <input id="signupName" type="text" placeholder="Enter full name">
+            </label>
+            <label>
+              <span>Phone or Email</span>
+              <input id="signupContact" type="text" placeholder="Phone number or email">
+            </label>
+            <label id="companyField" class="is-hidden">
+              <span>Company Name</span>
+              <input id="signupCompany" type="text" placeholder="Business or company name">
+            </label>
+            <label>
+              <span>Primary Skill or Category</span>
+              <select id="signupSkill">
+                <option>Plumbing</option>
+                <option>Cleaning</option>
+                <option>Construction</option>
+                <option>Warehouse</option>
+                <option>Hospitality</option>
+              </select>
+            </label>
+            <label id="assistedField" class="is-hidden">
+              <span>Helper or Agent Name</span>
+              <input id="signupAssistedBy" type="text" placeholder="Field agent, employer, kiosk, or support team">
+            </label>
+            <label id="voiceField" class="is-hidden">
+              <span>Preferred Voice Language</span>
+              <select id="signupVoiceLanguage">
+                <option>Nepali</option>
+                <option>Hindi</option>
+                <option>English</option>
+              </select>
+            </label>
+          </div>
+          <div class="skill-picker" id="workerSkillPicker">
+            <button class="skill-card is-active" type="button" data-skill-choice="Plumbing">
+              <span class="skill-icon">Pipe</span>
+              <strong>Plumbing</strong>
+              <small>Leaks and fitting</small>
+            </button>
+            <button class="skill-card" type="button" data-skill-choice="Cleaning">
+              <span class="skill-icon">Clean</span>
+              <strong>Cleaning</strong>
+              <small>Homes and hotels</small>
+            </button>
+            <button class="skill-card" type="button" data-skill-choice="Construction">
+              <span class="skill-icon">Build</span>
+              <strong>Construction</strong>
+              <small>Site labor help</small>
+            </button>
+            <button class="skill-card" type="button" data-skill-choice="Warehouse">
+              <span class="skill-icon">Stock</span>
+              <strong>Warehouse</strong>
+              <small>Loading and packing</small>
+            </button>
+            <button class="skill-card" type="button" data-skill-choice="Hospitality">
+              <span class="skill-icon">Serve</span>
+              <strong>Hospitality</strong>
+              <small>Hotels and events</small>
+            </button>
+          </div>
+          <div class="assist-options" id="assistOptions">
+            <article class="assist-card">
+              <strong>Need help now?</strong>
+              <p>Choose assisted signup and let a field agent, employer, kiosk, or support person fill the account with the worker.</p>
+            </article>
+            <article class="assist-card">
+              <strong>Prefer speaking?</strong>
+              <p>Choose voice signup and the platform uses simple local-language prompts instead of long written forms.</p>
+            </article>
+          </div>
+          <div class="photo-prep-tray" id="photoPrepTray">
+            <article class="info-card">
+              <strong>ID Photo</strong>
+              <p>Use camera or choose file for worker ID.</p>
+              <input id="workerIdPhoto" type="file" accept="image/*">
+            </article>
+            <article class="info-card">
+              <strong>Selfie Photo</strong>
+              <p>Capture a clear face photo for verification.</p>
+              <input id="workerSelfiePhoto" type="file" accept="image/*">
+            </article>
+          </div>
+          <p class="helper-text" id="photoPrepStatus">No photos selected yet.</p>
+          <label>
+            <span>Notes</span>
+            <textarea id="signupNotes" placeholder="Experience, business type, or onboarding notes"></textarea>
+          </label>
+          <div class="button-row">
+            <button class="secondary-button small-button" id="sendOtp" type="button"><span id="otpLabel">Send OTP</span></button>
+            <button class="primary-button small-button" type="submit"><span id="signupSubmitLabel">Create Worker Account</span></button>
+          </div>
+          <p class="feedback" id="signupFeedback"></p>
+        </form>
+      </div>
+
+      <div class="panel">
+        <p class="eyebrow">Login</p>
+        <h2>Return to your dashboard after approval</h2>
+        <p class="helper-text">Workers and employers can sign back in with the same phone or email used during registration.</p>
+        <div class="tab-row" id="loginTabs">
+          <button class="role-tab active" type="button" data-login-role="worker">Worker Login</button>
+          <button class="role-tab" type="button" data-login-role="employer">Employer Login</button>
+        </div>
+        <form id="loginForm" class="stack">
+          <label>
+            <span>Phone or Email</span>
+            <input id="loginContact" type="text" placeholder="Enter registered phone or email">
+          </label>
+          <div class="button-row">
+            <button class="primary-button small-button" type="submit">Open My Dashboard</button>
+          </div>
+          <p class="feedback" id="loginFeedback"></p>
+        </form>
+        <div class="stack onboarding-support">
+          <div>
+            <p class="eyebrow">Worker-Friendly Onboarding</p>
+            <h2>Documents and assisted flows after signup</h2>
+          </div>
+          <article class="info-card">
+            <strong>Worker Verification</strong>
+            <p>Government ID, selfie or profile photo, address or phone proof, optional trade certificate.</p>
+          </article>
+          <article class="info-card">
+            <strong>Low-Literacy Options</strong>
+            <p>Workers can sign up themselves, use voice onboarding in local language, or register through a helper, kiosk, or field agent.</p>
+          </article>
+          <article class="info-card">
+            <strong>Employer Verification</strong>
+            <p>Business registration document, tax or company ID, authorized representative ID, company logo and billing info.</p>
+          </article>
+          <article class="info-card">
+            <strong>Verification Review</strong>
+            <p>Submitted documents are reviewed so approved accounts can access full worker or employer tools.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="download">
+      <div class="section-heading">
+        <p class="eyebrow">Download</p>
+        <h2>App rollout and waitlist</h2>
+      </div>
+      <div class="two-grid">
+        <article class="panel">
+          <h3>Android Early Access</h3>
+          <p>Field teams and workers can join the Android rollout list for the first mobile release.</p>
+          <div class="button-row">
+            <a class="primary-button small-button" href="#signup">Join Android Waitlist</a>
+          </div>
+        </article>
+        <article class="panel">
+          <h3>iPhone Invite List</h3>
+          <p>Employers and supervisors can register interest for the iPhone launch and pilot access.</p>
+          <div class="button-row">
+            <a class="secondary-button small-button" href="#signup">Join iPhone Waitlist</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="community">
+      <div class="section-heading">
+        <p class="eyebrow">Community</p>
+        <h2>Support and social channels</h2>
+      </div>
+      <div class="three-grid">
+        <a class="panel interactive-panel" href="#signup"><h3>Facebook Updates</h3><p>Use this channel for worker stories, local launch updates, and referral campaigns.</p><span>Join community</span></a>
+        <a class="panel interactive-panel" href="#signup"><h3>LinkedIn</h3><p>Employer partnerships, hiring updates, and market insights live here.</p><span>View partnerships</span></a>
+        <a class="panel interactive-panel" href="#signup"><h3>Help and Contact</h3><p>Direct users back to onboarding support, document help, and rollout questions.</p><span>Get support</span></a>
+      </div>
+    </section>
+
+    <section class="section" id="legal">
+      <div class="section-heading">
+        <p class="eyebrow">Legal</p>
+        <h2>Platform policies</h2>
+      </div>
+      <div class="three-grid">
+        <a class="panel interactive-panel" href="#signup"><h3>Terms of Service</h3><p>Defines platform use, worker obligations, employer responsibilities, and acceptable conduct.</p><span>Review access</span></a>
+        <a class="panel interactive-panel" href="#signup"><h3>Privacy Policy</h3><p>Explains how identity documents, location signals, and payment records are stored and reviewed.</p><span>See privacy flow</span></a>
+        <a class="panel interactive-panel" href="#signup"><h3>Escrow and Dispute Policy</h3><p>Describes payment holds, release conditions, disputes, evidence review, and refunds.</p><span>Learn payment rules</span></a>
+      </div>
+    </section>
+  </main>
+
+  <section class="portal-shell is-hidden" id="portalShell">
+    <div class="portal-header">
+      <div>
+        <p class="eyebrow">Private Portal</p>
+        <h2 id="portalTitle">Worker Portal</h2>
+      </div>
+      <div class="button-row">
+        <button class="secondary-button small-button" id="portalExport" type="button">Export</button>
+        <button class="ghost-button small-button" id="logoutButton" type="button">Log Out</button>
+      </div>
+    </div>
+
+    <div class="portal-layout">
+      <aside class="portal-sidebar panel">
+        <div class="status-block">
+          <span class="status-pill available" id="portalRoleBadge">WORKER</span>
+          <strong id="portalUserName">Guest</strong>
+          <p id="portalSubtitle">Private role dashboard</p>
+        </div>
+        <nav class="stack" id="portalNav"></nav>
+      </aside>
+      <main class="portal-main panel" id="portalContent"></main>
+    </div>
+  </section>
+
+  <div class="auth-modal is-hidden" id="authModal" aria-hidden="true">
+    <div class="auth-backdrop" id="authBackdrop"></div>
+    <div class="auth-panel">
+      <p class="eyebrow">Secure Staff Access</p>
+      <h2>Authorized operations only</h2>
+      <p class="helper-text">This entry is hidden from public users. Use a valid internal access code to continue.</p>
+      <div class="tab-row" id="authRoleTabs">
+        <button class="role-tab active" type="button" data-auth-role="admin">Admin</button>
+        <button class="role-tab" type="button" data-auth-role="super_admin">Super Admin</button>
+      </div>
+      <label>
+        <span>Authorization Code</span>
+        <input id="authCode" type="password" placeholder="Enter internal access code">
+      </label>
+      <div class="button-row">
+        <button class="secondary-button small-button" id="authCancel" type="button">Cancel</button>
+        <button class="primary-button small-button" id="authSubmit" type="button">Enter Secure Portal</button>
+      </div>
+      <p class="feedback" id="authFeedback"></p>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div>
+      <strong>WorkShift</strong>
+      <p>Daily worker marketplace with verification, escrow payments, ratings, and faster local hiring.</p>
+    </div>
+    <div class="footer-links">
+      <a href="#hero">Home</a>
+      <a href="#how">How It Works</a>
+      <a href="#signup">Sign Up</a>
+    </div>
+    <div class="footer-links">
+      <a href="#download">App Store</a>
+      <a href="#download">Google Play</a>
+      <a href="#community">Facebook</a>
+      <a href="#community">LinkedIn</a>
+      <a href="#legal">Legal</a>
+    </div>
+  </footer>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="true"></div>
+  <script>
+    window.__workshiftBooted = false;
+    window.__workshiftShowIssue = function (message) {
+      var existing = document.getElementById("workshiftIssueBanner");
+      if (existing) {
+        existing.querySelector("span").textContent = message;
+        return;
+      }
+      var banner = document.createElement("div");
+      banner.id = "workshiftIssueBanner";
+      banner.style.position = "fixed";
+      banner.style.left = "16px";
+      banner.style.right = "16px";
+      banner.style.bottom = "16px";
+      banner.style.zIndex = "9999";
+      banner.style.padding = "14px 18px";
+      banner.style.borderRadius = "16px";
+      banner.style.background = "rgba(127, 29, 29, 0.96)";
+      banner.style.color = "#fff7f7";
+      banner.style.boxShadow = "0 18px 40px rgba(15, 23, 42, 0.32)";
+      banner.style.font = "600 14px/1.5 'Segoe UI', sans-serif";
+      banner.innerHTML = "<strong style='display:block;margin-bottom:4px'>WorkShift startup issue</strong><span></span>";
+      banner.querySelector("span").textContent = message;
+      document.body.appendChild(banner);
+    };
+
+    window.addEventListener("error", function (event) {
+      if (!window.__workshiftBooted) {
+        window.__workshiftShowIssue((event && event.message) || "A script error stopped the page from starting.");
+      }
+    });
+
+    window.addEventListener("unhandledrejection", function (event) {
+      if (!window.__workshiftBooted) {
+        var detail = event && event.reason && event.reason.message ? event.reason.message : String(event.reason || "Unknown async error");
+        window.__workshiftShowIssue(detail);
+      }
+    });
+  </script>
+  __WORKSHIFT_INLINE_BUNDLE__
+</body>
+</html>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 120" role="img" aria-label="Tap work type illustration">
+  <rect width="180" height="120" rx="28" fill="#f8eee4"/>
+  <rect x="18" y="24" width="40" height="40" rx="14" fill="#c5612f"/>
+  <rect x="70" y="24" width="40" height="40" rx="14" fill="#0f766e"/>
+  <rect x="122" y="24" width="40" height="40" rx="14" fill="#2563eb"/>
+  <circle cx="90" cy="88" r="20" fill="#ffbf69"/>
+  <path d="M90 76 L96 92 L86 92 Z" fill="#ffffff"/>
+</svg>
