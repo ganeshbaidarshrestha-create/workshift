@@ -1,4 +1,6 @@
 $files = @(
+  'scripts/country-rules.js',
+  'scripts/supabase.js',
   'scripts/data.js',
   'scripts/matching.js',
   'scripts/store.js',
@@ -8,6 +10,7 @@ $files = @(
   'scripts/renderers/shared.js',
   'scripts/renderers/worker.js',
   'scripts/renderers/employer.js',
+  'scripts/renderers/household.js',
   'scripts/renderers.js',
   'scripts/actions.js',
   'scripts/main.js'

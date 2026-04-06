@@ -1,13 +1,48 @@
 import { scoreWorkersForJob } from "../matching.js";
+import { countryName, formatCountryMoney, getCountryRule } from "../country-rules.js";
+import {
+  applyToSupabaseJob,
+  createSupabaseDispute,
+  createSupabaseWalletEntry,
+  createSupabaseJob,
+  formatSupabaseApplicationStatus,
+  listSupabaseAdminPayments,
+  listSupabaseAdminQueue,
+  listSupabaseApplicationsForJob,
+  listSupabaseChatMessages,
+  listSupabaseDisputes,
+  listSupabaseEmployerEscrows,
+  listSupabaseMyDisputes,
+  listSupabaseWorkerApplicationsWithMessages,
+  mapSupabaseApplicationToEmployerApplicant,
+  mapSupabaseApplicationToWorkerApplication,
+  mapSupabaseApplicationToWorkerJob,
+  mapSupabaseDisputeToAdminItem,
+  mapSupabaseEscrowToAdminPayment,
+  mapSupabaseReviewToQueueItem,
+  supabaseEnabled,
+  sendSupabaseChatMessage,
+  uploadSupabaseFile,
+  updateSupabaseDisputeStatus,
+  updateSupabaseApplicationStatus,
+  updateSupabaseEscrowStatus,
+  updateSupabaseJob,
+  updateSupabaseVerificationStatus,
+  upsertSupabaseEscrowTransaction,
+  upsertSupabaseProfile
+} from "../supabase.js";
 import {
   addActivity,
+  addDisputeRecord,
   addAdminAccount,
+  closeDisputeModal,
   closeWorkerProfileModal,
   closeJobPostModal,
   closeWorkerJobModal,
   findRegisteredEmployerByCompany,
   findRegisteredWorkerByReference,
   getSession,
+  openDisputeModal,
   openJobPostModal,
   openWorkerProfileModal,
   openWorkerJobModal,
@@ -16,6 +51,7 @@ import {
   removeSavedSearch,
   saveRegisteredUserRecord,
   saveCurrentUser,
+  saveDisputeDraft,
   saveJobPostDraft,
   selectedApplicant,
   selectedDisputeItem,
@@ -29,6 +65,7 @@ import {
   setSelectedSearchWorker,
   toggleComparisonWorker,
   toggleEmployerQuickFilter,
+  updateStoredDispute,
   updateApproval
 } from "../store.js";
 import { renderPortal, renderToasts } from "../renderers.js";
@@ -44,6 +81,189 @@ function syncVisibleSearchSelection(session, job) {
   } else {
     setSelectedSearchWorker("");
   }
+}
+
+async function syncEmployerPipelineFromSupabase(session, jobId = "") {
+  if (!supabaseEnabled() || session.currentUser?.role !== "employer") return;
+  const targetJobId = jobId || session.selectedEmployerJob;
+  const targetJob = (session.currentUser.jobs || []).find((item) => item.id === targetJobId);
+  if (!targetJob?.supabaseId) return;
+
+  const liveApplications = await listSupabaseApplicationsForJob(targetJob.supabaseId);
+  const liveApplicants = await Promise.all(liveApplications.map(async (application) => {
+    const messages = await listSupabaseChatMessages(application.id);
+    return mapSupabaseApplicationToEmployerApplicant(application, {
+      id: targetJob.supabaseId,
+      title: targetJob.title,
+      category: targetJob.category,
+      location: targetJob.location,
+      required_skills: String(targetJob.requiredSkillsText || "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean)
+    }, messages);
+  }));
+
+  session.currentUser.applicants = [
+    ...(session.currentUser.applicants || []).filter((item) => item.jobId !== targetJob.id && item.jobSupabaseId !== targetJob.supabaseId),
+    ...liveApplicants
+  ];
+  session.currentUser.hiring = [
+    ...(session.currentUser.hiring || []).filter((item) => !liveApplicants.some((applicant) => applicant.name === item.candidate)),
+    ...liveApplicants.map((applicant) => ({ candidate: applicant.name, status: applicant.status }))
+  ];
+  targetJob.applicants = liveApplicants.length;
+  targetJob.shortlisted = liveApplicants.filter((applicant) => ["Shortlisted", "Invited", "Hired", "Rated"].includes(applicant.status)).length;
+  if (!liveApplicants.some((applicant) => applicant.id === session.selectedApplicant)) {
+    session.selectedApplicant = liveApplicants[0]?.id || "";
+  }
+}
+
+async function syncWorkerPipelineFromSupabase(session) {
+  if (!supabaseEnabled() || session.currentUser?.role !== "worker") return;
+  const applications = await listSupabaseWorkerApplicationsWithMessages();
+  const mappedApplications = applications.map((application) => mapSupabaseApplicationToWorkerApplication(application, application.messages));
+  const mappedJobs = applications.map((application) => mapSupabaseApplicationToWorkerJob(application));
+  session.currentUser.applications = mappedApplications;
+  session.currentUser.jobs = mappedJobs;
+  const selectedJob = mappedJobs.find((job) => job.id === session.selectedWorkerJob) || mappedJobs[0] || null;
+  const selectedApplication = mappedApplications.find((item) => item.supabaseApplicationId === selectedJob?.supabaseApplicationId)
+    || mappedApplications[0]
+    || null;
+  session.currentUser.chatStream = selectedApplication?.chatThread || [];
+  if (selectedJob?.id) session.selectedWorkerJob = selectedJob.id;
+  await syncCurrentUserDisputesFromSupabase(session);
+  window.dispatchEvent(new CustomEvent("workshift:worker-live-sync"));
+}
+
+async function syncEmployerEscrowsFromSupabase(session) {
+  if (!supabaseEnabled() || session.currentUser?.role !== "employer") return;
+  const escrows = await listSupabaseEmployerEscrows();
+  const latestEscrow = escrows[0] || null;
+  session.currentUser.profile.payments = escrows.slice(0, 6).map((escrow) => mapSupabaseEscrowToAdminPayment(escrow));
+  session.currentUser.escrow = latestEscrow ? {
+    funded: ["funded", "released"].includes(String(latestEscrow.status || "").toLowerCase()),
+    status: formatSupabaseApplicationStatus(latestEscrow.status || "draft"),
+    autoReleaseHours: 24,
+    nextRelease: latestEscrow.released_at || latestEscrow.refunded_at || "Pending release",
+    escrowId: latestEscrow.id
+  } : session.currentUser.escrow;
+
+  const escrowByJobId = new Map(escrows.map((escrow) => [escrow.job_id, escrow]));
+  (session.currentUser.jobs || []).forEach((item) => {
+    const matched = escrowByJobId.get(item.supabaseId || item.jobSupabaseId || "");
+    if (!matched) return;
+    item.escrow = ["funded", "released"].includes(String(matched.status || "").toLowerCase());
+    item.escrowId = matched.id;
+  });
+  await syncCurrentUserDisputesFromSupabase(session);
+}
+
+async function syncAdminStateFromSupabase(session) {
+  if (!supabaseEnabled() || session.currentUser?.role !== "admin") return;
+  const [queueRecords, disputeRecords, paymentRecords] = await Promise.all([
+    listSupabaseAdminQueue(),
+    listSupabaseDisputes(),
+    listSupabaseAdminPayments()
+  ]);
+  session.currentUser.queue = queueRecords.map((item) => mapSupabaseReviewToQueueItem(item));
+  session.currentUser.disputes = disputeRecords.map((item) => mapSupabaseDisputeToAdminItem(item));
+  session.currentUser.payments = paymentRecords.map((item) => mapSupabaseEscrowToAdminPayment(item));
+  if (!session.currentUser.queue.some((item) => item.id === session.selectedQueue)) {
+    session.selectedQueue = session.currentUser.queue[0]?.id || "";
+  }
+  if (!session.currentUser.disputes.some((item) => item.id === session.selectedDispute)) {
+    session.selectedDispute = session.currentUser.disputes[0]?.id || "";
+  }
+}
+
+async function syncCurrentUserDisputesFromSupabase(session) {
+  if (!supabaseEnabled() || !["worker", "employer"].includes(session.currentUser?.role || "")) return;
+  const disputes = await listSupabaseMyDisputes();
+  session.currentUser.disputes = disputes;
+  if (!session.currentUser.disputes.some((item) => item.id === session.selectedDispute)) {
+    session.selectedDispute = session.currentUser.disputes[0]?.id || "";
+  }
+}
+
+function buildEvidenceItems(notes = "", links = "") {
+  const noteItems = String(notes || "")
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((value, index) => ({ label: `Note ${index + 1}`, value }));
+  const linkItems = String(links || "")
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((value, index) => ({ label: `Link ${index + 1}`, value }));
+  return [...noteItems, ...linkItems];
+}
+
+function buildDisputeContext(session) {
+  if (!session.currentUser || !["worker", "employer"].includes(session.currentUser.role)) return null;
+
+  if (session.currentUser.role === "worker") {
+    const job = selectedWorkerJob();
+    const application = (session.currentUser.applications || []).find((item) => item.supabaseApplicationId === job?.supabaseApplicationId)
+      || (session.currentUser.applications || []).find((item) => item.title === job?.title)
+      || null;
+    return {
+      jobId: job?.id || "",
+      jobSupabaseId: job?.supabaseId || "",
+      applicationId: application?.supabaseApplicationId ? `sbapp-${application.supabaseApplicationId}` : application?.id || "",
+      applicationSupabaseId: application?.supabaseApplicationId || "",
+      escrowId: job?.escrowId || session.currentUser.escrow?.escrowId || "",
+      againstProfileId: application?.employerId || job?.employerId || "",
+      againstName: job?.company || "Employer",
+      title: job?.title || "Current shift",
+      amount: Number(String(job?.pay || "").replace(/[^\d.]/g, "")) || Number(job?.dailyRate || 0) || 0,
+      currencyCode: getCountryRule(job?.countryCode || session.currentUser.countryCode || "NP").currencyCode
+    };
+  }
+
+  const job = selectedEmployerJob();
+  const applicant = selectedApplicant();
+  return {
+    jobId: job?.id || "",
+    jobSupabaseId: job?.supabaseId || "",
+    applicationId: applicant?.supabaseApplicationId ? `sbapp-${applicant.supabaseApplicationId}` : applicant?.id || "",
+    applicationSupabaseId: applicant?.supabaseApplicationId || "",
+    escrowId: job?.escrowId || session.currentUser.escrow?.escrowId || "",
+    againstProfileId: applicant?.workerId || "",
+    againstName: applicant?.name || "Worker",
+    title: job?.title || "Current booking",
+    amount: Number(job?.dailyRate || 0) * Math.max(1, Number(job?.headcount || 1)),
+    currencyCode: getCountryRule(job?.countryCode || session.currentUser.countryCode || "NP").currencyCode
+  };
+}
+
+function createLocalDisputeRecord(session, draft, evidence) {
+  const recordId = `disp_${Date.now()}`;
+  const amount = Number(draft.amount || 0);
+  const title = `${draft.title || "WorkShift case"}: ${draft.reason || "Dispute opened"}`;
+  const note = `${draft.requestedResolution || "Review and mediate"} / Amount ${formatCountryMoney(amount, draft.currencyCode || session.currentUser.countryCode || "NP")}`;
+  const record = {
+    id: recordId,
+    disputeId: "",
+    escrowId: draft.escrowId || "",
+    title,
+    status: "Open",
+    note,
+    amount,
+    currencyCode: draft.currencyCode || getCountryRule(session.currentUser.countryCode || "NP").currencyCode,
+    jobTitle: draft.title || "Work item",
+    againstName: draft.againstName || "Counterparty",
+    requestedResolution: draft.requestedResolution || "Review and mediate",
+    summary: draft.summary || "",
+    evidence,
+    openedByRole: session.currentUser.role,
+    openedByName: session.currentUser.accountType === "household"
+      ? (session.currentUser.homeLabel || session.currentUser.fullName)
+      : (session.currentUser.company || session.currentUser.fullName),
+    createdAt: new Date().toISOString()
+  };
+  return record;
 }
 
 function ensureApplicantForWorker(employer, worker, job) {
@@ -115,6 +335,69 @@ function ensureApplicantForPoolWorker(employer, candidate, job) {
   return applicant;
 }
 
+export async function uploadDocumentAsset(token, file) {
+  const session = getSession();
+  if (!session.currentUser || !file) return;
+  const [, docId] = token.split(":");
+  const documentItem = session.currentUser.documents.find((item) => item.id === docId);
+  if (!documentItem) return;
+
+  documentItem.status = "Uploading";
+  documentItem.fileName = file.name;
+
+  const folder = `documents/${session.currentUser.role}/${session.currentUser.id || "local-user"}/${docId}`;
+  const result = await uploadSupabaseFile(file, { folder });
+  if (!result.ok) {
+    documentItem.status = "Missing";
+    pushToast("Upload issue", result.error || "The document could not be uploaded.");
+    renderToasts();
+    return;
+  }
+
+  documentItem.status = "Uploaded";
+  documentItem.fileName = result.data?.fileName || file.name;
+  documentItem.url = result.data?.url || "";
+  documentItem.storagePath = result.data?.path || "";
+  documentItem.storageBucket = result.data?.bucket || "";
+  documentItem.storageProvider = result.data?.provider || "local-demo";
+  addActivity(`Uploaded document ${documentItem.name}.`);
+  pushToast("Document uploaded", `${documentItem.name} is now attached and ready for review.`);
+  saveCurrentUser();
+  renderPortal();
+  renderToasts();
+}
+
+export async function uploadDisputeEvidenceFiles(fileList) {
+  const session = getSession();
+  if (!session.currentUser || !fileList?.length) return;
+  const files = Array.from(fileList);
+  const existingDraft = session.disputeDraft || {};
+  const evidence = Array.isArray(existingDraft.evidence) ? [...existingDraft.evidence] : [];
+
+  for (const file of files) {
+    const folder = `evidence/${session.currentUser.role}/${session.currentUser.id || "local-user"}`;
+    const result = await uploadSupabaseFile(file, { bucket: "workshift-evidence", folder });
+    if (!result.ok) {
+      pushToast("Evidence upload issue", result.error || `Could not upload ${file.name}.`);
+      continue;
+    }
+    evidence.push({
+      label: `File: ${result.data?.fileName || file.name}`,
+      value: result.data?.url || result.data?.path || file.name,
+      fileName: result.data?.fileName || file.name,
+      url: result.data?.url || "",
+      path: result.data?.path || "",
+      bucket: result.data?.bucket || "",
+      provider: result.data?.provider || "local-demo"
+    });
+  }
+
+  saveDisputeDraft({ evidence });
+  pushToast("Evidence ready", `${files.length} evidence file${files.length === 1 ? "" : "s"} attached to the dispute draft.`);
+  renderPortal();
+  renderToasts();
+}
+
 function appendWorkerChat(worker, from, text) {
   if (!Array.isArray(worker.chatStream)) worker.chatStream = [];
   if (!worker.profile) worker.profile = {};
@@ -151,14 +434,16 @@ function syncWorkerJobState(worker, job, employerName, status, note) {
       id: job.id,
       title: job.title,
       company: employerName,
-      pay: `$${job.dailyRate}/day`,
+      pay: `${formatCountryMoney(job.dailyRate, job.countryCode || "NP")}/${job.payUnit || "day"}`,
       distance: job.location || "Nearby",
       status,
       applied: true,
       saved: false,
-      summary: `${job.category} / ${job.location}`,
+      summary: `${job.category} / ${(job.serviceAddress || job.location)} / ${countryName(job.countryCode || "NP")} / ${job.bookingMode || "direct booking"}`,
       skills: job.requiredSkillsText || job.category,
-      location: job.location
+      location: job.location,
+      country: job.country || countryName(job.countryCode || "NP"),
+      countryCode: job.countryCode || "NP"
     };
     worker.jobs.unshift(workerJob);
   }
@@ -167,8 +452,11 @@ function syncWorkerJobState(worker, job, employerName, status, note) {
   workerJob.status = status;
   workerJob.applied = true;
   workerJob.location = job.location;
-  workerJob.pay = `$${job.dailyRate}/day`;
+  workerJob.serviceAddress = job.serviceAddress || workerJob.serviceAddress || "";
+  workerJob.pay = `${formatCountryMoney(job.dailyRate, job.countryCode || "NP")}/${job.payUnit || "day"}`;
   workerJob.skills = job.requiredSkillsText || job.category;
+  workerJob.country = job.country || countryName(job.countryCode || "NP");
+  workerJob.countryCode = job.countryCode || "NP";
 
   let application = worker.applications.find((item) => item.title === job.title);
   if (!application) {
@@ -196,7 +484,7 @@ export function exportCurrentRole() {
   renderToasts();
 }
 
-export function saveProfile() {
+export async function saveProfile() {
   const session = getSession();
   if (!session.currentUser) return;
   session.currentUser.fullName = document.querySelector("#profileFullName")?.value || session.currentUser.fullName;
@@ -205,8 +493,14 @@ export function saveProfile() {
   session.currentUser.notes = document.querySelector("#profileNotes")?.value || session.currentUser.notes;
   if (session.currentUser.role === "employer") {
     session.currentUser.company = document.querySelector("#profileCompany")?.value || session.currentUser.company;
+    if (session.currentUser.accountType === "household") {
+      session.currentUser.homeLabel = document.querySelector("#profileCompany")?.value || session.currentUser.homeLabel;
+      session.currentUser.serviceAddress = document.querySelector("#profileNotes")?.value || session.currentUser.serviceAddress;
+    }
+    session.currentUser.countryCode = document.querySelector("#profileCountryCode")?.value || session.currentUser.countryCode || "NP";
   }
   if (session.currentUser.role === "worker") {
+    session.currentUser.countryCode = document.querySelector("#profileCountryCode")?.value || session.currentUser.countryCode || "NP";
     session.currentUser.availability = document.querySelector("#profileAvailability")?.value || session.currentUser.availability;
     session.currentUser.profile.experience = document.querySelector("#profileExperience")?.value || session.currentUser.profile.experience;
     session.currentUser.profile.bio = document.querySelector("#profileBio")?.value || session.currentUser.profile.bio;
@@ -214,11 +508,19 @@ export function saveProfile() {
   addActivity(`Saved ${session.currentUser.role} profile changes.`);
   pushToast("Profile saved", "Changes are visible in the private portal.");
   saveCurrentUser();
+  if (supabaseEnabled() && ["worker", "employer"].includes(session.currentUser.role)) {
+    const result = await upsertSupabaseProfile(session.currentUser);
+    if (result.ok) {
+      pushToast("Supabase synced", "Profile changes were saved to the live backend.");
+    } else {
+      pushToast("Supabase sync issue", result.error || "Profile stayed local because the backend save failed.");
+    }
+  }
   renderPortal();
   renderToasts();
 }
 
-export function updateMediaPreview(kind, file) {
+export async function updateMediaPreview(kind, file) {
   const session = getSession();
   if (!session.currentUser || !file) return;
   if (kind === "worker-photo" && session.currentUser.role === "worker") {
@@ -227,21 +529,21 @@ export function updateMediaPreview(kind, file) {
   if (kind === "employer-logo" && session.currentUser.role === "employer") {
     session.currentUser.profile.logo = file.name;
   }
-  const reader = new FileReader();
-  reader.onload = () => {
-    if (kind === "worker-photo" && session.currentUser.role === "worker") {
-      session.currentUser.profile.photoData = String(reader.result || "");
-    }
-    if (kind === "employer-logo" && session.currentUser.role === "employer") {
-      session.currentUser.profile.logoData = String(reader.result || "");
-    }
-    addActivity(`Updated ${kind} preview with ${file.name}.`);
-    pushToast("Media ready", `${file.name} is now visible across the portal.`);
-    saveCurrentUser();
-    renderPortal();
+  const folder = `media/${session.currentUser.role}/${session.currentUser.id || "local-user"}/${kind}`;
+  const result = await uploadSupabaseFile(file, { folder });
+  if (!result.ok) {
+    pushToast("Media issue", result.error || "The media preview could not be updated.");
     renderToasts();
-  };
-  reader.readAsDataURL(file);
+    return;
+  }
+  if (kind === "worker-photo" && session.currentUser.role === "worker") {
+    session.currentUser.profile.photoData = result.data?.url || "";
+  }
+  if (kind === "employer-logo" && session.currentUser.role === "employer") {
+    session.currentUser.profile.logoData = result.data?.url || "";
+  }
+  addActivity(`Updated ${kind} preview with ${file.name}.`);
+  pushToast("Media ready", `${file.name} is now visible across the portal.`);
   saveCurrentUser();
   renderPortal();
   renderToasts();
@@ -260,7 +562,112 @@ export function markDocumentUploaded(token) {
   renderToasts();
 }
 
-export function workerAction(action, payload = "") {
+export function openDisputeComposer() {
+  const session = getSession();
+  const context = buildDisputeContext(session);
+  if (!context) return;
+  openDisputeModal({
+    ...context,
+    reason: "Payment issue",
+    requestedResolution: "Review and mediate",
+    summary: "",
+    evidenceNotes: "",
+    evidenceLinks: ""
+  });
+  renderPortal();
+  renderToasts();
+}
+
+export async function submitDispute() {
+  const session = getSession();
+  if (!session.currentUser || !["worker", "employer"].includes(session.currentUser.role)) return;
+
+  const existingDraft = session.disputeDraft || {};
+  const draft = {
+    ...existingDraft,
+    reason: document.querySelector("#disputeReason")?.value || existingDraft.reason || "Payment issue",
+    requestedResolution: document.querySelector("#disputeResolution")?.value || existingDraft.requestedResolution || "Review and mediate",
+    amount: Number(document.querySelector("#disputeAmount")?.value || existingDraft.amount || 0),
+    summary: document.querySelector("#disputeSummary")?.value.trim() || existingDraft.summary || "",
+    evidenceNotes: document.querySelector("#disputeEvidenceNotes")?.value.trim() || existingDraft.evidenceNotes || "",
+    evidenceLinks: document.querySelector("#disputeEvidenceLinks")?.value.trim() || existingDraft.evidenceLinks || ""
+  };
+  saveDisputeDraft(draft);
+
+  if (!draft.summary) {
+    pushToast("Dispute details", "Explain what happened before submitting the dispute.");
+    renderToasts();
+    return;
+  }
+
+  const evidence = [
+    ...(Array.isArray(draft.evidence) ? draft.evidence : []),
+    ...buildEvidenceItems(draft.evidenceNotes, draft.evidenceLinks)
+  ];
+  if (!evidence.length) {
+    pushToast("Evidence needed", "Add at least one evidence note or reference link so admin can review the case.");
+    renderToasts();
+    return;
+  }
+
+  const localRecord = createLocalDisputeRecord(session, draft, evidence);
+  session.currentUser.disputes = [localRecord, ...(session.currentUser.disputes || [])];
+  session.selectedDispute = localRecord.id;
+  addDisputeRecord(localRecord);
+  if (session.currentUser.escrow?.status) {
+    session.currentUser.escrow.status = "Disputed";
+  }
+  if (session.currentUser.role === "worker") {
+    const job = selectedWorkerJob();
+    const linkedEmployer = findRegisteredEmployerByCompany(job?.company || "");
+    if (linkedEmployer) {
+      linkedEmployer.disputes = [localRecord, ...(linkedEmployer.disputes || [])];
+      saveRegisteredUserRecord(linkedEmployer);
+    }
+  } else {
+    const applicant = selectedApplicant();
+    const linkedWorker = findRegisteredWorkerByReference({ id: applicant?.id, name: applicant?.name });
+    if (linkedWorker) {
+      linkedWorker.disputes = [localRecord, ...(linkedWorker.disputes || [])];
+      saveRegisteredUserRecord(linkedWorker);
+    }
+  }
+
+  if (supabaseEnabled()) {
+    const result = await createSupabaseDispute({
+      applicationId: draft.applicationSupabaseId || null,
+      escrowId: draft.escrowId || null,
+      againstProfileId: draft.againstProfileId || null,
+      reason: draft.reason,
+      resolutionNote: `${draft.requestedResolution}: ${draft.summary}`,
+      amount: draft.amount,
+      currencyCode: draft.currencyCode || getCountryRule(session.currentUser.countryCode || "NP").currencyCode,
+      evidence
+    });
+    if (result.ok) {
+      updateStoredDispute(localRecord.id, { disputeId: result.data?.id || "" });
+      if (draft.escrowId) {
+        await updateSupabaseEscrowStatus(draft.escrowId, "disputed", `${draft.reason}: ${draft.summary}`);
+      }
+      await syncCurrentUserDisputesFromSupabase(session);
+      if (session.currentUser.role === "admin") {
+        await syncAdminStateFromSupabase(session);
+      }
+      pushToast("Supabase synced", `${draft.title || "Dispute"} was submitted to the live dispute queue.`);
+    } else {
+      pushToast("Supabase dispute issue", result.error || "The dispute stayed local because backend sync failed.");
+    }
+  }
+
+  closeDisputeModal();
+  addActivity(`Dispute opened for ${draft.title || "current job"}.`);
+  pushToast("Dispute opened", `${draft.reason} was submitted with ${evidence.length} evidence item${evidence.length === 1 ? "" : "s"}.`);
+  saveCurrentUser();
+  renderPortal();
+  renderToasts();
+}
+
+export async function workerAction(action, payload = "") {
   const session = getSession();
   if ((action === "quick-open" || action === "quick-apply") && payload) {
     session.selectedWorkerJob = payload;
@@ -281,8 +688,20 @@ export function workerAction(action, payload = "") {
       session.currentUser.applications.unshift({
         title: job.title,
         status: "Applied",
-        cover: "Applied from live marketplace board"
+        cover: "Applied from live marketplace board",
+        countryCode: job.countryCode || session.currentUser.countryCode || "NP"
       });
+    }
+    if (supabaseEnabled() && job.supabaseId) {
+      const result = await applyToSupabaseJob(job.supabaseId, `Worker applied from ${job.country || countryName(job.countryCode || "NP")} marketplace flow.`);
+      if (result.ok) {
+        const application = session.currentUser.applications.find((item) => item.title === job.title);
+        if (application) application.supabaseApplicationId = result.data?.id || "";
+        await syncWorkerPipelineFromSupabase(session);
+        pushToast("Live application", `${job.title} was submitted to the Supabase backend.`);
+      } else if (!String(result.error || "").toLowerCase().includes("duplicate")) {
+        pushToast("Application sync issue", result.error || "The application was saved locally only.");
+      }
     }
     const linkedEmployer = findRegisteredEmployerByCompany(job.company);
     if (linkedEmployer) {
@@ -328,6 +747,16 @@ export function workerAction(action, payload = "") {
       appendEmployerApplicantChat(linkedEmployer, linkedApplicant, "Employer", "Received. Your update is visible inside the employer hiring workspace.");
       saveRegisteredUserRecord(linkedEmployer);
     }
+    const currentApplication = (session.currentUser.applications || []).find((item) => item.title === job.title);
+    if (supabaseEnabled() && currentApplication?.supabaseApplicationId) {
+      const result = await sendSupabaseChatMessage(currentApplication.supabaseApplicationId, text, "worker");
+      if (result.ok) {
+        await syncWorkerPipelineFromSupabase(session);
+        pushToast("Supabase synced", `Message saved to the live thread for ${job.title}.`);
+      } else {
+        pushToast("Supabase chat issue", result.error || "The message stayed local because backend sync failed.");
+      }
+    }
     input.value = "";
   }
   addActivity(`Worker action completed: ${action}.`);
@@ -339,7 +768,7 @@ export function workerAction(action, payload = "") {
   renderToasts();
 }
 
-export function employerAction(action, payload = "") {
+export async function employerAction(action, payload = "") {
   const session = getSession();
   const job = selectedEmployerJob();
   const applicant = selectedApplicant();
@@ -360,6 +789,67 @@ export function employerAction(action, payload = "") {
     }
     setHiringStatus(applicant.name, status);
   };
+  const syncJobIfNeeded = async (message) => {
+    if (supabaseEnabled() && job?.supabaseId) {
+      const result = await updateSupabaseJob(job.supabaseId, job);
+      if (result.ok) {
+        if (message) pushToast("Supabase synced", message);
+      } else {
+        pushToast("Supabase sync issue", result.error || "The job update stayed local because backend sync failed.");
+      }
+    }
+  };
+  const persistApplicantStatus = async (status) => {
+    const formattedStatus = formatSupabaseApplicationStatus(status);
+    setApplicantStatus(formattedStatus);
+    if (supabaseEnabled() && applicant?.supabaseApplicationId) {
+      const result = await updateSupabaseApplicationStatus(applicant.supabaseApplicationId, status);
+      if (result.ok) {
+        if (status === "hired" && job?.supabaseId) {
+          await updateSupabaseJob(job.supabaseId, { ...job, status: "Ongoing" });
+        }
+        await syncEmployerPipelineFromSupabase(session, job.id);
+        pushToast("Supabase synced", `${applicant.name} is now ${formattedStatus.toLowerCase()} in the live hiring pipeline.`);
+      } else {
+        pushToast("Supabase sync issue", result.error || "The applicant status stayed local because backend sync failed.");
+      }
+    }
+  };
+  const syncEscrowIfNeeded = async (status, note) => {
+    if (!supabaseEnabled() || !job?.supabaseId) return null;
+    const workerId = applicant?.workerId || "";
+    const result = await upsertSupabaseEscrowTransaction({
+      applicationId: applicant?.supabaseApplicationId || null,
+      jobId: job.supabaseId,
+      workerId: workerId || null,
+      countryCode: job.countryCode || session.currentUser.countryCode || "NP",
+      grossAmount: Number(job.dailyRate || 0) * Math.max(1, Number(job.headcount || 1)),
+      status,
+      note
+    });
+    if (!result.ok) {
+      pushToast("Supabase escrow issue", result.error || "Escrow stayed local because backend sync failed.");
+      return null;
+    }
+    await syncEmployerEscrowsFromSupabase(session);
+    return result.data || null;
+  };
+
+  if (action === "select-job") {
+    session.selectedEmployerJob = payload;
+    await syncEmployerPipelineFromSupabase(session, payload);
+    await syncEmployerEscrowsFromSupabase(session);
+    renderPortal();
+    renderToasts();
+    return;
+  }
+
+  if (action === "select-applicant") {
+    session.selectedApplicant = payload;
+    renderPortal();
+    renderToasts();
+    return;
+  }
 
   if (action === "open-job-modal") openJobPostModal();
   if (action === "edit-job") openJobPostModal(job.id);
@@ -367,15 +857,22 @@ export function employerAction(action, payload = "") {
 
   if (action === "job-modal-next" || action === "job-modal-back" || action === "save-job-post") {
     const existingDraft = session.jobPostDraft || {};
+    const isHousehold = session.currentUser.accountType === "household";
     const draftPatch = {
       title: document.querySelector("#jobPostTitle") ? document.querySelector("#jobPostTitle").value.trim() : (existingDraft.title || ""),
-      category: document.querySelector("#jobPostCategory") ? document.querySelector("#jobPostCategory").value : (existingDraft.category || "Facilities"),
+      category: document.querySelector("#jobPostCategory") ? document.querySelector("#jobPostCategory").value : (existingDraft.category || (isHousehold ? "General Help" : "Facilities")),
+      countryCode: document.querySelector("#jobPostCountry") ? document.querySelector("#jobPostCountry").value : (existingDraft.countryCode || session.currentUser.countryCode || "NP"),
       location: document.querySelector("#jobPostLocation") ? document.querySelector("#jobPostLocation").value.trim() : (existingDraft.location || ""),
+      serviceAddress: document.querySelector("#jobPostServiceAddress") ? document.querySelector("#jobPostServiceAddress").value.trim() : (existingDraft.serviceAddress || ""),
       headcount: document.querySelector("#jobPostHeadcount") ? Number(document.querySelector("#jobPostHeadcount").value || 1) : Number(existingDraft.headcount || 1),
       dailyRate: document.querySelector("#jobPostRate") ? Number(document.querySelector("#jobPostRate").value || 90) : Number(existingDraft.dailyRate || 90),
+      payUnit: document.querySelector("#jobPostPayUnit") ? document.querySelector("#jobPostPayUnit").value : (existingDraft.payUnit || "Per day"),
+      bookingMode: document.querySelector("#jobPostBookingMode") ? document.querySelector("#jobPostBookingMode").value : (existingDraft.bookingMode || "Crew hire"),
       requiredSkillsText: document.querySelector("#jobPostSkills") ? document.querySelector("#jobPostSkills").value.trim() : (existingDraft.requiredSkillsText || ""),
       duration: document.querySelector("#jobPostDuration") ? document.querySelector("#jobPostDuration").value : (existingDraft.duration || "1 day"),
       shiftStart: document.querySelector("#jobPostShiftStart") ? document.querySelector("#jobPostShiftStart").value : (existingDraft.shiftStart || "06:00"),
+      startWindow: document.querySelector("#jobPostStartWindow") ? document.querySelector("#jobPostStartWindow").value.trim() : (existingDraft.startWindow || ""),
+      safetyNotes: document.querySelector("#jobPostSafetyNotes") ? document.querySelector("#jobPostSafetyNotes").value.trim() : (existingDraft.safetyNotes || ""),
       notes: document.querySelector("#jobPostNotes") ? document.querySelector("#jobPostNotes").value.trim() : (existingDraft.notes || ""),
       urgency: document.querySelector("#jobPostUrgency") ? document.querySelector("#jobPostUrgency").value : (existingDraft.urgency || "New")
     };
@@ -391,6 +888,12 @@ export function employerAction(action, payload = "") {
       renderToasts();
       return;
     }
+    if (session.currentUser.accountType === "household" && !draft.serviceAddress) {
+      pushToast("Home booking", "Add the home or service address before publishing the request.");
+      renderToasts();
+      return;
+    }
+    const countryRule = getCountryRule(draft.countryCode || session.currentUser.countryCode || "NP");
     if (getSession().editingJobId) {
       const existingJob = session.currentUser.jobs.find((item) => item.id === getSession().editingJobId);
       if (!existingJob) {
@@ -401,34 +904,56 @@ export function employerAction(action, payload = "") {
       Object.assign(existingJob, {
         title: draft.title,
         category: draft.category,
+        hirerType: session.currentUser.accountType || "business",
+        countryCode: draft.countryCode,
+        country: countryRule.name,
         location: draft.location,
+        serviceAddress: draft.serviceAddress,
         status: existingJob.status === "Completed" ? "Completed" : existingJob.status === "Cancelled" ? "Cancelled" : existingJob.status === "Paused" ? "Paused" : "Open",
-        spend: `$${draft.dailyRate * draft.headcount}`,
+        spend: formatCountryMoney(draft.dailyRate * draft.headcount, draft.countryCode),
         dailyRate: draft.dailyRate,
+        payUnit: draft.payUnit,
+        bookingMode: draft.bookingMode,
         urgency: draft.urgency,
         headcount: draft.headcount,
         requiredSkillsText: draft.requiredSkillsText,
         duration: draft.duration,
         shiftStart: draft.shiftStart,
+        startWindow: draft.startWindow,
+        safetyNotes: draft.safetyNotes,
         notes: draft.notes,
         biddingHistory: [...(existingJob.biddingHistory || [existingJob.dailyRate || draft.dailyRate]), draft.dailyRate]
       });
       session.selectedEmployerJob = existingJob.id;
       addActivity(`Employer updated job post ${draft.title}.`);
       pushToast("Job updated", `${draft.title} has been refreshed and republished.`);
+      if (supabaseEnabled() && existingJob.supabaseId) {
+        const result = await updateSupabaseJob(existingJob.supabaseId, existingJob);
+        if (result.ok) {
+          pushToast("Supabase synced", `${draft.title} was updated in the live backend.`);
+        } else {
+          pushToast("Supabase sync issue", result.error || "The job update stayed local because backend sync failed.");
+        }
+      }
     } else {
       const newJob = {
         id: `e${Date.now()}`,
         title: draft.title,
         category: draft.category,
+        hirerType: session.currentUser.accountType || "business",
+        countryCode: draft.countryCode,
+        country: countryRule.name,
         location: draft.location,
+        serviceAddress: draft.serviceAddress,
         status: "Open",
         applicants: 0,
         shortlisted: 0,
         escrow: false,
-        spend: `$${draft.dailyRate * draft.headcount}`,
+        spend: formatCountryMoney(draft.dailyRate * draft.headcount, draft.countryCode),
         broadcasted: false,
         dailyRate: draft.dailyRate,
+        payUnit: draft.payUnit,
+        bookingMode: draft.bookingMode,
         bidStep: 8,
         biddingHistory: [draft.dailyRate],
         urgency: draft.urgency,
@@ -436,12 +961,25 @@ export function employerAction(action, payload = "") {
         requiredSkillsText: draft.requiredSkillsText,
         duration: draft.duration,
         shiftStart: draft.shiftStart,
+        startWindow: draft.startWindow,
+        safetyNotes: draft.safetyNotes,
         notes: draft.notes
       };
       session.currentUser.jobs.unshift(newJob);
       session.selectedEmployerJob = newJob.id;
       addActivity(`Employer created job post ${draft.title}.`);
-      pushToast("Job posted", `${draft.title} is now visible in the marketplace.`);
+      pushToast("Job posted", `${draft.title} is now visible in the marketplace for ${countryRule.name}.`);
+      if (supabaseEnabled()) {
+        const result = await createSupabaseJob(newJob);
+        if (result.ok) {
+          newJob.supabaseId = result.data?.id || "";
+          newJob.id = newJob.supabaseId ? `sb-${newJob.supabaseId}` : newJob.id;
+          session.selectedEmployerJob = newJob.id;
+          pushToast("Supabase synced", `${draft.title} was published to the live backend.`);
+        } else {
+          pushToast("Supabase sync issue", result.error || "The job was created locally because backend publishing failed.");
+        }
+      }
     }
     closeJobPostModal();
   }
@@ -454,7 +992,8 @@ export function employerAction(action, payload = "") {
   }
   if (action === "shortlist") {
     if (applicant.status === "New") job.shortlisted += 1;
-    setApplicantStatus("Shortlisted");
+    if (supabaseEnabled() && applicant?.supabaseApplicationId) await persistApplicantStatus("shortlisted");
+    else setApplicantStatus("Shortlisted");
     applicant.score = "Shortlisted";
     const linkedWorker = findRegisteredWorkerByReference({ id: applicant.id, name: applicant.name });
     if (linkedWorker) {
@@ -463,7 +1002,8 @@ export function employerAction(action, payload = "") {
     }
   }
   if (action === "invite") {
-    setApplicantStatus("Invited");
+    if (supabaseEnabled() && applicant?.supabaseApplicationId) await persistApplicantStatus("invited");
+    else setApplicantStatus("Invited");
     const linkedWorker = findRegisteredWorkerByReference({ id: applicant.id, name: applicant.name });
     if (linkedWorker) {
       syncWorkerJobState(linkedWorker, job, session.currentUser.company || session.currentUser.fullName, "Invited", `${session.currentUser.company || "Employer"} invited you to ${job.title}.`);
@@ -471,11 +1011,17 @@ export function employerAction(action, payload = "") {
     }
   }
   if (action === "hire-worker") {
-    setApplicantStatus("Hired");
+    if (supabaseEnabled() && applicant?.supabaseApplicationId) await persistApplicantStatus("hired");
+    else setApplicantStatus("Hired");
     job.status = "Ongoing";
     if (!job.escrow) {
       job.escrow = true;
       session.currentUser.escrow.status = "Funded";
+      const fundedEscrow = await syncEscrowIfNeeded("funded", `${job.title} escrow funded during hire.`);
+      if (fundedEscrow?.id) {
+        job.escrowId = fundedEscrow.id;
+        session.currentUser.escrow.escrowId = fundedEscrow.id;
+      }
     }
     const linkedWorker = findRegisteredWorkerByReference({ id: applicant.id, name: applicant.name });
     if (linkedWorker) {
@@ -488,12 +1034,53 @@ export function employerAction(action, payload = "") {
   if (action === "escrow") {
     job.escrow = true;
     session.currentUser.escrow.status = "Funded";
-    session.currentUser.profile.payments[1].status = "Escrow funded";
+    if (session.currentUser.profile?.payments?.[1]) session.currentUser.profile.payments[1].status = "Escrow funded";
+    const fundedEscrow = await syncEscrowIfNeeded("funded", `${job.title} escrow funded from employer workspace.`);
+    if (fundedEscrow?.id) {
+      job.escrowId = fundedEscrow.id;
+      session.currentUser.escrow.escrowId = fundedEscrow.id;
+      pushToast("Supabase synced", `${job.title} escrow funding was saved to the live backend.`);
+    }
   }
   if (action === "release-escrow") {
     session.currentUser.escrow.status = "Released";
-    session.currentUser.profile.payments[1].status = "Released";
+    if (session.currentUser.profile?.payments?.[1]) session.currentUser.profile.payments[1].status = "Released";
     job.escrow = true;
+    if (supabaseEnabled() && (job.escrowId || session.currentUser.escrow?.escrowId)) {
+      const escrowId = job.escrowId || session.currentUser.escrow?.escrowId;
+      const releaseResult = await updateSupabaseEscrowStatus(escrowId, "released", `${job.title} escrow released to worker.`);
+      if (releaseResult.ok) {
+        const currencyCode = getCountryRule(job.countryCode || session.currentUser.countryCode || "NP").currencyCode;
+        const grossAmount = Number(job.dailyRate || 0) * Math.max(1, Number(job.headcount || 1));
+        const netAmount = Math.max(0, grossAmount - (grossAmount * 0.1));
+        await createSupabaseWalletEntry({
+          profileId: session.currentUser.id,
+          escrowId,
+          entryKey: `${escrowId}:employer:release`,
+          direction: "debit",
+          amount: grossAmount,
+          currencyCode,
+          status: "completed",
+          note: `${job.title} employer payout released`
+        });
+        if (applicant?.workerId) {
+          await createSupabaseWalletEntry({
+            profileId: applicant.workerId,
+            escrowId,
+            entryKey: `${escrowId}:worker:release`,
+            direction: "credit",
+            amount: netAmount,
+            currencyCode,
+            status: "completed",
+            note: `${job.title} worker payout received`
+          });
+        }
+        await syncEmployerEscrowsFromSupabase(session);
+        pushToast("Supabase synced", `${job.title} escrow release and wallet ledger updates were saved.`);
+      } else {
+        pushToast("Supabase escrow issue", releaseResult.error || "Escrow release stayed local because backend sync failed.");
+      }
+    }
   }
   if (action === "toggle-map") {
     session.currentUser.mapView = session.currentUser.mapView === "map" ? "list" : "map";
@@ -513,11 +1100,21 @@ export function employerAction(action, payload = "") {
       appendWorkerChat(linkedWorker, "Worker", "Received. I can see the update in my hiring chat.");
       saveRegisteredUserRecord(linkedWorker);
     }
+    if (supabaseEnabled() && applicant?.supabaseApplicationId) {
+      const result = await sendSupabaseChatMessage(applicant.supabaseApplicationId, text, "employer");
+      if (result.ok) {
+        await syncEmployerPipelineFromSupabase(session, job.id);
+        pushToast("Supabase synced", `Message saved to the live thread for ${applicant.name}.`);
+      } else {
+        pushToast("Supabase chat issue", result.error || "The message stayed local because backend sync failed.");
+      }
+    }
     input.value = "";
   }
   if (action === "rate-worker") {
     session.currentUser.profile.ratings.unshift({ worker: applicant.name, score: "5/5", note: "Rated after completion" });
-    setApplicantStatus("Rated");
+    if (supabaseEnabled() && applicant?.supabaseApplicationId) await persistApplicantStatus("rated");
+    else setApplicantStatus("Rated");
     const linkedWorker = findRegisteredWorkerByReference({ id: applicant.id, name: applicant.name });
     if (linkedWorker) {
       syncWorkerJobState(linkedWorker, job, session.currentUser.company || session.currentUser.fullName, "Rated", `${session.currentUser.company || "Employer"} rated your work on ${job.title}.`);
@@ -539,24 +1136,28 @@ export function employerAction(action, payload = "") {
     job.urgency = "Boosted";
     const spendAmount = Number(String(job.spend).replace(/[^0-9.]/g, "")) || 0;
     const projectedSpend = spendAmount + (raiseBy * Math.max(1, job.shortlisted || 1));
-    job.spend = `$${projectedSpend.toLocaleString()}`;
-    addActivity(`Employer raised wage bid for ${job.title} by $${raiseBy}/day.`);
-    pushToast("Wage bid raised", `${job.title} now offers $${job.dailyRate}/day and is attracting more workers.`);
+    job.spend = formatCountryMoney(projectedSpend.toLocaleString().replace(/,/g, ""), job.countryCode || session.currentUser.countryCode || "NP");
+    addActivity(`Employer raised wage bid for ${job.title} by ${formatCountryMoney(raiseBy, job.countryCode || session.currentUser.countryCode || "NP")}/day.`);
+    pushToast("Wage bid raised", `${job.title} now offers ${formatCountryMoney(job.dailyRate, job.countryCode || session.currentUser.countryCode || "NP")}/day and is attracting more workers.`);
+    await syncJobIfNeeded(`${job.title} wage changes were saved to the live backend.`);
   }
   if (action === "pause-job") {
     job.status = "Paused";
     addActivity(`Employer paused job ${job.title}.`);
     pushToast("Job paused", `${job.title} is hidden from active recruiting until reopened.`);
+    await syncJobIfNeeded(`${job.title} was paused in the live backend.`);
   }
   if (action === "reopen-job") {
     job.status = "Open";
     addActivity(`Employer reopened job ${job.title}.`);
     pushToast("Job reopened", `${job.title} is live in the marketplace again.`);
+    await syncJobIfNeeded(`${job.title} was reopened in the live backend.`);
   }
   if (action === "cancel-job") {
     job.status = "Cancelled";
     addActivity(`Employer cancelled job ${job.title}.`);
     pushToast("Job cancelled", `${job.title} was moved out of the active hiring pipeline.`);
+    await syncJobIfNeeded(`${job.title} was cancelled in the live backend.`);
   }
   if (action === "search-skill") {
     const skill = document.querySelector("#employerSearchSkill")?.value.trim() || "";
@@ -715,7 +1316,8 @@ export function employerAction(action, payload = "") {
   renderToasts();
 }
 
-export function adminAction(action) {
+export async function adminAction(action) {
+  const session = getSession();
   const queue = selectedQueueItem();
   const dispute = selectedDisputeItem();
   if (!queue && (action === "approve" || action === "rerequest" || action === "suspend")) return;
@@ -723,17 +1325,79 @@ export function adminAction(action) {
   if (action === "approve") {
     queue.status = "Approved";
     updateApproval(queue.accountId, "Approved");
+    if (supabaseEnabled() && queue.reviewId && queue.accountId) {
+      const result = await updateSupabaseVerificationStatus(queue.reviewId, queue.accountId, "Approved", "Approved by admin dashboard.");
+      if (result.ok) {
+        await syncAdminStateFromSupabase(session);
+        pushToast("Supabase synced", `${queue.name} was approved in the live verification queue.`);
+      } else {
+        pushToast("Supabase admin issue", result.error || "Verification stayed local because backend sync failed.");
+      }
+    }
   }
   if (action === "rerequest") {
     queue.status = "Re-upload requested";
     updateApproval(queue.accountId, "Re-upload requested");
+    if (supabaseEnabled() && queue.reviewId && queue.accountId) {
+      const result = await updateSupabaseVerificationStatus(queue.reviewId, queue.accountId, "Re-upload requested", "Admin requested another document upload.");
+      if (result.ok) {
+        await syncAdminStateFromSupabase(session);
+        pushToast("Supabase synced", `${queue.name} was moved to re-upload requested in the live queue.`);
+      } else {
+        pushToast("Supabase admin issue", result.error || "Verification stayed local because backend sync failed.");
+      }
+    }
   }
   if (action === "suspend") {
     queue.status = "Suspended";
     updateApproval(queue.accountId, "Suspended");
+    if (supabaseEnabled() && queue.reviewId && queue.accountId) {
+      const result = await updateSupabaseVerificationStatus(queue.reviewId, queue.accountId, "Suspended", "Admin suspended the account during verification review.");
+      if (result.ok) {
+        await syncAdminStateFromSupabase(session);
+        pushToast("Supabase synced", `${queue.name} was suspended in the live queue.`);
+      } else {
+        pushToast("Supabase admin issue", result.error || "Verification stayed local because backend sync failed.");
+      }
+    }
   }
-  if (action === "resolve") dispute.status = "Closed";
-  if (action === "refund") dispute.status = "Refund issued";
+  if (action === "resolve") {
+    dispute.status = "Closed";
+    dispute.note = "Closed by admin review.";
+    updateStoredDispute(dispute.id, { status: "Closed", note: "Closed by admin review." });
+    if (supabaseEnabled() && dispute.disputeId) {
+      const result = await updateSupabaseDisputeStatus(dispute.disputeId, "Closed", "Closed by admin review.");
+      if (result.ok) {
+        await syncAdminStateFromSupabase(session);
+        pushToast("Supabase synced", `${dispute.title} was closed in the live dispute inbox.`);
+      } else {
+        pushToast("Supabase admin issue", result.error || "Dispute stayed local because backend sync failed.");
+      }
+    }
+  }
+  if (action === "refund") {
+    dispute.status = "Refund issued";
+    dispute.note = "Admin issued a partial refund.";
+    updateStoredDispute(dispute.id, { status: "Refund issued", note: "Admin issued a partial refund." });
+    if (supabaseEnabled() && dispute.disputeId) {
+      const result = await updateSupabaseDisputeStatus(dispute.disputeId, "Refund issued", "Admin issued a partial refund.");
+      if (result.ok) {
+        await syncAdminStateFromSupabase(session);
+        const latestEscrow = (session.currentUser.payments || []).find((item) => item.id === dispute.escrowId);
+        if (latestEscrow?.id) {
+          await updateSupabaseEscrowStatus(latestEscrow.id, "refunded", "Refund issued by admin dispute workflow.");
+        }
+        pushToast("Supabase synced", `${dispute.title} refund was saved to the live backend.`);
+      } else {
+        pushToast("Supabase admin issue", result.error || "Refund stayed local because backend sync failed.");
+      }
+    } else if (supabaseEnabled()) {
+      const payment = session.currentUser.payments?.[0];
+      if (payment?.id) {
+        await updateSupabaseEscrowStatus(payment.id, "refunded", "Refund issued from admin dashboard.");
+      }
+    }
+  }
   addActivity(`Admin action completed: ${action}.`);
   pushToast("Admin update", `${action} action processed successfully.`);
   renderPortal();

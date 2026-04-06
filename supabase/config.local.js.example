@@ -1,0 +1,10 @@
+window.WORKSHIFT_SUPABASE = {
+  enabled: true,
+  url: "https://YOUR_PROJECT_REF.supabase.co",
+  anonKey: "YOUR_SUPABASE_ANON_KEY",
+  siteUrl: window.location.origin,
+  storageKey: "workshift_supabase_auth_v1",
+  documentBucket: "workshift-documents",
+  evidenceBucket: "workshift-evidence",
+  demoFallback: true
+};

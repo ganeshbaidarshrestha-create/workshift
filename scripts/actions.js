@@ -1,13 +1,22 @@
 import { dom } from "./dom.js";
-import { createUser, getSession, loginUser, logout, setLoginRole, setPortalView, setSignupMode, setSignupRole, setSignupStep, setWorkerJobsFilter, setWorkerJobSearch } from "./store.js";
+import { closeDisputeModal, createUser, getSession, loginUser, logout, pushToast, setLoginRole, setPortalView, setSignupEmployerType, setSignupMode, setSignupRole, setSignupStep, setWorkerJobsFilter, setWorkerJobSearch } from "./store.js";
+import { requestSupabaseOtp, savePendingSupabaseSignup, supabaseEnabled } from "./supabase.js";
 import { renderLoginRole, renderPortal, renderPublicVisibility, renderSignupRole, renderToasts } from "./renderers.js";
-import { closeAuthModal, getAuthRole, openAuthModal, openSignupRole, sendOtpFeedback, setAuthRole, submitAuth } from "./actions/public-actions.js";
-import { adminAction, employerAction, exportCurrentRole, markDocumentUploaded, saveProfile, superAdminAction, updateMediaPreview, workerAction } from "./actions/portal-actions.js";
+import { closeAuthModal, getAuthRole, openAuthModal, openSignupRole, requestAuthOtp, sendOtpFeedback, setAuthRole, submitAuth } from "./actions/public-actions.js";
+import { adminAction, employerAction, exportCurrentRole, markDocumentUploaded, openDisputeComposer, saveProfile, submitDispute, superAdminAction, updateMediaPreview, uploadDocumentAsset, uploadDisputeEvidenceFiles, workerAction } from "./actions/portal-actions.js";
 
 function handleSignupModeClick(event) {
   const button = event.target.closest("[data-signup-mode]");
   if (!button) return;
   setSignupMode(button.dataset.signupMode);
+  renderSignupRole();
+}
+
+function handleEmployerTypeClick(event) {
+  const button = event.target.closest("[data-signup-employer-type]");
+  if (!button) return;
+  setSignupRole("employer");
+  setSignupEmployerType(button.dataset.signupEmployerType);
   renderSignupRole();
 }
 
@@ -47,6 +56,13 @@ function handlePortalClicks(event) {
   const upload = event.target.closest("[data-upload]");
   if (upload) return markDocumentUploaded(upload.dataset.upload);
   if (event.target.closest("[data-save-profile]")) return saveProfile();
+  if (event.target.closest("[data-open-dispute]")) return openDisputeComposer();
+  if (event.target.closest("[data-close-dispute]")) {
+    closeDisputeModal();
+    renderPortal();
+    return;
+  }
+  if (event.target.closest("[data-submit-dispute]")) return submitDispute();
   if (event.target.closest("[data-worker-apply]")) return workerAction("apply");
   if (event.target.closest("[data-worker-save]")) return workerAction("save");
   if (event.target.closest("[data-worker-open-job]")) return workerAction("open-job");
@@ -70,7 +86,7 @@ function handlePortalClicks(event) {
   if (event.target.closest("[data-worker-job-search-apply]")) {
     const term = document.querySelector("#workerJobSearchTerm")?.value.trim() || "";
     const location = document.querySelector("#workerJobSearchLocation")?.value.trim() || "";
-    const country = document.querySelector("#workerJobSearchCountry")?.value || "Nepal";
+    const country = document.querySelector("#workerJobSearchCountry")?.value || "All Countries";
     setWorkerJobSearch(term, location, country);
     renderPortal();
     return;
@@ -81,8 +97,8 @@ function handlePortalClicks(event) {
     const countryInput = document.querySelector("#workerJobSearchCountry");
     if (termInput) termInput.value = "";
     if (locationInput) locationInput.value = "";
-    if (countryInput) countryInput.value = "Nepal";
-    setWorkerJobSearch("", "", "Nepal");
+    if (countryInput) countryInput.value = "All Countries";
+    setWorkerJobSearch("", "", "All Countries");
     renderPortal();
     return;
   }
@@ -92,7 +108,7 @@ function handlePortalClicks(event) {
     const locationInput = document.querySelector("#workerJobSearchLocation");
     if (locationInput) locationInput.value = location;
     const term = document.querySelector("#workerJobSearchTerm")?.value.trim() || "";
-    const country = document.querySelector("#workerJobSearchCountry")?.value || "Nepal";
+    const country = document.querySelector("#workerJobSearchCountry")?.value || "All Countries";
     setWorkerJobSearch(term, location, country);
     renderPortal();
     return;
@@ -159,20 +175,24 @@ function handlePortalClicks(event) {
   const workerJob = event.target.closest("[data-select-worker-job]");
   if (workerJob) {
     session.selectedWorkerJob = workerJob.dataset.selectWorkerJob;
+    const selectedApplication = (session.currentUser?.applications || []).find((item) =>
+      item.supabaseApplicationId && (session.currentUser?.jobs || []).some((job) =>
+        job.id === session.selectedWorkerJob && job.supabaseApplicationId === item.supabaseApplicationId
+      )
+    ) || (session.currentUser?.applications || []).find((item) => item.title === (session.currentUser?.jobs || []).find((job) => job.id === session.selectedWorkerJob)?.title);
+    if (selectedApplication?.chatThread) {
+      session.currentUser.chatStream = selectedApplication.chatThread;
+    }
     renderPortal();
     return;
   }
   const employerJob = event.target.closest("[data-select-employer-job]");
   if (employerJob) {
-    session.selectedEmployerJob = employerJob.dataset.selectEmployerJob;
-    renderPortal();
-    return;
+    return employerAction("select-job", employerJob.dataset.selectEmployerJob);
   }
   const applicant = event.target.closest("[data-select-applicant]");
   if (applicant) {
-    session.selectedApplicant = applicant.dataset.selectApplicant;
-    renderPortal();
-    return;
+    return employerAction("select-applicant", applicant.dataset.selectApplicant);
   }
   const queue = event.target.closest("[data-select-queue]");
   if (queue) {
@@ -184,6 +204,7 @@ function handlePortalClicks(event) {
   if (dispute) {
     session.selectedDispute = dispute.dataset.selectDispute;
     renderPortal();
+    return;
   }
 }
 
@@ -194,6 +215,8 @@ export function bindEvents() {
     setSignupRole(button.dataset.signupRole);
     renderSignupRole();
   });
+
+  dom.signupEmployerTypeTabs?.addEventListener("click", handleEmployerTypeClick);
 
   dom.loginTabs?.addEventListener("click", (event) => {
     const button = event.target.closest("[data-login-role]");
@@ -239,9 +262,15 @@ export function bindEvents() {
   });
 
   dom.heroWorker.addEventListener("click", () => openSignupRole("worker"));
-  dom.heroEmployer.addEventListener("click", () => openSignupRole("employer"));
+  dom.heroEmployer.addEventListener("click", () => openSignupRole("employer", "business"));
+  document.querySelector("#heroHome")?.addEventListener("click", () => openSignupRole("employer", "household"));
 
-  ["#signupName", "#signupContact", "#signupAssistedBy", "#signupVoiceLanguage", "#signupSkill"].forEach((selector) => {
+  ["#signupName", "#signupContact", "#signupAssistedBy", "#signupVoiceLanguage", "#signupSkill", "#signupCompany", "#signupHomeAddress"].forEach((selector) => {
+    document.querySelector(selector)?.addEventListener("input", () => renderSignupRole());
+    document.querySelector(selector)?.addEventListener("change", () => renderSignupRole());
+  });
+
+  ["#signupCountry"].forEach((selector) => {
     document.querySelector(selector)?.addEventListener("input", () => renderSignupRole());
     document.querySelector(selector)?.addEventListener("change", () => renderSignupRole());
   });
@@ -250,12 +279,12 @@ export function bindEvents() {
     const cta = event.target.closest("[data-cta-role]");
     if (!cta) return;
     event.preventDefault();
-    openSignupRole(cta.dataset.ctaRole);
+    openSignupRole(cta.dataset.ctaRole, cta.dataset.signupEmployerType || "business");
   });
 
   dom.sendOtp.addEventListener("click", sendOtpFeedback);
 
-  dom.signupForm.addEventListener("submit", (event) => {
+  dom.signupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const session = getSession();
     const fullName = document.querySelector("#signupName").value.trim();
@@ -265,9 +294,13 @@ export function bindEvents() {
     const voiceLanguage = document.querySelector("#signupVoiceLanguage")?.value || "Nepali";
     const payload = {
       role: session.signupRole,
+      accountType: session.signupRole === "employer" ? session.signupEmployerType : "",
       fullName,
       contact,
       company,
+      homeLabel: session.signupRole === "employer" && session.signupEmployerType === "household" ? company : "",
+      serviceAddress: document.querySelector("#signupHomeAddress")?.value.trim() || "",
+      countryCode: document.querySelector("#signupCountry")?.value || "NP",
       skill: document.querySelector("#signupSkill").value,
       notes: document.querySelector("#signupNotes").value.trim(),
       onboardingMode: session.signupMode,
@@ -278,12 +311,40 @@ export function bindEvents() {
       dom.signupFeedback.textContent = "Please complete name and contact.";
       return;
     }
-    if (payload.role === "employer" && !company) {
+    if (payload.role === "employer" && session.signupEmployerType !== "household" && !company) {
       dom.signupFeedback.textContent = "Please enter the company name for employer registration.";
+      return;
+    }
+    if (payload.role === "employer" && session.signupEmployerType === "household" && !payload.serviceAddress) {
+      dom.signupFeedback.textContent = "Please enter the home or service address for household hiring.";
       return;
     }
     if (payload.role === "worker" && session.signupMode === "assisted" && !assistedBy) {
       dom.signupFeedback.textContent = "Enter the helper or agent name to continue assisted registration.";
+      return;
+    }
+    if (supabaseEnabled()) {
+      savePendingSupabaseSignup(payload);
+      const result = await requestSupabaseOtp(payload.contact, {
+        shouldCreateUser: true,
+        data: {
+          role: payload.role,
+          accountType: payload.accountType,
+          fullName: payload.fullName,
+          company: payload.company || "",
+          serviceAddress: payload.serviceAddress || "",
+          countryCode: payload.countryCode,
+          onboardingMode: payload.onboardingMode || "self"
+        }
+      });
+      dom.signupFeedback.textContent = result.ok
+        ? `Supabase verification started for ${payload.contact}. Complete the delivered OTP or magic link, then return to finalize the ${payload.role} account in the real backend.`
+        : `Supabase signup request failed: ${result.error}`;
+      if (result.ok) {
+        pushToast("Supabase signup", `Verification sent for ${payload.contact}.`);
+      }
+      renderToasts();
+      renderSignupRole();
       return;
     }
     createUser(payload);
@@ -300,12 +361,29 @@ export function bindEvents() {
     renderSignupRole();
   });
 
-  dom.loginForm?.addEventListener("submit", (event) => {
+  dom.loginForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
     const session = getSession();
     const contact = document.querySelector("#loginContact")?.value.trim();
     if (!contact) {
       dom.loginFeedback.textContent = "Enter your registered phone or email first.";
+      return;
+    }
+    if (supabaseEnabled()) {
+      const result = await requestSupabaseOtp(contact, {
+        shouldCreateUser: false,
+        data: {
+          intent: "login",
+          role: session.loginRole
+        }
+      });
+      dom.loginFeedback.textContent = result.ok
+        ? `Supabase login verification sent to ${contact}. Complete the delivered OTP or magic link to sign in with the real backend.`
+        : `Supabase login failed: ${result.error}`;
+      if (result.ok) {
+        pushToast("Supabase login", `Verification sent for ${contact}.`);
+        renderToasts();
+      }
       return;
     }
     const user = loginUser(session.loginRole, contact);
@@ -331,9 +409,16 @@ export function bindEvents() {
 
   dom.authBackdrop?.addEventListener("click", closeAuthModal);
   dom.authCancel?.addEventListener("click", closeAuthModal);
-  dom.authSubmit?.addEventListener("click", submitAuth);
+  dom.authSubmit?.addEventListener("click", () => { void submitAuth(); });
+  dom.authRequestOtp?.addEventListener("click", () => { void requestAuthOtp(); });
   dom.authCode?.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") submitAuth();
+    if (event.key === "Enter") void submitAuth();
+  });
+  dom.authContact?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      void requestAuthOtp();
+    }
   });
 
   window.addEventListener("keydown", (event) => {
@@ -363,9 +448,28 @@ export function bindEvents() {
     const input = event.target?.closest?.("input[type='file']");
     if (!input) return;
     const file = input.files?.[0];
+    if (input.matches("[data-dispute-file-upload]")) {
+      if (!input.files?.length) return;
+      void uploadDisputeEvidenceFiles(input.files);
+      input.value = "";
+      return;
+    }
+    if (input.matches("[data-document-file-upload]")) {
+      if (!file) return;
+      void uploadDocumentAsset(input.dataset.documentFileUpload, file);
+      input.value = "";
+      return;
+    }
     if (!file) return;
-    if (input.matches("[data-preview-upload='worker-photo']")) return updateMediaPreview("worker-photo", file);
-    if (input.matches("[data-preview-upload='employer-logo']")) return updateMediaPreview("employer-logo", file);
+    if (input.matches("[data-preview-upload='worker-photo']")) {
+      void updateMediaPreview("worker-photo", file);
+      input.value = "";
+      return;
+    }
+    if (input.matches("[data-preview-upload='employer-logo']")) {
+      void updateMediaPreview("employer-logo", file);
+      input.value = "";
+    }
   });
 
   dom.portalContent.addEventListener("keydown", (event) => {
@@ -386,6 +490,7 @@ export function bindEvents() {
   dom.portalExport.addEventListener("click", exportCurrentRole);
   dom.logoutButton.addEventListener("click", () => {
     logout();
+    window.dispatchEvent(new CustomEvent("workshift:logout"));
     renderPublicVisibility();
     renderToasts();
   });

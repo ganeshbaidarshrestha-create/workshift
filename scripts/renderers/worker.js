@@ -1,7 +1,10 @@
+import { countryName, formatCountryMoney, getCountryRule, listCountryRules } from "../country-rules.js";
 import { getMarketplaceJobs, getSession, selectedWorkerJob } from "../store.js";
 import {
   chatFeed,
+  disputeComposer,
   documentList,
+  evidenceList,
   formatAccountId,
   identityCard,
   mapsUrl,
@@ -26,32 +29,42 @@ export function workerDashboard(user) {
   const login = user.login || {};
   const withdrawal = profile.withdrawal || {};
   const reputation = user.reputation || {};
+  const countryRule = getCountryRule(user.countryCode || "NP");
+  const countryOptions = listCountryRules();
   const fallbackJob = availableJobs[0] || {
     id: "job_fallback",
     title: "No live job available",
     company: "WorkShift",
-    pay: "$0/day",
+    pay: `${formatCountryMoney(0, user.countryCode || "NP")}/day`,
     distance: "Location pending",
     skills: "No skills listed",
     summary: "Job marketplace is loading.",
     status: "Open",
-    location: "Nepal"
+    location: "Kathmandu Valley",
+    country: "Nepal"
   };
   const currentJob = userJobs.find((item) => item.applied) || job || fallbackJob;
   const currentApplication = applications.find((item) => item.title === currentJob.title) || applications[0];
+  const currentChatStream = Array.isArray(currentApplication?.chatThread) && currentApplication.chatThread.length
+    ? currentApplication.chatThread
+    : chatStream;
   const session = getSession();
   const activeView = session.activePortalView;
   const savedJobs = userJobs.filter((item) => item.saved);
   const workerSearchTerm = String(session.workerJobSearchTerm || "").trim().toLowerCase();
   const workerSearchLocation = String(session.workerJobSearchLocation || "").trim().toLowerCase();
-  const workerSearchCountry = session.workerJobSearchCountry || "Nepal";
+  const workerSearchCountry = session.workerJobSearchCountry || "All Countries";
   const allLocations = Array.from(new Set(availableJobs.map((item) => item.location || item.distance).filter(Boolean)));
   const discoverableJobs = availableJobs.filter((item) => {
     const haystack = [item.title, item.company, item.skills, item.summary].join(" ").toLowerCase();
     const itemLocation = String(item.location || item.distance || "").toLowerCase();
     const matchesTerm = !workerSearchTerm || haystack.includes(workerSearchTerm);
     const matchesLocation = !workerSearchLocation || itemLocation.includes(workerSearchLocation);
-    const matchesCountry = !workerSearchCountry || workerSearchCountry === "Nepal";
+    const itemCountry = String(item.country || "Nepal").toLowerCase();
+    const normalizedCountryFilter = String(workerSearchCountry || "").trim().toLowerCase();
+    const matchesCountry = !normalizedCountryFilter
+      || normalizedCountryFilter === "all countries"
+      || itemCountry === normalizedCountryFilter;
     return matchesTerm && matchesLocation && matchesCountry;
   });
   const appliedJobs = availableJobs.filter((item) => {
@@ -92,6 +105,7 @@ export function workerDashboard(user) {
     <div class="stack">
       ${identityCard(user)}
       ${workerJobModal(user, session, job)}
+      ${disputeComposer(user, session)}
 
       ${(activeView === "dashboard" || activeView === "jobs") ? `
       <section class="panel">
@@ -100,11 +114,11 @@ export function workerDashboard(user) {
             <span class="avatar-chip">${(user.fullName || "WU").slice(0, 2).toUpperCase()}</span>
             <div>
               <strong>${user.fullName || "Worker User"}</strong>
-              <p>Wallet balance $${user.wallet}</p>
+              <p>Wallet balance ${formatCountryMoney(user.wallet, user.countryCode || "NP")}</p>
             </div>
           </div>
           <div class="button-row">
-            <span class="icon-chip">Wallet $${user.wallet}</span>
+            <span class="icon-chip">Wallet ${formatCountryMoney(user.wallet, user.countryCode || "NP")}</span>
             <span class="icon-chip">Bell 2</span>
           </div>
         </div>
@@ -128,8 +142,8 @@ export function workerDashboard(user) {
           </article>
           <article class="job-card selected">
             <header><div><strong>Chat With ${currentJob.company}</strong><div>${currentJob.title} / direct employer thread</div></div><span class="status-pill ${user.availability}">${user.availability}</span></header>
-            <div class="meta-row"><span>${currentApplication?.status || "Open"}</span><span>${chatStream.length} messages</span><span>${currentJob.pay}</span></div>
-            ${chatFeed(chatStream)}
+            <div class="meta-row"><span>${currentApplication?.status || "Open"}</span><span>${currentChatStream.length} messages</span><span>${currentJob.pay}</span></div>
+            ${chatFeed(currentChatStream)}
             <div class="button-row">
               <input id="chatInput" type="text" placeholder="Message ${currentJob.company}">
               <button class="primary-button small-button" type="button" data-worker-send-chat>Send</button>
@@ -145,7 +159,7 @@ export function workerDashboard(user) {
         <div class="document-grid">
           <article class="info-card"><strong>Selected Job</strong><p>${currentJob.title} / ${currentJob.company}</p></article>
           <article class="info-card"><strong>Application Status</strong><p>${currentApplication?.status || workerJobStatus(user, currentJob).label}</p></article>
-          <article class="info-card"><strong>Employer Thread</strong><p>${chatStream.length} visible messages with ${currentJob.company}</p></article>
+          <article class="info-card"><strong>Employer Thread</strong><p>${currentChatStream.length} visible messages with ${currentJob.company}</p></article>
           <article class="info-card"><strong>Verification</strong><p>${user.verificationStatus}${user.approvedAt ? ` / approved ${new Date(user.approvedAt).toLocaleDateString()}` : ""}</p></article>
         </div>
         <div class="worker-timeline">
@@ -174,9 +188,9 @@ export function workerDashboard(user) {
       <section class="panel">
         <h3>Wallet and Payout Breakdown</h3>
         <div class="summary-grid">
-          <article class="quick-card"><strong>Available Balance</strong><p>$${payoutAvailable}</p></article>
-          <article class="quick-card"><strong>Pending Payout</strong><p>$${payoutPending}</p></article>
-          <article class="quick-card"><strong>Weekly Earnings</strong><p>$${user.weeklyEarnings}</p></article>
+          <article class="quick-card"><strong>Available Balance</strong><p>${formatCountryMoney(payoutAvailable, user.countryCode || "NP")}</p></article>
+          <article class="quick-card"><strong>Pending Payout</strong><p>${formatCountryMoney(payoutPending, user.countryCode || "NP")}</p></article>
+          <article class="quick-card"><strong>Weekly Earnings</strong><p>${formatCountryMoney(user.weeklyEarnings, user.countryCode || "NP")}</p></article>
           <article class="quick-card"><strong>Last Payout Schedule</strong><p>${lastPayout}</p></article>
         </div>
       </section>
@@ -211,13 +225,15 @@ export function workerDashboard(user) {
           <div class="profile-grid">
             <label><span>Search Work</span><input id="workerJobSearchTerm" type="text" value="${session.workerJobSearchTerm || ""}" placeholder="cleaning, plumbing, warehouse"></label>
             <label><span>Location</span><input id="workerJobSearchLocation" type="text" value="${session.workerJobSearchLocation || ""}" placeholder="Kathmandu Valley"></label>
-            <label><span>Country</span><select id="workerJobSearchCountry"><option ${workerSearchCountry === "Nepal" ? "selected" : ""}>Nepal</option><option ${workerSearchCountry === "India" ? "selected" : ""}>India</option></select></label>
+            <label><span>Country</span><select id="workerJobSearchCountry"><option ${workerSearchCountry === "All Countries" ? "selected" : ""}>All Countries</option>${countryOptions.map((country) => `<option ${workerSearchCountry === country.name ? "selected" : ""}>${country.name}</option>`).join("")}</select></label>
           </div>
           <div class="button-row">
             <span class="icon-chip">${discoverableJobs.length} jobs found</span>
             <span class="icon-chip">${workerSearchTerm || "All job types"}</span>
             <span class="icon-chip">${workerSearchLocation || "All locations"}</span>
+            <span class="icon-chip">${workerSearchCountry}</span>
           </div>
+          <div class="helper-text">Current product model supports ${countryOptions.length} countries. Countries without live jobs will simply show zero matches until employers post there.</div>
           <div class="button-row">
             <span class="helper-text">Quick locations:</span>
             ${allLocations.slice(0, 5).map((location) => `<button class="ghost-button small-button" type="button" data-worker-location-chip="${location}">${location}</button>`).join("")}
@@ -258,12 +274,16 @@ export function workerDashboard(user) {
           <label><span>Full Name</span><input id="profileFullName" type="text" value="${user.fullName}"></label>
           <label><span>Contact</span><input id="profileContact" type="text" value="${user.contact}"></label>
           <label><span>Primary Skill</span><input id="profileSkill" type="text" value="${user.skill}"></label>
+          <label><span>Country</span><select id="profileCountryCode">${countryOptions.map((country) => `<option value="${country.code}" ${country.code === (user.countryCode || "NP") ? "selected" : ""}>${country.name}</option>`).join("")}</select></label>
           <label><span>Experience</span><input id="profileExperience" type="text" value="${profile.experience || ""}"></label>
           <label><span>Availability</span><select id="profileAvailability"><option ${user.availability === "available" ? "selected" : ""}>available</option><option ${user.availability === "busy" ? "selected" : ""}>busy</option><option ${user.availability === "offline" ? "selected" : ""}>offline</option></select></label>
         </div>
         <div class="document-grid">
           <article class="info-card"><strong>Profile Photo</strong><p>${profile.photo || "Not uploaded yet"}</p><input type="file" accept="image/*" data-preview-upload="worker-photo"></article>
           <article class="info-card"><strong>Verification Status</strong><p>${user.verificationStatus}</p></article>
+          <article class="info-card"><strong>Phone Auth</strong><p>${countryRule.phoneAuthMode}</p></article>
+          <article class="info-card"><strong>Payout Rail</strong><p>${countryRule.payoutRail}</p></article>
+          <article class="info-card"><strong>Verification Rule</strong><p>${countryRule.verificationRule}</p></article>
         </div>
         <label><span>Bio</span><textarea id="profileBio">${profile.bio || ""}</textarea></label>
         <label><span>Profile Notes</span><textarea id="profileNotes">${user.notes}</textarea></label>
@@ -280,6 +300,7 @@ export function workerDashboard(user) {
         <div class="document-grid">
           <article class="info-card"><strong>Registration and Login</strong><p>${login.method || "otp"} / ${login.social || "Google ready"} / ${login.biometric || "Mobile ready"}</p></article>
           <article class="info-card"><strong>Geo Availability</strong><p>${user.availability} / location sharing ${user.geoSharing}</p></article>
+          <article class="info-card"><strong>Country Rules</strong><p>${countryName(user.countryCode || "NP")} / ${countryRule.phoneAuthMode}</p></article>
           <article class="info-card"><strong>Job Discovery</strong><p>Map and list discovery with category, distance, pay, and duration filtering.</p></article>
           <article class="info-card"><strong>Instant Acceptance</strong><p>${invitations.map((invite) => `${invite.title} - ${invite.status}`).join(" | ")}</p></article>
         </div>
@@ -301,13 +322,39 @@ export function workerDashboard(user) {
           <article class="info-card"><strong>Job Applications</strong><p>${applications.map((application) => `${application.title}: ${application.status}`).join(" | ")}</p></article>
           <article class="info-card"><strong>Saved Jobs</strong><p>${savedJobs.map((item) => item.title).join(" | ") || "No saved jobs yet"}</p></article>
           <article class="info-card"><strong>Job Completion</strong><p>Timesheet ${shift.timesheet || "Not started"} / Stage ${shift.stage || "Queued"} / Proof ${shift.proofSubmitted ? "Uploaded" : "Pending"}</p></article>
-          <article class="info-card"><strong>Earnings Dashboard</strong><p>Weekly $${user.weeklyEarnings} / Monthly $${user.monthlyEarnings} / Tax export via portal export.</p></article>
+          <article class="info-card"><strong>Earnings Dashboard</strong><p>Weekly ${formatCountryMoney(user.weeklyEarnings, user.countryCode || "NP")} / Monthly ${formatCountryMoney(user.monthlyEarnings, user.countryCode || "NP")} / Tax export via portal export.</p></article>
           <article class="info-card"><strong>Wallet and Withdrawal</strong><p>${withdrawal.payoutMethod || "Bank transfer"} / ${withdrawal.schedule || "On demand"} / ${withdrawal.linkedAccount || "Not linked"}</p></article>
           <article class="info-card"><strong>Ratings and Reviews</strong><p>${reviews.map((review) => `${review.employer}: ${review.rating}/5`).join(" | ")}</p></article>
           <article class="info-card"><strong>Notifications</strong><p>${notifications.join(" | ")}</p></article>
           <article class="info-card"><strong>Reputation Score</strong><p>${reputation.score || 0} / 100 / ${reputation.tier || "Growing"}</p></article>
           <article class="info-card"><strong>Verification</strong><p>${user.verificationStatus}${user.approvedAt ? ` / approved ${new Date(user.approvedAt).toLocaleDateString()}` : ""}</p></article>
           <article class="info-card"><strong>Chat</strong><p>${(Array.isArray(profile.chat) ? profile.chat : []).join(" ")}</p></article>
+        </div>
+      </section>
+      ` : ""}
+
+      ${(activeView === "dashboard" || activeView === "profile") ? `
+      <section class="panel">
+        <h3>Disputes And Payment Safety</h3>
+        <div class="document-grid">
+          <article class="info-card"><strong>Current Job</strong><p>${currentJob.title} / ${currentApplication?.status || workerJobStatus(user, currentJob).label}</p></article>
+          <article class="info-card"><strong>Wallet Protection</strong><p>${formatCountryMoney(user.wallet, user.countryCode || "NP")} visible / ${currentJob.status === "Rated" ? "Ready for payout review" : "Escrow and dispute trail available"}</p></article>
+          <article class="info-card"><strong>Open Cases</strong><p>${(user.disputes || []).filter((item) => item.status !== "Closed").length}</p></article>
+          <article class="info-card"><strong>Counterparty</strong><p>${currentJob.company}</p></article>
+        </div>
+        <div class="button-row">
+          <button class="primary-button small-button" type="button" data-open-dispute>Open Dispute</button>
+        </div>
+        <div class="document-grid">
+          ${evidenceList((user.disputes || []).find((item) => item.id === session.selectedDispute)?.evidence || [])}
+        </div>
+        <div class="recent-feed">
+          ${(user.disputes || []).map((item) => `
+            <article class="timeline-card ${item.id === session.selectedDispute ? "selected" : ""}" data-select-dispute="${item.id}">
+              <header><strong>${item.title}</strong><span>${item.status}</span></header>
+              <div>${item.note || "Awaiting admin review."}</div>
+            </article>
+          `).join("") || `<article class="info-card"><strong>No disputes opened</strong><p>If pay, safety, timing, or service quality goes wrong, open a case here with notes and evidence.</p></article>`}
         </div>
       </section>
       ` : ""}
@@ -366,9 +413,9 @@ export function workerDashboard(user) {
           <article class="info-card"><strong>Job Context</strong><p>${currentJob.title}</p></article>
           <article class="info-card"><strong>Status</strong><p>${currentApplication?.status || workerJobStatus(user, currentJob).label}</p></article>
           <article class="info-card"><strong>Employer</strong><p>${currentJob.company}</p></article>
-          <article class="info-card"><strong>Messages</strong><p>${chatStream.length} in this thread</p></article>
+          <article class="info-card"><strong>Messages</strong><p>${currentChatStream.length} in this thread</p></article>
         </div>
-        ${chatFeed(chatStream)}
+        ${chatFeed(currentChatStream)}
         <div class="button-row">
           <input id="chatInput" type="text" placeholder="Message ${currentJob.company}">
           <button class="primary-button small-button" type="button" data-worker-send-chat>Send</button>

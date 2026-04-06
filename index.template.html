@@ -52,6 +52,7 @@
         <div class="hero-actions">
           <button class="primary-button" id="heroWorker" type="button">Register as Worker</button>
           <button class="secondary-button" id="heroEmployer" type="button">Hire Workers</button>
+          <button class="secondary-button" id="heroHome" type="button">Hire For Home</button>
         </div>
         <div class="hero-links">
           <a href="#field-scenes">Explore live work scenes</a>
@@ -163,7 +164,24 @@
               <span>Live hiring workspace</span>
             </div>
             <div class="button-row">
-              <button class="primary-button small-button" type="button" data-cta-role="employer">Start Employer Registration</button>
+              <button class="primary-button small-button" type="button" data-cta-role="employer" data-signup-employer-type="business">Start Employer Registration</button>
+            </div>
+          </div>
+        </article>
+        <article class="panel entry-card photo-entry-card">
+          <div class="entry-photo-wrap">
+            <img class="entry-image entry-photo" src="https://images.pexels.com/photos/5794/food-healthy-lunch-family.jpg?cs=srgb&dl=pexels-pixabay-5794.jpg&fm=jpg" alt="Family booking home help">
+            <span class="entry-tag">Home Hirer Access</span>
+          </div>
+          <div class="stack entry-content">
+            <h3>Hire For Home</h3>
+            <p>Book plumbers, electricians, painters, nannies, cleaners, and trusted short-term help for your home.</p>
+            <div class="entry-meta">
+              <span>Short jobs and hourly help</span>
+              <span>Safer household booking flow</span>
+            </div>
+            <div class="button-row">
+              <button class="primary-button small-button" type="button" data-cta-role="employer" data-signup-employer-type="household">Start Home Hiring</button>
             </div>
           </div>
         </article>
@@ -212,7 +230,25 @@
         <a class="panel interactive-panel category-card" href="#signup" data-cta-role="worker"><h3>Agriculture</h3><p>Harvest teams, packaging, farm labor, and seasonal onboarding support.</p><span>Start assisted setup</span></a>
         <a class="panel interactive-panel category-card" href="#signup" data-cta-role="employer"><h3>Warehouse</h3><p>Inventory support, loading, logistics helpers, and night-shift staffing.</p><span>Search nearby workers</span></a>
         <a class="panel interactive-panel category-card" href="#signup" data-cta-role="employer"><h3>Hospitality</h3><p>Hotels, restaurants, catering assistants, and overflow service teams.</p><span>Launch hiring flow</span></a>
-        <a class="panel interactive-panel category-card" href="#signup" data-cta-role="employer"><h3>Home Services</h3><p>Repair, maintenance, emergency visits, and trust-first local booking.</p><span>Request verified help</span></a>
+        <a class="panel interactive-panel category-card" href="#signup" data-cta-role="employer" data-signup-employer-type="household"><h3>Home Services</h3><p>Repair, maintenance, emergency visits, and trust-first local booking.</p><span>Request verified help</span></a>
+      </div>
+    </section>
+
+    <section class="section" id="global-board">
+      <div class="section-heading">
+        <p class="eyebrow">Visible On Board</p>
+        <h2>Countries and worker types users can clearly browse</h2>
+        <p>The platform now exposes a broader country list and a much larger worker catalog so people can quickly understand what kinds of hiring are supported.</p>
+      </div>
+      <div class="two-grid">
+        <article class="panel">
+          <h3>Countries Supported In The Current Product Model</h3>
+          <div class="badge-row" id="globalCountryList"></div>
+        </article>
+        <article class="panel">
+          <h3>Worker Types Available On Board</h3>
+          <div class="document-grid" id="workerTypeBoard"></div>
+        </article>
       </div>
     </section>
 
@@ -481,7 +517,8 @@
           <p>Bring job post, matching, comparison, chat, and payment controls into a single operations-friendly hiring flow.</p>
         </div>
         <div class="button-row">
-          <button class="primary-button" type="button" data-cta-role="employer">Open Employer Registration</button>
+          <button class="primary-button" type="button" data-cta-role="employer" data-signup-employer-type="business">Open Employer Registration</button>
+          <button class="secondary-button" type="button" data-cta-role="employer" data-signup-employer-type="household">Open Home Hiring</button>
           <a class="secondary-button" href="#field-scenes">Explore use cases</a>
         </div>
       </div>
@@ -495,6 +532,10 @@
         <div class="tab-row" id="signupTabs">
           <button class="role-tab active" type="button" data-signup-role="worker">Worker</button>
           <button class="role-tab" type="button" data-signup-role="employer">Employer</button>
+        </div>
+        <div class="tab-row is-hidden" id="signupEmployerTypeTabs">
+          <button class="role-tab active" type="button" data-signup-employer-type="business">Business Hiring</button>
+          <button class="role-tab" type="button" data-signup-employer-type="household">Hire For Home</button>
         </div>
         <div class="tab-row" id="signupModeTabs">
           <button class="role-tab active" type="button" data-signup-mode="self">Register Myself</button>
@@ -562,18 +603,20 @@
               <input id="signupContact" type="text" placeholder="Phone number or email">
             </label>
             <label id="companyField" class="is-hidden">
-              <span>Company Name</span>
+              <span id="companyFieldLabel">Company Name</span>
               <input id="signupCompany" type="text" placeholder="Business or company name">
+            </label>
+            <label id="homeAddressField" class="is-hidden">
+              <span>Home or Service Address</span>
+              <input id="signupHomeAddress" type="text" placeholder="Street, area, or neighborhood where help is needed">
             </label>
             <label>
               <span>Primary Skill or Category</span>
-              <select id="signupSkill">
-                <option>Plumbing</option>
-                <option>Cleaning</option>
-                <option>Construction</option>
-                <option>Warehouse</option>
-                <option>Hospitality</option>
-              </select>
+              <select id="signupSkill"></select>
+            </label>
+            <label>
+              <span>Country</span>
+              <select id="signupCountry"></select>
             </label>
             <label id="assistedField" class="is-hidden">
               <span>Helper or Agent Name</span>
@@ -588,33 +631,7 @@
               </select>
             </label>
           </div>
-          <div class="skill-picker" id="workerSkillPicker">
-            <button class="skill-card is-active" type="button" data-skill-choice="Plumbing">
-              <span class="skill-icon">Pipe</span>
-              <strong>Plumbing</strong>
-              <small>Leaks and fitting</small>
-            </button>
-            <button class="skill-card" type="button" data-skill-choice="Cleaning">
-              <span class="skill-icon">Clean</span>
-              <strong>Cleaning</strong>
-              <small>Homes and hotels</small>
-            </button>
-            <button class="skill-card" type="button" data-skill-choice="Construction">
-              <span class="skill-icon">Build</span>
-              <strong>Construction</strong>
-              <small>Site labor help</small>
-            </button>
-            <button class="skill-card" type="button" data-skill-choice="Warehouse">
-              <span class="skill-icon">Stock</span>
-              <strong>Warehouse</strong>
-              <small>Loading and packing</small>
-            </button>
-            <button class="skill-card" type="button" data-skill-choice="Hospitality">
-              <span class="skill-icon">Serve</span>
-              <strong>Hospitality</strong>
-              <small>Hotels and events</small>
-            </button>
-          </div>
+          <div class="skill-picker" id="workerSkillPicker"></div>
           <div class="assist-options" id="assistOptions">
             <article class="assist-card">
               <strong>Need help now?</strong>
@@ -653,7 +670,7 @@
       <div class="panel">
         <p class="eyebrow">Login</p>
         <h2>Return to your dashboard after approval</h2>
-        <p class="helper-text">Workers and employers can sign back in with the same phone or email used during registration.</p>
+        <p class="helper-text">Workers, businesses, and home hirers can sign back in with the same phone or email used during registration.</p>
         <div class="tab-row" id="loginTabs">
           <button class="role-tab active" type="button" data-login-role="worker">Worker Login</button>
           <button class="role-tab" type="button" data-login-role="employer">Employer Login</button>
@@ -771,10 +788,18 @@
     <div class="auth-panel">
       <p class="eyebrow">Secure Staff Access</p>
       <h2>Authorized operations only</h2>
-      <p class="helper-text">This entry is hidden from public users. Use a valid internal access code to continue.</p>
+      <p class="helper-text" id="authHelper">This entry is hidden from public users. Use a valid internal access code to continue.</p>
       <div class="tab-row" id="authRoleTabs">
         <button class="role-tab active" type="button" data-auth-role="admin">Admin</button>
         <button class="role-tab" type="button" data-auth-role="super_admin">Super Admin</button>
+      </div>
+      <label id="authContactField" class="is-hidden">
+        <span>Work Email or Phone</span>
+        <input id="authContact" type="text" placeholder="Enter your admin contact">
+      </label>
+      <div class="button-row is-hidden" id="authOtpRow">
+        <button class="secondary-button small-button" id="authRequestOtp" type="button">Request OTP</button>
+        <span class="helper-text">Use this in live Supabase mode.</span>
       </div>
       <label>
         <span>Authorization Code</span>
@@ -847,6 +872,9 @@
       }
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./supabase/config.js"></script>
+  <script src="./supabase/config.local.js"></script>
   __WORKSHIFT_INLINE_BUNDLE__
 </body>
 </html>

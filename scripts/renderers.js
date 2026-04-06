@@ -1,6 +1,9 @@
 import { dom } from "./dom.js";
+import { listCountryRules } from "./country-rules.js";
+import { workerTypeCatalog } from "./data.js";
 import { getSession, selectedDisputeItem, selectedQueueItem } from "./store.js";
 import { employerDashboard } from "./renderers/employer.js";
+import { householdDashboard } from "./renderers/household.js";
 import { workerDashboard } from "./renderers/worker.js";
 
 function adminDashboard(user) {
@@ -78,6 +81,12 @@ function adminDashboard(user) {
                 <div class="button-row">
                   <button class="primary-button small-button" type="button" data-resolve>Resolve</button>
                   <button class="secondary-button small-button" type="button" data-refund>Issue Partial Refund</button>
+                </div>
+                <div class="document-grid">
+                  <article class="info-card"><strong>Opened By</strong><p>${dispute.openedByName || "Participant"}</p></article>
+                  <article class="info-card"><strong>Against</strong><p>${dispute.againstName || "Counterparty"}</p></article>
+                  <article class="info-card"><strong>Escrow</strong><p>${dispute.escrowId || "Not linked"}</p></article>
+                  <article class="info-card"><strong>Evidence Items</strong><p>${Array.isArray(dispute.evidence) ? dispute.evidence.length : 0}</p></article>
                 </div>
               </div>
           ` : ""}
@@ -178,13 +187,63 @@ export function renderPublicVisibility() {
 
 export function renderSignupRole() {
   const session = getSession();
+  const selectedSkill = document.querySelector("#signupSkill")?.value || session.currentUser?.skill || "Plumbing";
+  const selectedCountry = document.querySelector("#signupCountry")?.value || session.currentUser?.countryCode || "NP";
+  const countryOptions = listCountryRules();
+  const featuredWorkerTypes = workerTypeCatalog.slice(0, 12);
+
+  const signupSkillSelect = document.querySelector("#signupSkill");
+  if (signupSkillSelect) {
+    signupSkillSelect.innerHTML = workerTypeCatalog.map((type) => `<option ${type.name === selectedSkill ? "selected" : ""}>${type.name}</option>`).join("");
+  }
+
+  const signupCountrySelect = document.querySelector("#signupCountry");
+  if (signupCountrySelect) {
+    signupCountrySelect.innerHTML = countryOptions.map((country) => `<option value="${country.code}" ${country.code === selectedCountry ? "selected" : ""}>${country.name}</option>`).join("");
+  }
+
+  if (dom.workerSkillPicker) {
+    dom.workerSkillPicker.innerHTML = featuredWorkerTypes.map((type, index) => `
+      <button class="skill-card ${type.name === selectedSkill || (!selectedSkill && index === 0) ? "is-active" : ""}" type="button" data-skill-choice="${type.name}">
+        <span class="skill-icon">${type.icon}</span>
+        <strong>${type.name}</strong>
+        <small>${type.blurb}</small>
+      </button>
+    `).join("");
+  }
+
+  const globalCountryList = document.querySelector("#globalCountryList");
+  if (globalCountryList) {
+    globalCountryList.innerHTML = countryOptions.map((country) => `<span class="icon-chip">${country.name} (${country.currencyCode})</span>`).join("");
+  }
+
+  const workerTypeBoard = document.querySelector("#workerTypeBoard");
+  if (workerTypeBoard) {
+    workerTypeBoard.innerHTML = workerTypeCatalog.map((type) => `
+      <article class="info-card">
+        <strong>${type.name}</strong>
+        <p>${type.blurb}</p>
+      </article>
+    `).join("");
+  }
+
+  const employerMode = session.signupRole === "employer";
+  const householdEmployerMode = employerMode && session.signupEmployerType === "household";
   dom.signupTabs.querySelectorAll("[data-signup-role]").forEach((button) => {
     button.classList.toggle("active", button.dataset.signupRole === session.signupRole);
+  });
+  dom.signupEmployerTypeTabs?.querySelectorAll("[data-signup-employer-type]").forEach((button) => {
+    button.classList.toggle("active", employerMode && button.dataset.signupEmployerType === session.signupEmployerType);
   });
   dom.signupModeTabs?.querySelectorAll("[data-signup-mode]").forEach((button) => {
     button.classList.toggle("active", button.dataset.signupMode === session.signupMode);
   });
-  dom.companyField.classList.toggle("is-hidden", session.signupRole !== "employer");
+  dom.companyField.classList.toggle("is-hidden", !employerMode);
+  dom.homeAddressField?.classList.toggle("is-hidden", !householdEmployerMode);
+  dom.signupEmployerTypeTabs?.classList.toggle("is-hidden", !employerMode);
+  if (dom.companyFieldLabel) {
+    dom.companyFieldLabel.textContent = householdEmployerMode ? "Household or Family Name" : "Company Name";
+  }
 
   const workerMode = session.signupRole === "worker";
   dom.signupModeTabs?.classList.toggle("is-hidden", !workerMode);
@@ -203,12 +262,18 @@ export function renderSignupRole() {
   });
 
   if (dom.signupSectionTitle) {
-    dom.signupSectionTitle.textContent = workerMode ? "Create a worker or employer account" : "Create an employer account";
+    dom.signupSectionTitle.textContent = workerMode
+      ? "Create a worker or hirer account"
+      : householdEmployerMode
+      ? "Create a home hirer account"
+      : "Create an employer account";
   }
 
   if (dom.onboardingHint) {
     dom.onboardingHint.textContent = !workerMode
-      ? "Employer onboarding uses standard business verification and company registration."
+      ? householdEmployerMode
+        ? "Home hirers use a lighter trust flow with address confirmation, payment setup, and safer short-term booking."
+        : "Employer onboarding uses standard business verification and company registration."
       : session.signupMode === "assisted"
       ? "Assisted signup lets a field agent, employer, or kiosk operator create the worker account with them."
       : session.signupMode === "voice"
@@ -218,7 +283,9 @@ export function renderSignupRole() {
 
   if (dom.signupSubmitLabel) {
     dom.signupSubmitLabel.textContent = !workerMode
-      ? "Create Employer Account"
+      ? householdEmployerMode
+        ? "Create Home Hirer Account"
+        : "Create Employer Account"
       : session.signupMode === "assisted"
       ? "Create Assisted Worker Account"
       : session.signupMode === "voice"
@@ -313,16 +380,20 @@ export function renderPortal() {
   if (!session.currentUser) return;
 
   const user = session.currentUser;
-  dom.portalTitle.textContent = `${user.role.charAt(0).toUpperCase() + user.role.slice(1)} Portal`;
-  dom.portalRoleBadge.textContent = user.role.toUpperCase();
+  dom.portalTitle.textContent = user.role === "employer" && user.accountType === "household"
+    ? "Home Hirer Portal"
+    : `${user.role.charAt(0).toUpperCase() + user.role.slice(1)} Portal`;
+  dom.portalRoleBadge.textContent = user.role === "employer" && user.accountType === "household" ? "HOME HIRER" : user.role.toUpperCase();
   dom.portalRoleBadge.className = `status-pill ${user.availability || "available"}`;
-  dom.portalUserName.textContent = user.fullName || user.company || "WorkShift User";
+  dom.portalUserName.textContent = user.fullName || user.homeLabel || user.company || "WorkShift User";
   dom.portalSubtitle.textContent = user.role === "super_admin"
     ? "Platform configuration, commissions, feature flags, and master analytics"
     : user.role === "admin"
     ? "Verification, disputes, analytics, and risk moderation"
     : user.role === "employer"
-    ? "Company, jobs, applicants, payments, and verification"
+    ? user.accountType === "household"
+      ? "Home requests, trusted helpers, protected payments, and safer short-term bookings"
+      : "Company, jobs, applicants, payments, and verification"
     : "Profile, jobs, wallet, reviews, notifications, and verification";
 
   const navItems = user.role === "super_admin"
@@ -331,10 +402,15 @@ export function renderPortal() {
     ? ["dashboard", "verifications", "jobs", "disputes", "payments", "analytics"]
     : ["dashboard", "profile", "jobs", "documents"];
 
-  dom.portalNav.innerHTML = navItems.map((item) => `<button class="role-tab ${session.activePortalView === item ? "active" : ""}" type="button" data-portal-view="${item}">${item.charAt(0).toUpperCase() + item.slice(1)}</button>`).join("");
+  dom.portalNav.innerHTML = navItems.map((item) => {
+    const label = user.role === "employer" && user.accountType === "household" && item === "jobs"
+      ? "Bookings"
+      : item.charAt(0).toUpperCase() + item.slice(1);
+    return `<button class="role-tab ${session.activePortalView === item ? "active" : ""}" type="button" data-portal-view="${item}">${label}</button>`;
+  }).join("");
 
   if (user.role === "worker") dom.portalContent.innerHTML = workerDashboard(user);
-  if (user.role === "employer") dom.portalContent.innerHTML = employerDashboard(user);
+  if (user.role === "employer") dom.portalContent.innerHTML = user.accountType === "household" ? householdDashboard(user) : employerDashboard(user);
   if (user.role === "admin") dom.portalContent.innerHTML = adminDashboard(user);
   if (user.role === "super_admin") dom.portalContent.innerHTML = superAdminDashboard(user);
 }

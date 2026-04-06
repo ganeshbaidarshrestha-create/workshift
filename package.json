@@ -1,0 +1,10 @@
+{
+  "name": "workshift",
+  "private": true,
+  "version": "0.1.0",
+  "description": "WorkShift static prototype and build tooling",
+  "scripts": {
+    "build": "node scripts/build-bundle.mjs",
+    "vercel-build": "node scripts/build-bundle.mjs"
+  }
+}

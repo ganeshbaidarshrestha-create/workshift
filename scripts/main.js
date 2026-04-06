@@ -1,8 +1,43 @@
 import { bindEvents } from "./actions.js";
 import { dom } from "./dom.js";
 import { scoreWorkersForJob } from "./matching.js";
-import { getSession } from "./store.js";
+import { getSession, hydrateCurrentUser, setSupabaseMarketplaceJobs } from "./store.js";
+import {
+  ensureSupabaseProfileFromAuth,
+  listSupabaseAdminPayments,
+  listSupabaseAdminQueue,
+  listSupabaseDisputes,
+  listSupabaseEmployerEscrows,
+  listSupabaseEmployerPipeline,
+  listSupabaseJobs,
+  listSupabaseMyDisputes,
+  listSupabaseWalletEntriesForCurrentProfile,
+  listSupabaseWorkerEscrows,
+  listSupabaseWorkerApplicationsWithMessages,
+  mapSupabaseDisputeToAdminItem,
+  mapSupabaseEscrowToAdminPayment,
+  mapSupabaseApplicationToEmployerApplicant,
+  mapSupabaseApplicationToWorkerApplication,
+  mapSupabaseApplicationToWorkerJob,
+  mapSupabaseJobToEmployerJob,
+  mapSupabaseJobToMarketplaceJob,
+  mapSupabaseProfileToPortalUser,
+  mapSupabaseReviewToQueueItem,
+  summarizeSupabaseLedger,
+  subscribeToSupabaseApplicationMessages,
+  subscribeToSupabaseEmployerJobs,
+  subscribeToSupabaseJobApplications,
+  subscribeToSupabaseWorkerApplications,
+  supabaseEnabled,
+  unsubscribeSupabaseChannel
+} from "./supabase.js";
 import { renderLoginRole, renderPortal, renderPublicVisibility, renderSignupRole, renderToasts } from "./renderers.js";
+
+let workerApplicationsChannel = null;
+let workerMessageChannels = [];
+let employerJobsChannel = null;
+let employerApplicationsChannels = [];
+let employerMessageChannels = [];
 
 function initTestimonials() {
   if (!dom.testimonialTrack || !dom.testimonialDots) return;
@@ -102,8 +137,12 @@ function runSmokeTests() {
 
   step("Worker document upload works", () => {
     document.querySelector("[data-portal-view='documents']").click();
-    document.querySelector("[data-upload='worker:wid']").click();
-    return getSession().currentUser.documents[0].status === "Uploaded";
+    const input = document.querySelector("[data-document-file-upload='worker:wid']");
+    const file = new File(["worker id"], "worker-id.png", { type: "image/png" });
+    Object.defineProperty(input, "files", { value: [file], configurable: true });
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+    return ["Uploading", "Uploaded"].includes(getSession().currentUser.documents[0].status)
+      && getSession().currentUser.documents[0].fileName === "worker-id.png";
   });
 
   step("Worker profile photo preview works", () => {
@@ -320,6 +359,34 @@ function runSmokeTests() {
         && updatedJob?.dailyRate === 145;
     });
 
+    step("Employer can open a dispute with evidence", () => {
+      document.querySelector("[data-portal-view='jobs']").click();
+      document.querySelector("[data-select-applicant]")?.click();
+      document.querySelector("[data-open-dispute]").click();
+      document.querySelector("#disputeReason").value = "Payment issue";
+      document.querySelector("#disputeResolution").value = "Partial refund";
+      document.querySelector("#disputeAmount").value = "145";
+      document.querySelector("#disputeSummary").value = "Worker completed only part of the shift and requested full payout.";
+      document.querySelector("#disputeEvidenceNotes").value = "Timesheet shows 3 hours only\nChat confirms early departure";
+      document.querySelector("#disputeEvidenceLinks").value = "payment-ref-001";
+      document.querySelector("[data-submit-dispute]").click();
+      return Array.isArray(getSession().currentUser.disputes)
+        && getSession().currentUser.disputes[0]?.status === "Open"
+        && Array.isArray(getSession().currentUser.disputes[0]?.evidence)
+        && getSession().currentUser.disputes[0].evidence.length >= 2;
+    });
+
+    step("Admin sees and can resolve a submitted dispute", () => {
+      document.querySelector("#logoutButton").click();
+      document.querySelector("#authRoleTabs [data-auth-role='admin']").click();
+      document.querySelector("#authCode").value = "ADMIN2026";
+      document.querySelector("#authSubmit").click();
+      document.querySelector("[data-select-dispute]")?.click();
+      const before = getSession().currentUser.disputes[0]?.status;
+      document.querySelector("[data-resolve]").click();
+      return before && getSession().currentUser.disputes[0]?.status === "Closed";
+    });
+
     step("Super admin access and settings work", () => {
       document.querySelector("#logoutButton").click();
       document.querySelector("#authRoleTabs [data-auth-role='super_admin']").click();
@@ -340,6 +407,261 @@ function runSmokeTests() {
   document.body.appendChild(report);
 }
 
+async function hydrateSupabaseRuntime() {
+  if (!supabaseEnabled()) return;
+
+  const liveJobs = await listSupabaseJobs();
+  setSupabaseMarketplaceJobs(liveJobs.map((job) => mapSupabaseJobToMarketplaceJob(job)));
+
+  const liveProfile = await ensureSupabaseProfileFromAuth();
+  if (!liveProfile) {
+    renderPortal();
+    return;
+  }
+
+  const user = mapSupabaseProfileToPortalUser(liveProfile);
+  if (!user) return;
+
+  if (user.role === "employer") {
+    const [employerPipeline, employerEscrows, disputes] = await Promise.all([
+      listSupabaseEmployerPipeline(),
+      listSupabaseEmployerEscrows(),
+      listSupabaseMyDisputes()
+    ]);
+    user.jobs = employerPipeline.map(({ job, applications }) => {
+      const mapped = mapSupabaseJobToEmployerJob({
+        ...job,
+        application_count: applications.length
+      });
+      mapped.shortlisted = applications.filter((application) => ["shortlisted", "invited", "hired", "rated"].includes(String(application.status || "").toLowerCase())).length;
+      const matchedEscrow = employerEscrows.find((escrow) => escrow.job_id === job.id);
+      if (matchedEscrow) {
+        mapped.escrow = ["funded", "released"].includes(String(matchedEscrow.status || "").toLowerCase());
+        mapped.escrowId = matchedEscrow.id;
+      }
+      return mapped;
+    });
+    user.applicants = employerPipeline.flatMap(({ job, applications }) =>
+      applications.map((application) => mapSupabaseApplicationToEmployerApplicant(application, job, application.messages))
+    );
+    user.hiring = user.applicants.map((application) => ({
+      candidate: application.name,
+      status: application.status
+    }));
+    user.profile.payments = employerEscrows.slice(0, 6).map((escrow) => mapSupabaseEscrowToAdminPayment(escrow));
+    const latestEscrow = employerEscrows[0] || null;
+    if (latestEscrow) {
+      user.escrow = {
+        funded: ["funded", "released"].includes(String(latestEscrow.status || "").toLowerCase()),
+        status: latestEscrow.status,
+        autoReleaseHours: 24,
+        nextRelease: latestEscrow.released_at || latestEscrow.refunded_at || "Pending release",
+        escrowId: latestEscrow.id
+      };
+    }
+    user.disputes = disputes;
+  }
+
+  if (user.role === "worker") {
+    const [workerApplications, workerEscrows, walletEntries, disputes] = await Promise.all([
+      listSupabaseWorkerApplicationsWithMessages(),
+      listSupabaseWorkerEscrows(),
+      listSupabaseWalletEntriesForCurrentProfile(),
+      listSupabaseMyDisputes()
+    ]);
+    user.applications = workerApplications.map((application) => mapSupabaseApplicationToWorkerApplication(application, application.messages));
+    user.jobs = workerApplications.map((application) => mapSupabaseApplicationToWorkerJob(application));
+    user.chatStream = user.applications[0]?.chatThread || [];
+    user.wallet = Math.max(0, summarizeSupabaseLedger(walletEntries));
+    user.weeklyEarnings = workerEscrows
+      .filter((escrow) => String(escrow.status || "").toLowerCase() === "released")
+      .reduce((sum, escrow) => sum + Number(escrow.net_amount || 0), 0);
+    user.monthlyEarnings = user.weeklyEarnings;
+    user.disputes = disputes;
+  }
+
+  if (user.role === "admin") {
+    const [queueRecords, disputeRecords, paymentRecords] = await Promise.all([
+      listSupabaseAdminQueue(),
+      listSupabaseDisputes(),
+      listSupabaseAdminPayments()
+    ]);
+    user.queue = queueRecords.map((item) => mapSupabaseReviewToQueueItem(item));
+    user.disputes = disputeRecords.map((item) => mapSupabaseDisputeToAdminItem(item));
+    user.payments = paymentRecords.map((item) => mapSupabaseEscrowToAdminPayment(item));
+  }
+
+  hydrateCurrentUser(user);
+  renderPublicVisibility();
+  renderPortal();
+  renderToasts();
+  await setupSupabaseLiveSubscriptions();
+}
+
+async function refreshEmployerSupabaseState() {
+  const session = getSession();
+  if (!supabaseEnabled() || session.currentUser?.role !== "employer") return;
+  const [employerPipeline, employerEscrows, disputes] = await Promise.all([
+    listSupabaseEmployerPipeline(),
+    listSupabaseEmployerEscrows(),
+    listSupabaseMyDisputes()
+  ]);
+  const jobs = employerPipeline.map(({ job, applications }) => {
+    const mapped = mapSupabaseJobToEmployerJob({
+      ...job,
+      application_count: applications.length
+    });
+    mapped.shortlisted = applications.filter((application) => ["shortlisted", "invited", "hired", "rated"].includes(String(application.status || "").toLowerCase())).length;
+    const matchedEscrow = employerEscrows.find((escrow) => escrow.job_id === job.id);
+    if (matchedEscrow) {
+      mapped.escrow = ["funded", "released"].includes(String(matchedEscrow.status || "").toLowerCase());
+      mapped.escrowId = matchedEscrow.id;
+    }
+    return mapped;
+  });
+  const applicants = employerPipeline.flatMap(({ job, applications }) =>
+    applications.map((application) => mapSupabaseApplicationToEmployerApplicant(application, job, application.messages))
+  );
+  const selectedJob = jobs.find((job) => job.id === session.selectedEmployerJob) || jobs[0] || null;
+  const selectedApplicant = applicants.find((applicant) =>
+    applicant.id === session.selectedApplicant
+    && (
+      applicant.jobId === selectedJob?.id
+      || applicant.jobSupabaseId === selectedJob?.supabaseId
+    )
+  ) || applicants.find((applicant) =>
+    applicant.jobId === selectedJob?.id
+    || applicant.jobSupabaseId === selectedJob?.supabaseId
+  ) || null;
+
+  hydrateCurrentUser({
+    ...session.currentUser,
+    jobs,
+    applicants,
+    hiring: applicants.map((application) => ({
+      candidate: application.name,
+      status: application.status
+    })),
+    profile: {
+      ...(session.currentUser.profile || {}),
+      payments: employerEscrows.slice(0, 6).map((escrow) => mapSupabaseEscrowToAdminPayment(escrow))
+    },
+    escrow: employerEscrows[0] ? {
+      funded: ["funded", "released"].includes(String(employerEscrows[0].status || "").toLowerCase()),
+      status: employerEscrows[0].status,
+      autoReleaseHours: 24,
+      nextRelease: employerEscrows[0].released_at || employerEscrows[0].refunded_at || "Pending release",
+      escrowId: employerEscrows[0].id
+    } : session.currentUser.escrow,
+    disputes,
+    chatStream: selectedApplicant?.chatThread || session.currentUser.chatStream || []
+  });
+
+  if (selectedJob?.id) session.selectedEmployerJob = selectedJob.id;
+  if (selectedApplicant?.id) session.selectedApplicant = selectedApplicant.id;
+  await setupSupabaseLiveSubscriptions();
+  renderPortal();
+  renderToasts();
+}
+
+async function refreshWorkerSupabaseState() {
+  const session = getSession();
+  if (!supabaseEnabled() || session.currentUser?.role !== "worker") return;
+  const [workerApplications, workerEscrows, walletEntries, disputes] = await Promise.all([
+    listSupabaseWorkerApplicationsWithMessages(),
+    listSupabaseWorkerEscrows(),
+    listSupabaseWalletEntriesForCurrentProfile(),
+    listSupabaseMyDisputes()
+  ]);
+  const jobs = workerApplications.map((application) => mapSupabaseApplicationToWorkerJob(application));
+  const applications = workerApplications.map((application) => mapSupabaseApplicationToWorkerApplication(application, application.messages));
+  const selectedJob = jobs.find((job) => job.id === session.selectedWorkerJob) || jobs[0] || null;
+  const selectedApplication = applications.find((application) => application.supabaseApplicationId === selectedJob?.supabaseApplicationId)
+    || applications[0]
+    || null;
+  hydrateCurrentUser({
+    ...session.currentUser,
+    jobs,
+    applications,
+    wallet: Math.max(0, summarizeSupabaseLedger(walletEntries)),
+    weeklyEarnings: workerEscrows
+      .filter((escrow) => String(escrow.status || "").toLowerCase() === "released")
+      .reduce((sum, escrow) => sum + Number(escrow.net_amount || 0), 0),
+    monthlyEarnings: workerEscrows
+      .filter((escrow) => String(escrow.status || "").toLowerCase() === "released")
+      .reduce((sum, escrow) => sum + Number(escrow.net_amount || 0), 0),
+    disputes,
+    chatStream: selectedApplication?.chatThread || session.currentUser.chatStream || []
+  });
+  await setupSupabaseLiveSubscriptions();
+  renderPortal();
+  renderToasts();
+}
+
+function clearWorkerLiveSubscriptions() {
+  if (workerApplicationsChannel) {
+    unsubscribeSupabaseChannel(workerApplicationsChannel);
+    workerApplicationsChannel = null;
+  }
+  workerMessageChannels.forEach((channel) => unsubscribeSupabaseChannel(channel));
+  workerMessageChannels = [];
+}
+
+function clearEmployerLiveSubscriptions() {
+  if (employerJobsChannel) {
+    unsubscribeSupabaseChannel(employerJobsChannel);
+    employerJobsChannel = null;
+  }
+  employerApplicationsChannels.forEach((channel) => unsubscribeSupabaseChannel(channel));
+  employerApplicationsChannels = [];
+  employerMessageChannels.forEach((channel) => unsubscribeSupabaseChannel(channel));
+  employerMessageChannels = [];
+}
+
+async function setupSupabaseLiveSubscriptions() {
+  const session = getSession();
+  clearWorkerLiveSubscriptions();
+  clearEmployerLiveSubscriptions();
+  if (!supabaseEnabled() || !session.currentUser?.id) return;
+
+  if (session.currentUser.role === "worker") {
+    workerApplicationsChannel = subscribeToSupabaseWorkerApplications(session.currentUser.id, () => {
+      void refreshWorkerSupabaseState();
+    });
+
+    const applications = Array.isArray(session.currentUser.applications) ? session.currentUser.applications : [];
+    workerMessageChannels = applications
+      .filter((application) => application.supabaseApplicationId)
+      .map((application) => subscribeToSupabaseApplicationMessages(application.supabaseApplicationId, () => {
+        void refreshWorkerSupabaseState();
+      }))
+      .filter(Boolean);
+    return;
+  }
+
+  if (session.currentUser.role !== "employer") return;
+
+  employerJobsChannel = subscribeToSupabaseEmployerJobs(session.currentUser.id, () => {
+    void refreshEmployerSupabaseState();
+  });
+
+  const jobs = Array.isArray(session.currentUser.jobs) ? session.currentUser.jobs : [];
+  employerApplicationsChannels = jobs
+    .filter((job) => job.supabaseId)
+    .map((job) => subscribeToSupabaseJobApplications(job.supabaseId, () => {
+      void refreshEmployerSupabaseState();
+    }))
+    .filter(Boolean);
+
+  const applicants = Array.isArray(session.currentUser.applicants) ? session.currentUser.applicants : [];
+  employerMessageChannels = applicants
+    .filter((application) => application.supabaseApplicationId)
+    .map((application) => subscribeToSupabaseApplicationMessages(application.supabaseApplicationId, () => {
+      void refreshEmployerSupabaseState();
+    }))
+    .filter(Boolean);
+}
+
 function init() {
   try {
     installSmokeErrorCapture();
@@ -351,8 +673,19 @@ function init() {
     renderPortal();
     renderToasts();
     runSmokeTests();
+    void hydrateSupabaseRuntime();
     window.__workshiftBooted = true;
     document.body.dataset.workshiftReady = "true";
+    window.addEventListener("workshift:logout", () => {
+      clearWorkerLiveSubscriptions();
+      clearEmployerLiveSubscriptions();
+    });
+    window.addEventListener("workshift:worker-live-sync", () => {
+      void setupSupabaseLiveSubscriptions();
+    });
+    window.addEventListener("workshift:hydrate-supabase", () => {
+      void hydrateSupabaseRuntime();
+    });
   } catch (error) {
     window.__workshiftBooted = false;
     if (typeof window.__workshiftShowIssue === "function") {

@@ -1,4 +1,5 @@
 import { scoreWorkersForJob } from "../matching.js";
+import { countryName, formatCountryMoney, getCountryRule, listCountryRules } from "../country-rules.js";
 import { getSession, selectedApplicant, selectedEmployerJob, selectedSearchWorker } from "../store.js";
 import {
   applicantStageColumn,
@@ -6,6 +7,8 @@ import {
   chatFeed,
   comparisonTarget,
   documentList,
+  disputeComposer,
+  evidenceList,
   employerMapBoard,
   filterRankedWorkers,
   formatAccountId,
@@ -22,8 +25,10 @@ import {
 
 export function employerDashboard(user) {
   const profile = user.profile || {};
+  const countryRule = getCountryRule(user.countryCode || "NP");
+  const countryOptions = listCountryRules();
   const jobs = Array.isArray(user.jobs) ? user.jobs : [];
-  const applicants = Array.isArray(user.applicants) ? user.applicants : [];
+  const allApplicants = Array.isArray(user.applicants) ? user.applicants : [];
   const hiring = Array.isArray(user.hiring) ? user.hiring : [];
   const analytics = Array.isArray(profile.analytics) ? profile.analytics : [];
   const analyticsDashboard = Array.isArray(profile.analyticsDashboard) ? profile.analyticsDashboard : [];
@@ -31,10 +36,12 @@ export function employerDashboard(user) {
   const payments = Array.isArray(profile.payments) ? profile.payments : [];
   const ratings = Array.isArray(profile.ratings) ? profile.ratings : [];
   const workerPool = Array.isArray(user.workerPool) ? user.workerPool : [];
+  const session = getSession();
   const job = selectedEmployerJob() || jobs[0] || {
     id: "job_fallback",
     title: "No active job yet",
-    location: "Nepal",
+    location: "Kathmandu Valley",
+    countryCode: user.countryCode || "NP",
     status: "Draft",
     headcount: 1,
     dailyRate: 0,
@@ -47,7 +54,15 @@ export function employerDashboard(user) {
     applicants: 0,
     spend: "$0"
   };
-  const applicant = selectedApplicant() || applicants[0] || {
+  const applicants = allApplicants.filter((item) =>
+    item.jobId === job.id
+    || (item.jobSupabaseId && item.jobSupabaseId === job.supabaseId)
+    || (!item.jobId && !item.jobSupabaseId)
+  );
+  const applicant = applicants.find((item) => item.id === session.selectedApplicant)
+    || selectedApplicant()
+    || applicants[0]
+    || {
     id: "applicant_fallback",
     name: "No applicant selected",
     distance: "Waiting",
@@ -56,7 +71,6 @@ export function employerDashboard(user) {
     skills: [],
     chatThread: []
   };
-  const session = getSession();
   const workerSearch = user.workerSearch || {};
   const escrow = user.escrow || {};
   const account = user.account || {};
@@ -76,7 +90,7 @@ export function employerDashboard(user) {
     ? applicants.find((item) => item.id === searchWorker.id || item.name === searchWorker.name) || null
     : null;
   const searchWorkerThread = Array.isArray(searchWorkerApplicant?.chatThread) ? searchWorkerApplicant.chatThread : [];
-  const hiredCount = applicants.filter((item) => ["Hired", "Rated"].includes(item.status)).length;
+  const hiredCount = allApplicants.filter((item) => ["Hired", "Rated"].includes(item.status)).length;
   const compareApplicant = comparisonTarget(user, applicant);
   const biddingHistory = Array.isArray(job.biddingHistory) ? job.biddingHistory : [];
   const searchSummary = [
@@ -88,6 +102,7 @@ export function employerDashboard(user) {
     <div class="stack">
       ${identityCard(user)}
       ${jobPostWizard(user, session)}
+      ${disputeComposer(user, session)}
       ${workerProfileModal(session, searchWorker)}
 
       ${(activeView === "dashboard") ? `
@@ -108,7 +123,7 @@ export function employerDashboard(user) {
           <article class="info-card"><strong>Job Lifecycle</strong><p>${job.title} is ${job.status}. Pause, reopen, or cancel directly from the controls below.</p></article>
           <article class="info-card"><strong>Hiring Pipeline</strong><p>New ${stageCount(applicants, "New")} / Shortlisted ${stageCount(applicants, "Shortlisted")} / Invited ${stageCount(applicants, "Invited")} / Hired ${stageCount(applicants, "Hired")} / Rated ${stageCount(applicants, "Rated")}</p></article>
           <article class="info-card"><strong>Applicant Chat</strong><p>${applicant.name} thread has ${applicantThread.length} messages and remains tied to the selected worker.</p></article>
-          <article class="info-card"><strong>Company Assets</strong><p>Logo preview ${profile.logo || "Pending"} / verification badge ${profile.verificationBadge || "Pending"}</p></article>
+          <article class="info-card"><strong>Company Assets</strong><p>Logo preview ${profile.logo || "Pending"} / verification badge ${profile.verificationBadge || "Pending"} / operating country ${countryName(user.countryCode || "NP")}</p></article>
         </div>
         <div class="button-row">
           <button class="secondary-button small-button" type="button" data-portal-view="jobs">Open Hiring Workspace</button>
@@ -123,8 +138,8 @@ export function employerDashboard(user) {
         <h3>Live Hiring Workspace</h3>
         <div class="comparison-grid">
           <article class="job-card selected">
-            <header><div><strong>${job.title}</strong><div>${job.location}</div></div><span class="status-pill ${jobStatusTone(job.status)}">${job.status}</span></header>
-            <div class="meta-row"><span>${job.headcount || 1} workers</span><span>$${job.dailyRate}/day</span><span>${job.shortlisted} shortlisted</span><span>${job.escrow ? "Escrow ready" : "Escrow pending"}</span></div>
+            <header><div><strong>${job.title}</strong><div>${job.location} / ${countryName(job.countryCode || user.countryCode || "NP")}</div></div><span class="status-pill ${jobStatusTone(job.status)}">${job.status}</span></header>
+            <div class="meta-row"><span>${job.headcount || 1} workers</span><span>${formatCountryMoney(job.dailyRate, job.countryCode || user.countryCode || "NP")}/day</span><span>${job.shortlisted} shortlisted</span><span>${job.escrow ? "Escrow ready" : "Escrow pending"}</span></div>
             <div class="button-row">
               <button class="secondary-button small-button" type="button" data-shortlist>Shortlist</button>
               <button class="secondary-button small-button" type="button" data-invite>Invite</button>
@@ -366,8 +381,8 @@ export function employerDashboard(user) {
         <section class="panel">
           <h3>Selected Job Controls</h3>
           <div class="job-card selected">
-            <header><div><strong>${job.title}</strong><div>${job.location}</div></div><span class="status-pill ${jobStatusTone(job.status)}">${job.status}</span></header>
-            <div class="meta-row"><span>${job.headcount || 1} workers</span><span>$${job.dailyRate}/day</span><span>${job.requiredSkillsText || job.category}</span><span>${job.shortlisted} shortlisted</span><span>${job.escrow ? "Escrow ready" : "Escrow pending"}</span></div>
+            <header><div><strong>${job.title}</strong><div>${job.location} / ${countryName(job.countryCode || user.countryCode || "NP")}</div></div><span class="status-pill ${jobStatusTone(job.status)}">${job.status}</span></header>
+            <div class="meta-row"><span>${job.headcount || 1} workers</span><span>${formatCountryMoney(job.dailyRate, job.countryCode || user.countryCode || "NP")}/day</span><span>${job.requiredSkillsText || job.category}</span><span>${job.shortlisted} shortlisted</span><span>${job.escrow ? "Escrow ready" : "Escrow pending"}</span></div>
           </div>
           <div class="button-row">
             <button class="secondary-button small-button" type="button" data-edit-job>Edit Job</button>
@@ -386,7 +401,7 @@ export function employerDashboard(user) {
           <h3>Selected Applicant</h3>
           <div class="job-card selected">
             <header><div class="media-title">${applicant.photoData ? `<img class="mini-media" src="${applicant.photoData}" alt="${applicant.name}">` : `<div class="mini-media fallback">${(applicant.name || "WK").slice(0, 2).toUpperCase()}</div>`}<div><strong>${applicant.name}</strong><div>${applicant.distance}</div></div></div><span class="status-pill ${applicantStatusTone(applicantStatus)}">${applicantStatus}</span></header>
-            <div class="meta-row"><span>${applicant.rating} stars</span><span>Offer $${job.dailyRate}/day</span><span>${hiring.find((item) => item.candidate === applicant.name)?.status || "Reviewing"}</span><span>${applicant.chatThread?.length || 0} messages</span></div>
+            <div class="meta-row"><span>${applicant.rating} stars</span><span>Offer ${formatCountryMoney(job.dailyRate, job.countryCode || user.countryCode || "NP")}/day</span><span>${hiring.find((item) => item.candidate === applicant.name)?.status || "Reviewing"}</span><span>${applicant.chatThread?.length || 0} messages</span></div>
           </div>
           <div class="button-row">
             <button class="secondary-button small-button" type="button" data-shortlist>Shortlist</button>
@@ -430,7 +445,7 @@ export function employerDashboard(user) {
         <h3>Wage Bidding to Hire Faster</h3>
         <div class="document-grid">
           <article class="info-card"><strong>Selected Job</strong><p>${job.title} / ${job.location}</p></article>
-          <article class="info-card"><strong>Current Wage Offer</strong><p>$${job.dailyRate}/day</p></article>
+          <article class="info-card"><strong>Current Wage Offer</strong><p>${formatCountryMoney(job.dailyRate, job.countryCode || user.countryCode || "NP")}/day</p></article>
           <article class="info-card"><strong>Suggested Raise</strong><p>$${job.bidStep}/day / urgency ${job.urgency}</p></article>
           <article class="info-card"><strong>Bidding Trail</strong><p>${biddingHistory.map((value) => `$${value}`).join(" -> ")}</p></article>
         </div>
@@ -449,10 +464,13 @@ export function employerDashboard(user) {
           <label><span>Contact</span><input id="profileContact" type="text" value="${user.contact}"></label>
           <label><span>Company Name</span><input id="profileCompany" type="text" value="${user.company}"></label>
           <label><span>Industry</span><input id="profileSkill" type="text" value="${user.skill}"></label>
+          <label><span>Operating Country</span><select id="profileCountryCode">${countryOptions.map((country) => `<option value="${country.code}" ${country.code === (user.countryCode || "NP") ? "selected" : ""}>${country.name}</option>`).join("")}</select></label>
         </div>
         <div class="document-grid">
           <article class="info-card"><strong>Company Logo</strong><p>${profile.logo || "Not uploaded yet"}</p><input type="file" accept="image/*" data-preview-upload="employer-logo"></article>
           <article class="info-card"><strong>Verification Badge</strong><p>${profile.verificationBadge || "Pending review"}</p></article>
+          <article class="info-card"><strong>Phone Auth</strong><p>${countryRule.phoneAuthMode}</p></article>
+          <article class="info-card"><strong>Payout Rail</strong><p>${countryRule.payoutRail}</p></article>
         </div>
         <label><span>Company Notes</span><textarea id="profileNotes">${user.notes}</textarea></label>
         <button class="primary-button small-button" type="button" data-save-profile>Save Company Profile</button>
@@ -464,8 +482,8 @@ export function employerDashboard(user) {
         <h3>Employer Account and Hiring</h3>
         <div class="document-grid">
           <article class="info-card"><strong>Account Registration</strong><p>${account.registration || "Phone or email"} / onboarding ${account.onboarding || "Company setup"}</p></article>
-          <article class="info-card"><strong>Company Profile</strong><p>Logo ${profile.logo || "Pending"} / size ${profile.size || "Team"} / badge ${profile.verificationBadge || "Pending"}</p></article>
-          <article class="info-card"><strong>Verification</strong><p>${user.verificationStatus}${user.approvedAt ? ` / approved ${new Date(user.approvedAt).toLocaleDateString()}` : ""} / ID ${formatAccountId(user)}</p></article>
+          <article class="info-card"><strong>Company Profile</strong><p>Logo ${profile.logo || "Pending"} / size ${profile.size || "Team"} / badge ${profile.verificationBadge || "Pending"} / ${countryName(user.countryCode || "NP")}</p></article>
+          <article class="info-card"><strong>Verification</strong><p>${user.verificationStatus}${user.approvedAt ? ` / approved ${new Date(user.approvedAt).toLocaleDateString()}` : ""} / ID ${formatAccountId(user)} / ${countryRule.verificationRule}</p></article>
           <article class="info-card"><strong>Job Posting</strong><p>Rich posting flow with title, category, location, pay, duration, and headcount.</p></article>
           <article class="info-card"><strong>Worker Search</strong><p>${workerSearch.mapMode || "Map"} / saved search: ${workerSearch.savedSearch || "None saved"}</p></article>
           <article class="info-card"><strong>Hiring</strong><p>${hiring.map((item) => `${item.candidate}: ${item.status}`).join(" | ")}</p></article>
@@ -522,11 +540,23 @@ export function employerDashboard(user) {
           <article class="info-card"><strong>Escrow Status</strong><p>${escrow.status || "Pending"}</p></article>
           <article class="info-card"><strong>Auto Release</strong><p>${escrow.autoReleaseHours || 0}h / next ${escrow.nextRelease || "TBD"}</p></article>
           <article class="info-card"><strong>Payment Rail</strong><p>Stripe escrow flow simulated for local prototype.</p></article>
-          <article class="info-card"><strong>Selected Job Payment</strong><p>${job.title} / ${job.escrow ? "Escrow funded" : "Awaiting funding"}</p></article>
+          <article class="info-card"><strong>Selected Job Payment</strong><p>${job.title} / ${job.escrow ? "Escrow funded" : "Awaiting funding"} / ${countryRule.payoutRail}</p></article>
         </div>
         <div class="button-row">
           <button class="secondary-button small-button" type="button" data-release-escrow>Release Escrow</button>
           <button class="secondary-button small-button" type="button" data-rate-worker>Rate Selected Worker</button>
+          <button class="primary-button small-button" type="button" data-open-dispute>Open Dispute</button>
+        </div>
+        <div class="document-grid">
+          ${evidenceList((user.disputes || []).find((item) => item.id === session.selectedDispute)?.evidence || [])}
+        </div>
+        <div class="recent-feed">
+          ${(user.disputes || []).map((item) => `
+            <article class="timeline-card ${item.id === session.selectedDispute ? "selected" : ""}" data-select-dispute="${item.id}">
+              <header><strong>${item.title}</strong><span>${item.status}</span></header>
+              <div>${item.note || "Awaiting admin review."}</div>
+            </article>
+          `).join("") || `<article class="info-card"><strong>No active disputes</strong><p>Escrow, quality, timing, and conduct issues can be escalated here with evidence and payout context.</p></article>`}
         </div>
       </section>
       ` : ""}
@@ -545,7 +575,7 @@ export function employerDashboard(user) {
           ${applicants.map((item) => `
             <article class="job-card ${item.id === applicant.id ? "selected" : ""}" data-select-applicant="${item.id}">
               <header><div class="media-title">${item.photoData ? `<img class="mini-media" src="${item.photoData}" alt="${item.name}">` : `<div class="mini-media fallback">${(item.name || "WK").slice(0, 2).toUpperCase()}</div>`}<div><strong>${item.name}</strong><div>${item.distance}</div></div></div><span class="status-pill ${applicantStatusTone(item.status || "New")}">${item.status || item.score}</span></header>
-              <div class="meta-row"><span>${item.rating} stars</span><span>AI ranked</span><span>Offer sees $${job.dailyRate}/day</span><span>${hiring.find((entry) => entry.candidate === item.name)?.status || "Reviewing"}</span></div>
+              <div class="meta-row"><span>${item.rating} stars</span><span>AI ranked</span><span>Offer sees ${formatCountryMoney(job.dailyRate, job.countryCode || user.countryCode || "NP")}/day</span><span>${hiring.find((entry) => entry.candidate === item.name)?.status || "Reviewing"}</span></div>
             </article>
           `).join("")}
         </div>

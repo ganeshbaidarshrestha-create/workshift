@@ -1,4 +1,5 @@
-import { adminTemplate, cloneTemplate, employerTemplate, superAdminTemplate, workerTemplate } from "./data.js";
+import { countryName, formatCountryMoney } from "./country-rules.js";
+import { adminTemplate, cloneTemplate, employerTemplate, householdEmployerTemplate, superAdminTemplate, workerTemplate } from "./data.js";
 
 const APP_STORAGE_KEY = "workshift_app_data_v1";
 const SESSION_STORAGE_KEY = "workshift_session_v1";
@@ -31,7 +32,9 @@ function normalizeUser(user) {
   const template = user.role === "worker"
     ? workerTemplate
     : user.role === "employer"
-    ? employerTemplate
+    ? user.accountType === "household"
+      ? householdEmployerTemplate
+      : employerTemplate
     : user.role === "admin"
     ? adminTemplate
     : user.role === "super_admin"
@@ -45,6 +48,7 @@ function normalizeAppData(data) {
   normalized.registeredUsers = (normalized.registeredUsers || []).map((user) => normalizeUser(user));
   normalized.adminAccounts = Array.isArray(normalized.adminAccounts) ? normalized.adminAccounts : cloneTemplate(superAdminTemplate.admins);
   normalized.approvalQueue = Array.isArray(normalized.approvalQueue) ? normalized.approvalQueue : [];
+  normalized.disputes = Array.isArray(normalized.disputes) ? normalized.disputes : cloneTemplate(adminTemplate.disputes);
   return normalized;
 }
 
@@ -52,6 +56,7 @@ function defaultAppData() {
   return {
     registeredUsers: [],
     approvalQueue: [],
+    disputes: cloneTemplate(adminTemplate.disputes),
     adminAccounts: cloneTemplate(superAdminTemplate.admins),
     superAdminCode: "ROOT2026"
   };
@@ -83,6 +88,7 @@ const savedSession = loadSessionState();
 const session = {
   currentUser: savedSession.currentUser ? normalizeUser(savedSession.currentUser) : null,
   signupRole: savedSession.signupRole || "worker",
+  signupEmployerType: savedSession.signupEmployerType || "business",
   signupMode: savedSession.signupMode || "self",
   signupStep: savedSession.signupStep || "work",
   loginRole: savedSession.loginRole || "worker",
@@ -90,7 +96,7 @@ const session = {
   workerJobsFilter: savedSession.workerJobsFilter || "discover",
   workerJobSearchTerm: savedSession.workerJobSearchTerm || "",
   workerJobSearchLocation: savedSession.workerJobSearchLocation || "",
-  workerJobSearchCountry: savedSession.workerJobSearchCountry || "Nepal",
+  workerJobSearchCountry: savedSession.workerJobSearchCountry || "All Countries",
   selectedWorkerJob: savedSession.selectedWorkerJob || "w1",
   selectedEmployerJob: savedSession.selectedEmployerJob || "e1",
   selectedApplicant: savedSession.selectedApplicant || "a1",
@@ -105,9 +111,12 @@ const session = {
   workerProfileModalOpen: savedSession.workerProfileModalOpen || false,
   workerJobModalOpen: savedSession.workerJobModalOpen || false,
   jobPostModalOpen: savedSession.jobPostModalOpen || false,
+  disputeModalOpen: savedSession.disputeModalOpen || false,
   jobPostStep: savedSession.jobPostStep || 1,
   editingJobId: savedSession.editingJobId || "",
   jobPostDraft: savedSession.jobPostDraft || null,
+  disputeDraft: savedSession.disputeDraft || null,
+  supabaseMarketplaceJobs: Array.isArray(savedSession.supabaseMarketplaceJobs) ? savedSession.supabaseMarketplaceJobs : [],
   toasts: [],
   activityLog: [
     "UI refactored into reusable modules.",
@@ -135,6 +144,7 @@ function persistSession() {
     window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({
       currentUser: session.currentUser,
       signupRole: session.signupRole,
+      signupEmployerType: session.signupEmployerType,
       signupMode: session.signupMode,
       signupStep: session.signupStep,
       loginRole: session.loginRole,
@@ -157,9 +167,12 @@ function persistSession() {
       workerProfileModalOpen: session.workerProfileModalOpen,
       workerJobModalOpen: session.workerJobModalOpen,
       jobPostModalOpen: session.jobPostModalOpen,
+      disputeModalOpen: session.disputeModalOpen,
       jobPostStep: session.jobPostStep,
       editingJobId: session.editingJobId,
-      jobPostDraft: session.jobPostDraft
+      jobPostDraft: session.jobPostDraft,
+      disputeDraft: session.disputeDraft,
+      supabaseMarketplaceJobs: session.supabaseMarketplaceJobs
     }));
   } catch {
     if (!storageWarningShown) {
@@ -190,7 +203,8 @@ function initializeSelectionsForCurrentUser() {
     session.workerJobsFilter = marketplaceJobs.length ? "discover" : "applied";
     session.workerJobSearchTerm = "";
     session.workerJobSearchLocation = "";
-    session.workerJobSearchCountry = "Nepal";
+    session.workerJobSearchCountry = "All Countries";
+    session.selectedDispute = session.currentUser.disputes?.[0]?.id || "";
     session.activePortalView = "dashboard";
     session.workerJobModalOpen = false;
   }
@@ -198,6 +212,7 @@ function initializeSelectionsForCurrentUser() {
     session.selectedEmployerJob = session.currentUser.jobs[0]?.id || "";
     session.selectedApplicant = session.currentUser.applicants[0]?.id || "";
     session.selectedSearchWorker = session.currentUser.workerPool[0]?.id || "";
+    session.selectedDispute = session.currentUser.disputes?.[0]?.id || "";
     session.employerSearchSkill = "";
     session.employerSearchLocation = "";
     session.employerSortBy = "best_match";
@@ -208,6 +223,12 @@ function initializeSelectionsForCurrentUser() {
     if (!session.jobPostDraft) {
       session.jobPostDraft = defaultJobPostDraft();
     }
+    if (!session.disputeDraft) {
+      session.disputeDraft = defaultDisputeDraft();
+    }
+  }
+  if (session.currentUser?.role === "worker" && !session.disputeDraft) {
+    session.disputeDraft = defaultDisputeDraft();
   }
 }
 
@@ -215,14 +236,41 @@ function defaultJobPostDraft() {
   return {
     title: "",
     category: "Agriculture",
+    countryCode: "NP",
     location: "",
+    serviceAddress: "",
     headcount: 1,
     dailyRate: 90,
+    payUnit: "Per day",
+    bookingMode: "Crew hire",
     requiredSkillsText: "",
     duration: "1 day",
     shiftStart: "06:00",
+    startWindow: "",
+    safetyNotes: "",
     notes: "",
     urgency: "New"
+  };
+}
+
+function defaultDisputeDraft() {
+  return {
+    jobId: "",
+    jobSupabaseId: "",
+    applicationId: "",
+    applicationSupabaseId: "",
+    escrowId: "",
+    againstProfileId: "",
+    againstName: "",
+    title: "",
+    reason: "Payment issue",
+    summary: "",
+    requestedResolution: "Review and mediate",
+    amount: 0,
+    currencyCode: "",
+    evidenceNotes: "",
+    evidenceLinks: "",
+    evidence: []
   };
 }
 
@@ -239,6 +287,7 @@ function syncCurrentUserToRegistry() {
 function hydrateAdmin() {
   const adminUser = normalizeUser(cloneTemplate(adminTemplate));
   adminUser.queue = appData.approvalQueue.length ? cloneTemplate(appData.approvalQueue) : cloneTemplate(adminTemplate.queue);
+  adminUser.disputes = appData.disputes.length ? cloneTemplate(appData.disputes) : cloneTemplate(adminTemplate.disputes);
   return adminUser;
 }
 
@@ -297,6 +346,7 @@ export function saveRegisteredUserRecord(user) {
 }
 
 export function getMarketplaceJobs() {
+  const supabaseJobs = Array.isArray(session.supabaseMarketplaceJobs) ? session.supabaseMarketplaceJobs : [];
   const employerJobs = appData.registeredUsers
     .filter((item) => item.role === "employer")
     .flatMap((employer) => employer.jobs
@@ -304,19 +354,35 @@ export function getMarketplaceJobs() {
       .map((job) => ({
         id: job.id,
         title: job.title,
-        company: employer.company || employer.fullName || "Verified Employer",
+        company: employer.accountType === "household"
+          ? (employer.homeLabel || employer.fullName || "Verified Home Client")
+          : (employer.company || employer.fullName || "Verified Employer"),
         companyLogo: employer.profile?.logoData || "",
-        pay: job.dailyRate ? `$${job.dailyRate}/day` : job.spend,
+        pay: job.dailyRate ? `${formatCountryMoney(job.dailyRate, job.countryCode || employer.countryCode || "NP")}/${job.payUnit || "day"}` : job.spend,
         distance: employer.notes?.includes("Lalitpur") ? "4 km" : "2 km",
         status: job.status,
         applied: false,
         saved: false,
-        summary: `${job.category} / ${job.location} / ${job.urgency || "Active hiring"}`,
+        summary: `${job.category} / ${(job.serviceAddress || job.location)} / ${countryName(job.countryCode || employer.countryCode || "NP")} / ${job.bookingMode || job.urgency || "Active hiring"}`,
         skills: job.requiredSkillsText || `${job.category} / Local crew`,
-        location: job.location
+        location: job.location,
+        serviceAddress: job.serviceAddress || "",
+        country: job.country || countryName(job.countryCode || employer.countryCode || "NP"),
+        countryCode: job.countryCode || employer.countryCode || "NP",
+        payUnit: job.payUnit || "day",
+        bookingMode: job.bookingMode || "Crew hire",
+        hirerType: job.hirerType || employer.accountType || "business"
       })));
 
-  if (employerJobs.length) return employerJobs;
+  if (supabaseJobs.length || employerJobs.length) {
+    const merged = [...supabaseJobs];
+    employerJobs.forEach((job) => {
+      if (!merged.some((item) => item.id === job.id || (item.supabaseId && item.supabaseId === job.supabaseId))) {
+        merged.push(job);
+      }
+    });
+    return merged;
+  }
 
   const fallbackWorker = appData.registeredUsers.find((item) => item.role === "worker");
   if (fallbackWorker?.jobs?.length) return cloneTemplate(fallbackWorker.jobs);
@@ -341,7 +407,7 @@ export function createUser(payload) {
       accountId: user.id,
       name: user.fullName,
       type: payload.onboardingMode === "voice" ? "Worker Voice Onboarding" : payload.onboardingMode === "assisted" ? "Worker Assisted Registration" : queueTypeFor(user.role),
-      region: "Kathmandu",
+      region: countryName(user.countryCode || "NP"),
       status: "Pending",
       risk: queueRiskFor(user.role),
       onboardingMode: payload.onboardingMode || "self",
@@ -349,15 +415,16 @@ export function createUser(payload) {
       voiceLanguage: payload.voiceLanguage || ""
     });
   } else if (payload.role === "employer") {
-    const user = { ...cloneTemplate(employerTemplate), ...payload, id: `employer_${Date.now()}` };
+    const template = payload.accountType === "household" ? householdEmployerTemplate : employerTemplate;
+    const user = { ...cloneTemplate(template), ...payload, id: `employer_${Date.now()}` };
     session.currentUser = normalizeUser(user);
     appData.registeredUsers.push(normalizeUser(cloneTemplate(user)));
     appData.approvalQueue.unshift({
       id: `queue_${Date.now()}`,
       accountId: user.id,
-      name: user.company || user.fullName,
-      type: queueTypeFor(user.role),
-      region: "Kathmandu",
+      name: user.accountType === "household" ? (user.homeLabel || user.fullName) : (user.company || user.fullName),
+      type: user.accountType === "household" ? "Home Hirer Verification" : queueTypeFor(user.role),
+      region: countryName(user.countryCode || "NP"),
       status: "Pending",
       risk: queueRiskFor(user.role)
     });
@@ -382,6 +449,7 @@ export function loginAdmin() {
   session.currentUser = hydrateAdmin();
   session.selectedQueue = session.currentUser.queue[0]?.id || "";
   session.selectedDispute = session.currentUser.disputes[0]?.id || "";
+  session.disputeDraft = defaultDisputeDraft();
   persistSession();
 }
 
@@ -442,7 +510,7 @@ export function logout() {
   session.workerJobsFilter = "discover";
   session.workerJobSearchTerm = "";
   session.workerJobSearchLocation = "";
-  session.workerJobSearchCountry = "Nepal";
+  session.workerJobSearchCountry = "All Countries";
   session.employerSearchSkill = "";
   session.employerSearchLocation = "";
   session.employerSortBy = "best_match";
@@ -452,9 +520,12 @@ export function logout() {
   session.workerProfileModalOpen = false;
   session.workerJobModalOpen = false;
   session.jobPostModalOpen = false;
+  session.disputeModalOpen = false;
   session.jobPostStep = 1;
   session.editingJobId = "";
   session.jobPostDraft = null;
+  session.disputeDraft = null;
+  session.supabaseMarketplaceJobs = [];
   persistSession();
 }
 
@@ -463,6 +534,14 @@ export function setSignupRole(role) {
   if (role === "employer") {
     session.signupMode = "self";
   }
+  if (role === "worker") {
+    session.signupEmployerType = "business";
+  }
+  persistSession();
+}
+
+export function setSignupEmployerType(accountType) {
+  session.signupEmployerType = accountType === "household" ? "household" : "business";
   persistSession();
 }
 
@@ -578,17 +657,26 @@ export function openJobPostModal(jobId = "") {
     session.jobPostDraft = job ? {
       title: job.title || "",
       category: job.category || "Facilities",
+      countryCode: job.countryCode || session.currentUser.countryCode || "NP",
       location: job.location || "",
+      serviceAddress: job.serviceAddress || "",
       headcount: job.headcount || 1,
       dailyRate: job.dailyRate || 90,
+      payUnit: job.payUnit || "Per day",
+      bookingMode: job.bookingMode || "Crew hire",
       requiredSkillsText: job.requiredSkillsText || "",
       duration: job.duration || "1 day",
       shiftStart: job.shiftStart || "06:00",
+      startWindow: job.startWindow || "",
+      safetyNotes: job.safetyNotes || "",
       notes: job.notes || "",
       urgency: job.urgency || "New"
     } : defaultJobPostDraft();
   } else {
-    session.jobPostDraft = defaultJobPostDraft();
+    session.jobPostDraft = {
+      ...defaultJobPostDraft(),
+      countryCode: session.currentUser?.countryCode || "NP"
+    };
   }
   persistSession();
 }
@@ -597,7 +685,35 @@ export function closeJobPostModal() {
   session.jobPostModalOpen = false;
   session.jobPostStep = 1;
   session.editingJobId = "";
-  session.jobPostDraft = defaultJobPostDraft();
+  session.jobPostDraft = {
+    ...defaultJobPostDraft(),
+    countryCode: session.currentUser?.countryCode || "NP"
+  };
+  persistSession();
+}
+
+export function openDisputeModal(patch = {}) {
+  session.disputeModalOpen = true;
+  session.disputeDraft = {
+    ...defaultDisputeDraft(),
+    ...(session.disputeDraft || {}),
+    ...patch
+  };
+  persistSession();
+}
+
+export function closeDisputeModal() {
+  session.disputeModalOpen = false;
+  session.disputeDraft = defaultDisputeDraft();
+  persistSession();
+}
+
+export function saveDisputeDraft(patch) {
+  session.disputeDraft = {
+    ...defaultDisputeDraft(),
+    ...(session.disputeDraft || {}),
+    ...patch
+  };
   persistSession();
 }
 
@@ -627,8 +743,40 @@ export function pushToast(title, message) {
   }, 3000);
 }
 
+export function hydrateCurrentUser(user) {
+  session.currentUser = normalizeUser(cloneTemplate(user));
+  initializeSelectionsForCurrentUser();
+  persistSession();
+}
+
+export function setSupabaseMarketplaceJobs(jobs) {
+  session.supabaseMarketplaceJobs = Array.isArray(jobs) ? cloneTemplate(jobs) : [];
+  persistSession();
+}
+
 export function saveCurrentUser() {
   syncCurrentUserToRegistry();
+}
+
+export function addDisputeRecord(record) {
+  appData.disputes.unshift(cloneTemplate(record));
+  persistAppData();
+}
+
+export function updateStoredDispute(disputeId, patch) {
+  if (!disputeId) return;
+  appData.disputes = (appData.disputes || []).map((item) => item.id === disputeId ? { ...item, ...cloneTemplate(patch) } : item);
+  appData.registeredUsers = (appData.registeredUsers || []).map((user) => ({
+    ...user,
+    disputes: Array.isArray(user.disputes)
+      ? user.disputes.map((item) => item.id === disputeId ? { ...item, ...cloneTemplate(patch) } : item)
+      : user.disputes
+  }));
+  if (session.currentUser?.id && Array.isArray(session.currentUser.disputes)) {
+    session.currentUser.disputes = session.currentUser.disputes.map((item) => item.id === disputeId ? { ...item, ...cloneTemplate(patch) } : item);
+  }
+  persistAppData();
+  persistSession();
 }
 
 export function selectedWorkerJob() {
@@ -642,9 +790,10 @@ export function selectedWorkerJob() {
 
 export function selectedEmployerJob() {
   const jobs = session.currentUser?.jobs || [];
+  const fallbackTemplate = session.currentUser?.accountType === "household" ? householdEmployerTemplate : employerTemplate;
   return jobs.find((job) => job.id === session.selectedEmployerJob)
     || jobs[0]
-    || cloneTemplate(employerTemplate.jobs[0]);
+    || cloneTemplate(fallbackTemplate.jobs[0]);
 }
 
 export function selectedApplicant() {
@@ -667,9 +816,21 @@ export function selectedSearchWorker(workerList = []) {
 }
 
 export function selectedQueueItem() {
-  return session.currentUser.queue.find((item) => item.id === session.selectedQueue) || session.currentUser.queue[0];
+  return session.currentUser?.queue?.find((item) => item.id === session.selectedQueue) || session.currentUser?.queue?.[0] || {
+    id: "queue_empty",
+    name: "No pending verification",
+    type: "Verification Queue",
+    region: "Global",
+    status: "Empty",
+    risk: "Low"
+  };
 }
 
 export function selectedDisputeItem() {
-  return session.currentUser.disputes.find((item) => item.id === session.selectedDispute) || session.currentUser.disputes[0];
+  return session.currentUser?.disputes?.find((item) => item.id === session.selectedDispute) || session.currentUser?.disputes?.[0] || {
+    id: "dispute_empty",
+    title: "No active dispute",
+    status: "Closed",
+    note: "No dispute is currently selected."
+  };
 }

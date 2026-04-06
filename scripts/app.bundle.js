@@ -1,9 +1,1564 @@
+// FILE: scripts/country-rules.js
+const COUNTRY_RULES = {
+  NP: {
+    code: "NP",
+    name: "Nepal",
+    currencyCode: "NPR",
+    currencySymbol: "Rs",
+    phoneAuthMode: "Phone OTP preferred",
+    payoutRail: "Mobile money or bank transfer",
+    verificationRule: "Government ID, selfie, and local address or phone proof",
+    dialCode: "+977"
+  },
+  IN: {
+    code: "IN",
+    name: "India",
+    currencyCode: "INR",
+    currencySymbol: "Rs",
+    phoneAuthMode: "Phone OTP required for worker accounts",
+    payoutRail: "UPI or bank transfer",
+    verificationRule: "Government ID, selfie, and business or worker identity proof",
+    dialCode: "+91"
+  },
+  BD: {
+    code: "BD",
+    name: "Bangladesh",
+    currencyCode: "BDT",
+    currencySymbol: "Tk",
+    phoneAuthMode: "Phone OTP preferred",
+    payoutRail: "Mobile wallet or bank transfer",
+    verificationRule: "National ID, selfie, and phone or address proof",
+    dialCode: "+880"
+  },
+  PK: {
+    code: "PK",
+    name: "Pakistan",
+    currencyCode: "PKR",
+    currencySymbol: "Rs",
+    phoneAuthMode: "Phone OTP preferred",
+    payoutRail: "Bank transfer or mobile wallet",
+    verificationRule: "National ID, selfie, and worker or business proof",
+    dialCode: "+92"
+  },
+  LK: {
+    code: "LK",
+    name: "Sri Lanka",
+    currencyCode: "LKR",
+    currencySymbol: "Rs",
+    phoneAuthMode: "Phone OTP or email OTP",
+    payoutRail: "Bank transfer",
+    verificationRule: "National ID, selfie, and address proof",
+    dialCode: "+94"
+  },
+  AE: {
+    code: "AE",
+    name: "UAE",
+    currencyCode: "AED",
+    currencySymbol: "AED",
+    phoneAuthMode: "Phone OTP plus business verification",
+    payoutRail: "Bank transfer",
+    verificationRule: "Emirates ID or passport and employer trade license",
+    dialCode: "+971"
+  },
+  QA: {
+    code: "QA",
+    name: "Qatar",
+    currencyCode: "QAR",
+    currencySymbol: "QAR",
+    phoneAuthMode: "Phone OTP plus employer verification",
+    payoutRail: "Bank transfer",
+    verificationRule: "QID or passport and employer license verification",
+    dialCode: "+974"
+  },
+  SA: {
+    code: "SA",
+    name: "Saudi Arabia",
+    currencyCode: "SAR",
+    currencySymbol: "SAR",
+    phoneAuthMode: "Phone OTP plus employer verification",
+    payoutRail: "Bank transfer",
+    verificationRule: "National ID or iqama and employer registration proof",
+    dialCode: "+966"
+  },
+  MY: {
+    code: "MY",
+    name: "Malaysia",
+    currencyCode: "MYR",
+    currencySymbol: "RM",
+    phoneAuthMode: "Phone or email OTP",
+    payoutRail: "Bank transfer or e-wallet",
+    verificationRule: "Photo ID, selfie, and employer business proof",
+    dialCode: "+60"
+  },
+  SG: {
+    code: "SG",
+    name: "Singapore",
+    currencyCode: "SGD",
+    currencySymbol: "S$",
+    phoneAuthMode: "Email or phone OTP",
+    payoutRail: "FAST bank transfer",
+    verificationRule: "Photo ID and company verification",
+    dialCode: "+65"
+  },
+  TH: {
+    code: "TH",
+    name: "Thailand",
+    currencyCode: "THB",
+    currencySymbol: "฿",
+    phoneAuthMode: "Phone OTP preferred",
+    payoutRail: "Bank transfer",
+    verificationRule: "National ID, selfie, and employer or household proof",
+    dialCode: "+66"
+  },
+  JP: {
+    code: "JP",
+    name: "Japan",
+    currencyCode: "JPY",
+    currencySymbol: "JPY",
+    phoneAuthMode: "Email or phone OTP",
+    payoutRail: "Bank transfer",
+    verificationRule: "Residence or photo ID and employer verification",
+    dialCode: "+81"
+  },
+  KR: {
+    code: "KR",
+    name: "South Korea",
+    currencyCode: "KRW",
+    currencySymbol: "KRW",
+    phoneAuthMode: "Phone OTP preferred",
+    payoutRail: "Bank transfer",
+    verificationRule: "Photo ID and local payment verification",
+    dialCode: "+82"
+  },
+  AU: {
+    code: "AU",
+    name: "Australia",
+    currencyCode: "AUD",
+    currencySymbol: "A$",
+    phoneAuthMode: "Email or phone OTP",
+    payoutRail: "Bank transfer",
+    verificationRule: "Photo ID, payment verification, and employer business proof",
+    dialCode: "+61"
+  },
+  NZ: {
+    code: "NZ",
+    name: "New Zealand",
+    currencyCode: "NZD",
+    currencySymbol: "NZ$",
+    phoneAuthMode: "Email or phone OTP",
+    payoutRail: "Bank transfer",
+    verificationRule: "Photo ID and address or business proof",
+    dialCode: "+64"
+  },
+  GB: {
+    code: "GB",
+    name: "United Kingdom",
+    currencyCode: "GBP",
+    currencySymbol: "GBP",
+    phoneAuthMode: "Email or phone OTP",
+    payoutRail: "Bank transfer",
+    verificationRule: "Photo ID, address proof, and employer company verification",
+    dialCode: "+44"
+  },
+  DE: {
+    code: "DE",
+    name: "Germany",
+    currencyCode: "EUR",
+    currencySymbol: "EUR",
+    phoneAuthMode: "Email or phone OTP",
+    payoutRail: "SEPA bank transfer",
+    verificationRule: "Photo ID and employer or contractor verification",
+    dialCode: "+49"
+  },
+  FR: {
+    code: "FR",
+    name: "France",
+    currencyCode: "EUR",
+    currencySymbol: "EUR",
+    phoneAuthMode: "Email or phone OTP",
+    payoutRail: "SEPA bank transfer",
+    verificationRule: "Photo ID, address proof, and company verification",
+    dialCode: "+33"
+  },
+  CA: {
+    code: "CA",
+    name: "Canada",
+    currencyCode: "CAD",
+    currencySymbol: "C$",
+    phoneAuthMode: "Email or phone OTP",
+    payoutRail: "Bank transfer or Interac-linked payout",
+    verificationRule: "Photo ID, payment verification, and employer business proof",
+    dialCode: "+1"
+  },
+  US: {
+    code: "US",
+    name: "United States",
+    currencyCode: "USD",
+    currencySymbol: "$",
+    phoneAuthMode: "Email or phone OTP",
+    payoutRail: "ACH or card-linked payout",
+    verificationRule: "Photo ID, tax or payment verification, and employer business verification",
+    dialCode: "+1"
+  }
+};
+
+function listCountryRules() {
+  return Object.values(COUNTRY_RULES);
+}
+
+function getCountryRule(code = "NP") {
+  return COUNTRY_RULES[String(code || "NP").toUpperCase()] || COUNTRY_RULES.NP;
+}
+
+function countryName(code = "NP") {
+  return getCountryRule(code).name;
+}
+
+function formatCountryMoney(amount, code = "NP") {
+  const numericAmount = Number(amount || 0);
+  const rule = getCountryRule(code);
+  if (rule.currencySymbol === "$") return `${rule.currencySymbol}${numericAmount}`;
+  return `${rule.currencySymbol}${numericAmount}`;
+}
+
+
+// FILE: scripts/supabase.js
+
+const SUPABASE_PENDING_SIGNUP_KEY = "workshift_supabase_pending_signup_v1";
+
+function getSupabaseSettings() {
+  const settings = window.WORKSHIFT_SUPABASE || {};
+  return {
+    url: String(settings.url || "").trim(),
+    anonKey: String(settings.anonKey || "").trim(),
+    siteUrl: String(settings.siteUrl || window.location.origin || "").trim(),
+    storageKey: String(settings.storageKey || "workshift_supabase_auth_v1").trim(),
+    documentBucket: String(settings.documentBucket || "workshift-documents").trim(),
+    evidenceBucket: String(settings.evidenceBucket || "workshift-evidence").trim(),
+    enabled: Boolean(settings.enabled),
+    demoFallback: settings.demoFallback !== false
+  };
+}
+
+function supabaseEnabled() {
+  const settings = getSupabaseSettings();
+  return Boolean(
+    settings.enabled
+    && settings.url
+    && settings.anonKey
+    && window.supabase
+    && typeof window.supabase.createClient === "function"
+  );
+}
+
+let supabaseClientInstance = null;
+
+function getSupabaseClient() {
+  if (!supabaseEnabled()) return null;
+  if (supabaseClientInstance) return supabaseClientInstance;
+  const settings = getSupabaseSettings();
+  supabaseClientInstance = window.supabase.createClient(settings.url, settings.anonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      storageKey: settings.storageKey
+    }
+  });
+  return supabaseClientInstance;
+}
+
+function normalizeSupabaseContact(contact = "") {
+  return String(contact).trim();
+}
+
+function isEmailContact(contact = "") {
+  return normalizeSupabaseContact(contact).includes("@");
+}
+
+function savePendingSupabaseSignup(payload) {
+  try {
+    window.localStorage.setItem(SUPABASE_PENDING_SIGNUP_KEY, JSON.stringify(payload));
+  } catch {
+    return null;
+  }
+  return payload;
+}
+
+function loadPendingSupabaseSignup() {
+  try {
+    const raw = window.localStorage.getItem(SUPABASE_PENDING_SIGNUP_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearPendingSupabaseSignup() {
+  try {
+    window.localStorage.removeItem(SUPABASE_PENDING_SIGNUP_KEY);
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+async function requestSupabaseOtp(contact, options = {}) {
+  if (!supabaseEnabled()) {
+    return { ok: false, error: "Supabase is not configured for this environment." };
+  }
+
+  const client = getSupabaseClient();
+  const normalizedContact = normalizeSupabaseContact(contact);
+  const {
+    shouldCreateUser = true,
+    data = {}
+  } = options;
+
+  if (!normalizedContact) {
+    return { ok: false, error: "Contact is required." };
+  }
+
+  const authPayload = isEmailContact(normalizedContact)
+    ? {
+      email: normalizedContact,
+      options: {
+        shouldCreateUser,
+        emailRedirectTo: getSupabaseSettings().siteUrl,
+        data
+      }
+    }
+    : {
+      phone: normalizedContact,
+      options: {
+        shouldCreateUser,
+        data
+      }
+    };
+
+  const { data: response, error } = await client.auth.signInWithOtp(authPayload);
+  return {
+    ok: !error,
+    data: response || null,
+    error: error?.message || ""
+  };
+}
+
+async function getSupabaseSession() {
+  const client = getSupabaseClient();
+  if (!client) return { session: null, user: null };
+  const { data } = await client.auth.getSession();
+  return {
+    session: data.session || null,
+    user: data.session?.user || null
+  };
+}
+
+async function getSupabaseProfile() {
+  const client = getSupabaseClient();
+  const authState = await getSupabaseSession();
+  if (!client || !authState.user) return null;
+  const { data, error } = await client
+    .from("profiles")
+    .select("*")
+    .eq("id", authState.user.id)
+    .maybeSingle();
+
+  if (error) return null;
+  return data || null;
+}
+
+async function getSupabaseProfileForCurrentSession() {
+  const authState = await getSupabaseSession();
+  if (!authState.user) {
+    return { ok: false, error: "No authenticated Supabase session found.", profile: null, user: null };
+  }
+  const profile = await getSupabaseProfile();
+  return {
+    ok: Boolean(profile),
+    error: profile ? "" : "No matching Supabase profile found for the current session.",
+    profile,
+    user: authState.user
+  };
+}
+
+function supabaseAuthContact(user) {
+  return String(user?.phone || user?.email || user?.user_metadata?.contact || "").trim();
+}
+
+function timezoneSafeNow() {
+  return new Date().toISOString();
+}
+
+function storageSafeFileName(name = "file") {
+  return String(name || "file")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "file";
+}
+
+async function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("File reading failed."));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function ensureSupabaseProfileFromAuth() {
+  const authState = await getSupabaseSession();
+  if (!authState.user) return null;
+
+  const existingProfile = await getSupabaseProfile();
+  if (existingProfile) return existingProfile;
+
+  const pendingSignup = loadPendingSupabaseSignup();
+  const metadata = authState.user.user_metadata || {};
+  const fallbackRole = String(metadata.role || pendingSignup?.role || "worker").trim();
+  const payload = {
+    role: fallbackRole,
+    accountType: pendingSignup?.accountType || metadata.accountType || metadata.account_type || "business",
+    fullName: pendingSignup?.fullName || metadata.fullName || metadata.full_name || "",
+    contact: pendingSignup?.contact || supabaseAuthContact(authState.user),
+    company: pendingSignup?.company || metadata.company || metadata.company_name || "",
+    homeLabel: pendingSignup?.homeLabel || metadata.homeLabel || "",
+    serviceAddress: pendingSignup?.serviceAddress || metadata.serviceAddress || "",
+    countryCode: pendingSignup?.countryCode || metadata.countryCode || metadata.country_code || "NP",
+    notes: pendingSignup?.notes || "",
+    verificationStatus: "Pending",
+    onboardingMode: pendingSignup?.onboardingMode || metadata.onboardingMode || metadata.onboarding_mode || "self",
+    assistedBy: pendingSignup?.assistedBy || metadata.assistedBy || "",
+    voiceLanguage: pendingSignup?.voiceLanguage || metadata.voiceLanguage || ""
+  };
+
+  const result = await upsertSupabaseProfile(payload);
+  if (result.ok) clearPendingSupabaseSignup();
+  return result.data || null;
+}
+
+async function upsertSupabaseProfile(profile) {
+  const client = getSupabaseClient();
+  const authState = await getSupabaseSession();
+  if (!client || !authState.user) {
+    return { ok: false, error: "No authenticated Supabase user found." };
+  }
+  const countryRule = getCountryRule(profile.countryCode || "NP");
+
+  const payload = {
+    id: authState.user.id,
+    role: profile.role,
+    account_type: profile.accountType || "business",
+    full_name: profile.fullName || "",
+    contact: profile.contact || "",
+    company_name: profile.company || "",
+    country_code: countryRule.code,
+    currency_code: countryRule.currencyCode,
+    phone_auth_mode: countryRule.phoneAuthMode,
+    payout_rail: countryRule.payoutRail,
+    verification_rule: countryRule.verificationRule,
+    verification_status: profile.verificationStatus || "Pending",
+    notes: profile.notes || "",
+    metadata: {
+      countryName: countryRule.name,
+      accountType: profile.accountType || "business",
+      onboardingMode: profile.onboardingMode || "self",
+      assistedBy: profile.assistedBy || "",
+      voiceLanguage: profile.voiceLanguage || "",
+      serviceAddress: profile.serviceAddress || ""
+    }
+  };
+
+  const { data, error } = await client
+    .from("profiles")
+    .upsert(payload)
+    .select("*")
+    .single();
+
+  if (!error && data) {
+    await ensureSupabaseVerificationReview(data);
+  }
+
+  return {
+    ok: !error,
+    data: data || null,
+    error: error?.message || ""
+  };
+}
+
+function mapSupabaseProfileToPortalUser(profile) {
+  if (!profile?.role) return null;
+  const base = profile.role === "employer"
+    ? cloneTemplate(profile.account_type === "household" ? householdEmployerTemplate : employerTemplate)
+    : profile.role === "admin"
+    ? cloneTemplate(adminTemplate)
+    : profile.role === "super_admin"
+    ? cloneTemplate(superAdminTemplate)
+    : cloneTemplate(workerTemplate);
+  const countryRule = getCountryRule(profile.country_code || "NP");
+
+  base.id = profile.id || base.id;
+  base.role = profile.role || base.role;
+  base.accountType = profile.account_type || base.accountType || "business";
+  base.fullName = profile.full_name || base.fullName;
+  base.contact = profile.contact || base.contact;
+  base.countryCode = countryRule.code;
+  base.notes = profile.notes || base.notes;
+  base.verificationStatus = profile.verification_status || base.verificationStatus;
+  base.company = profile.company_name || base.company || "";
+  base.homeLabel = profile.company_name || base.homeLabel || "";
+  base.serviceAddress = profile.metadata?.serviceAddress || base.serviceAddress || "";
+  base.approvedAt = profile.verification_status === "Approved"
+    ? (profile.updated_at || profile.created_at || "")
+    : base.approvedAt;
+
+  if (base.role === "worker") {
+    base.jobs = [];
+    base.applications = [];
+    base.chatStream = [];
+    base.login.method = countryRule.phoneAuthMode;
+    base.profile.withdrawal.payoutMethod = countryRule.payoutRail;
+    base.profile.notifications = [
+      `Verification rule: ${countryRule.verificationRule}`,
+      `Payout rail: ${countryRule.payoutRail}`,
+      `Phone auth: ${countryRule.phoneAuthMode}`
+    ];
+  }
+
+  if (base.role === "employer") {
+    base.jobs = [];
+    base.applicants = [];
+    base.chatStream = [];
+    base.hiring = [];
+    base.profile.verificationBadge = profile.verification_status === "Approved" ? "Verified" : "Pending";
+    base.profile.notifications = [
+      `Operating in ${countryRule.name}`,
+      `Worker verification: ${countryRule.verificationRule}`,
+      `Preferred payout rail: ${countryRule.payoutRail}`
+    ];
+  }
+
+  if (base.role === "admin") {
+    base.queue = [];
+    base.disputes = [];
+    base.payments = [];
+    base.analytics = cloneTemplate(adminTemplate.analytics);
+    base.flaggedJobs = [];
+    base.abuseReports = [];
+    base.fraudAlerts = [];
+    base.monitoring = cloneTemplate(adminTemplate.monitoring);
+  }
+
+  if (base.role === "super_admin") {
+    base.admins = cloneTemplate(superAdminTemplate.admins);
+  }
+
+  return base;
+}
+
+function mapSupabaseJobToMarketplaceJob(job) {
+  const countryCode = job.country_code || job.employer?.country_code || "NP";
+  const country = countryName(countryCode);
+  const payRate = Number(job.pay_rate || 0);
+  const company = job.employer?.company_name || job.employer?.full_name || "Verified Employer";
+  return {
+    id: `sb-${job.id}`,
+    supabaseId: job.id,
+    title: job.title,
+    company,
+    companyLogo: "",
+    pay: `${formatCountryMoney(payRate, countryCode)}/${job.pay_unit || "day"}`,
+    distance: job.location || "Nearby",
+    status: String(job.status || "open").replace(/^./, (char) => char.toUpperCase()),
+    applied: false,
+    saved: false,
+    summary: `${job.category} / ${(job.service_address || job.location)} / ${country} / ${job.duration || "1 day"} / ${job.booking_mode || "crew hire"}`,
+    skills: Array.isArray(job.required_skills) && job.required_skills.length ? job.required_skills.join(", ") : (job.category || "General labor"),
+    location: job.location,
+    serviceAddress: job.service_address || "",
+    country,
+    countryCode,
+    dailyRate: payRate,
+    payUnit: job.pay_unit || "day",
+    bookingMode: job.booking_mode || "crew hire",
+    hirerType: job.hirer_type || "business"
+  };
+}
+
+function mapSupabaseJobToEmployerJob(job) {
+  const countryCode = job.country_code || "NP";
+  const payRate = Number(job.pay_rate || 0);
+  return {
+    id: `sb-${job.id}`,
+    supabaseId: job.id,
+    title: job.title,
+    category: job.category,
+    hirerType: job.hirer_type || "business",
+    countryCode,
+    country: countryName(countryCode),
+    location: job.location,
+    serviceAddress: job.service_address || "",
+    status: String(job.status || "open").replace(/^./, (char) => char.toUpperCase()),
+    applicants: Number(job.application_count || 0),
+    shortlisted: 0,
+    escrow: false,
+    spend: formatCountryMoney(payRate * Number(job.headcount || 1), countryCode),
+    broadcasted: false,
+    dailyRate: payRate,
+    bidStep: 8,
+    biddingHistory: [payRate],
+    urgency: "Live",
+    headcount: Number(job.headcount || 1),
+    requiredSkillsText: Array.isArray(job.required_skills) ? job.required_skills.join(", ") : "",
+    duration: job.duration || "1 day",
+    shiftStart: "06:00",
+    notes: job.notes || "",
+    payUnit: job.pay_unit || "Per day",
+    bookingMode: job.booking_mode || "Crew hire",
+    startWindow: job.start_window || ""
+  };
+}
+
+function formatSupabaseApplicationStatus(status = "applied") {
+  return String(status || "applied").replace(/^./, (char) => char.toUpperCase());
+}
+
+function mapSupabaseMessagesToChatThread(messages = []) {
+  return (messages || []).map((message) => ({
+    from: message.sender_role === "employer"
+      ? "Employer"
+      : message.sender_role === "worker"
+      ? "Worker"
+      : "Admin",
+    text: message.body || "",
+    time: message.created_at ? new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Now"
+  }));
+}
+
+function mapSupabaseApplicationToEmployerApplicant(application, job, messages = []) {
+  const status = formatSupabaseApplicationStatus(application.status);
+  const verification = application.worker?.verification_status || "Pending";
+  return {
+    id: `sbapp-${application.id}`,
+    supabaseApplicationId: application.id,
+    workerId: application.worker?.id || "",
+    jobId: `sb-${job.id}`,
+    jobSupabaseId: job.id,
+    name: application.worker?.full_name || "Worker",
+    distance: job.location || "Location pending",
+    rating: verification === "Approved" ? "Verified" : "Pending",
+    invited: ["Invited", "Hired", "Rated"].includes(status),
+    status,
+    skills: Array.isArray(job.required_skills) ? job.required_skills : [job.category || "General labor"],
+    reliability: verification === "Approved" ? "Verified worker" : "Verification pending",
+    contact: application.worker?.contact || "",
+    coverNote: application.cover_note || "",
+    chatThread: mapSupabaseMessagesToChatThread(messages)
+  };
+}
+
+function mapSupabaseApplicationToWorkerApplication(application, messages = []) {
+  return {
+    title: application.job?.title || "Untitled job",
+    status: formatSupabaseApplicationStatus(application.status),
+    cover: application.cover_note || "",
+    supabaseApplicationId: application.id,
+    employerId: application.job?.employer?.id || "",
+    countryCode: application.job?.country_code || "NP",
+    chatThread: mapSupabaseMessagesToChatThread(messages)
+  };
+}
+
+function mapSupabaseApplicationToWorkerJob(application) {
+  const job = application.job || {};
+  const mappedJob = mapSupabaseJobToMarketplaceJob({
+    ...job,
+    employer: job.employer || {}
+  });
+  return {
+    ...mappedJob,
+    applied: true,
+    status: formatSupabaseApplicationStatus(application.status),
+    employerId: job.employer?.id || "",
+    supabaseApplicationId: application.id
+  };
+}
+
+function deriveReviewType(profile) {
+  if (!profile?.role) return "Worker Identity";
+  if (profile.role === "employer" && profile.account_type === "household") return "Home Hirer Verification";
+  return profile.role === "employer"
+    ? "Employer Registration"
+    : profile.metadata?.onboardingMode === "voice"
+    ? "Worker Voice Onboarding"
+    : profile.metadata?.onboardingMode === "assisted"
+    ? "Worker Assisted Registration"
+    : "Worker Identity";
+}
+
+function deriveReviewRisk(profile) {
+  if (profile?.role === "employer") return "Medium";
+  const onboardingMode = String(profile?.metadata?.onboardingMode || "self").toLowerCase();
+  if (onboardingMode === "voice") return "Medium";
+  return "Low";
+}
+
+async function ensureSupabaseVerificationReview(profile) {
+  const client = getSupabaseClient();
+  if (!client || !profile?.id) return { ok: false, error: "Profile is required." };
+
+  const payload = {
+    profile_id: profile.id,
+    review_type: deriveReviewType(profile),
+    region: countryName(profile.country_code || "NP"),
+    risk_level: deriveReviewRisk(profile),
+    status: profile.verification_status || "Pending",
+    onboarding_mode: profile.metadata?.onboardingMode || "self",
+    helper_name: profile.metadata?.assistedBy || "",
+    voice_language: profile.metadata?.voiceLanguage || ""
+  };
+
+  const { data, error } = await client
+    .from("verification_reviews")
+    .upsert(payload, { onConflict: "profile_id" })
+    .select("*")
+    .single();
+
+  return {
+    ok: !error,
+    data: data || null,
+    error: error?.message || ""
+  };
+}
+
+function mapSupabaseReviewToQueueItem(review) {
+  const profile = review.profile || {};
+  return {
+    id: review.id,
+    reviewId: review.id,
+    accountId: profile.id || "",
+    name: profile.company_name || profile.full_name || "Pending account",
+    type: review.review_type || "Verification Review",
+    region: review.region || countryName(profile.country_code || "NP"),
+    status: review.status || "Pending",
+    risk: review.risk_level || "Low",
+    onboardingMode: review.onboarding_mode || "self",
+    helperName: review.helper_name || "",
+    voiceLanguage: review.voice_language || ""
+  };
+}
+
+function mapSupabaseDisputeToAdminItem(dispute) {
+  const jobTitle = dispute.application?.job?.title || dispute.escrow?.job?.title || "Marketplace case";
+  const evidence = Array.isArray(dispute.evidence) ? dispute.evidence : [];
+  return {
+    id: dispute.id,
+    disputeId: dispute.id,
+    escrowId: dispute.escrow?.id || "",
+    title: `${jobTitle}: ${dispute.reason || "Dispute opened"}`,
+    status: dispute.status || "Open",
+    note: dispute.resolution_note || `Amount ${formatCountryMoney(Number(dispute.amount || 0), dispute.currency_code || "NPR")}`,
+    evidence,
+    openedByName: dispute.opened_by_profile?.company_name || dispute.opened_by_profile?.full_name || "Participant",
+    againstName: dispute.against_profile?.company_name || dispute.against_profile?.full_name || "Counterparty",
+    createdAt: dispute.created_at || ""
+  };
+}
+
+function mapSupabaseDisputeToPortalItem(dispute, profile) {
+  const jobTitle = dispute.application?.job?.title || dispute.escrow?.job?.title || "Marketplace case";
+  const evidence = Array.isArray(dispute.evidence) ? dispute.evidence : [];
+  const openedById = dispute.opened_by || dispute.opened_by_profile?.id || "";
+  const againstId = dispute.against_profile_id || dispute.against_profile?.id || "";
+  const counterparty = openedById === profile?.id
+    ? (dispute.against_profile?.company_name || dispute.against_profile?.full_name || "Counterparty")
+    : (dispute.opened_by_profile?.company_name || dispute.opened_by_profile?.full_name || "Counterparty");
+  return {
+    id: dispute.id,
+    disputeId: dispute.id,
+    escrowId: dispute.escrow?.id || dispute.escrow_id || "",
+    title: `${jobTitle}: ${dispute.reason || "Dispute opened"}`,
+    status: dispute.status || "Open",
+    note: dispute.resolution_note || `Requested review for ${counterparty}`,
+    amount: Number(dispute.amount || 0),
+    currencyCode: dispute.currency_code || "NPR",
+    jobTitle,
+    againstName: counterparty,
+    openedByRole: openedById === profile?.id ? profile?.role || "" : "counterparty",
+    summary: dispute.resolution_note || "",
+    evidence,
+    createdAt: dispute.created_at || "",
+    againstProfileId: againstId
+  };
+}
+
+function mapSupabaseEscrowToAdminPayment(escrow) {
+  const reference = escrow.id ? `esc_${escrow.id.slice(0, 8)}` : "escrow";
+  return {
+    id: escrow.id,
+    reference,
+    amount: formatCountryMoney(Number(escrow.gross_amount || 0), escrow.country_code || "NP"),
+    status: String(escrow.status || "draft").replace(/^./, (char) => char.toUpperCase()),
+    worker: escrow.worker?.full_name || "Unassigned",
+    employer: escrow.employer?.company_name || escrow.employer?.full_name || "Employer",
+    title: escrow.job?.title || "Job payout"
+  };
+}
+
+function summarizeSupabaseLedger(entries = []) {
+  return (entries || []).reduce((sum, entry) => {
+    if (entry.status && entry.status !== "completed") return sum;
+    if (["credit", "refund", "release"].includes(entry.direction)) {
+      return sum + Number(entry.amount || 0);
+    }
+    if (["debit", "hold"].includes(entry.direction)) {
+      return sum - Number(entry.amount || 0);
+    }
+    return sum;
+  }, 0);
+}
+
+async function listSupabaseJobs() {
+  const client = getSupabaseClient();
+  if (!client) return [];
+  const { data, error } = await client
+    .from("jobs")
+    .select("id, title, category, hirer_type, booking_mode, pay_unit, country_code, currency_code, payout_rail, verification_rule, location, service_address, start_window, required_skills, duration, pay_rate, headcount, status, notes, employer:profiles!jobs_employer_id_fkey(full_name, company_name, country_code)")
+    .in("status", ["open", "ongoing"])
+    .order("created_at", { ascending: false });
+
+  if (error || !Array.isArray(data)) return [];
+  return data;
+}
+
+async function listSupabaseEmployerJobs() {
+  const client = getSupabaseClient();
+  const profile = await getSupabaseProfile();
+  if (!client || !profile) return [];
+  const { data, error } = await client
+    .from("jobs")
+    .select("id, title, category, hirer_type, booking_mode, pay_unit, country_code, currency_code, payout_rail, verification_rule, location, service_address, start_window, required_skills, duration, pay_rate, headcount, status, notes")
+    .eq("employer_id", profile.id)
+    .order("created_at", { ascending: false });
+
+  if (error || !Array.isArray(data)) return [];
+  return data;
+}
+
+async function createSupabaseJob(job) {
+  const client = getSupabaseClient();
+  const profile = await getSupabaseProfile();
+  if (!client || !profile) {
+    return { ok: false, error: "Authenticated employer profile is required." };
+  }
+  const countryRule = getCountryRule(job.countryCode || profile.country_code || "NP");
+
+  const payload = {
+    employer_id: profile.id,
+    title: job.title,
+    category: job.category,
+    hirer_type: job.hirerType || profile.account_type || "business",
+    booking_mode: job.bookingMode || "crew",
+    pay_unit: job.payUnit || "daily",
+    country_code: countryRule.code,
+    currency_code: countryRule.currencyCode,
+    payout_rail: countryRule.payoutRail,
+    verification_rule: countryRule.verificationRule,
+    location: job.location,
+    service_address: job.serviceAddress || "",
+    start_window: job.startWindow || "",
+    required_skills: Array.isArray(job.requiredSkills)
+      ? job.requiredSkills
+      : String(job.requiredSkillsText || "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
+    duration: job.duration || "1 day",
+    pay_rate: Number(job.dailyRate || 0),
+    headcount: Number(job.headcount || 1),
+    status: String(job.status || "open").toLowerCase(),
+    notes: job.notes || ""
+  };
+
+  const { data, error } = await client
+    .from("jobs")
+    .insert(payload)
+    .select("*")
+    .single();
+
+  return {
+    ok: !error,
+    data: data || null,
+    error: error?.message || ""
+  };
+}
+
+async function updateSupabaseJob(jobId, job) {
+  const client = getSupabaseClient();
+  const profile = await getSupabaseProfile();
+  if (!client || !profile || !jobId) {
+    return { ok: false, error: "Authenticated employer profile is required." };
+  }
+  const countryRule = getCountryRule(job.countryCode || profile.country_code || "NP");
+  const payload = {
+    title: job.title,
+    category: job.category,
+    hirer_type: job.hirerType || profile.account_type || "business",
+    booking_mode: job.bookingMode || "crew",
+    pay_unit: job.payUnit || "daily",
+    country_code: countryRule.code,
+    currency_code: countryRule.currencyCode,
+    payout_rail: countryRule.payoutRail,
+    verification_rule: countryRule.verificationRule,
+    location: job.location,
+    service_address: job.serviceAddress || "",
+    start_window: job.startWindow || "",
+    required_skills: Array.isArray(job.requiredSkills)
+      ? job.requiredSkills
+      : String(job.requiredSkillsText || "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
+    duration: job.duration || "1 day",
+    pay_rate: Number(job.dailyRate || 0),
+    headcount: Number(job.headcount || 1),
+    status: String(job.status || "open").toLowerCase(),
+    notes: job.notes || ""
+  };
+
+  const { data, error } = await client
+    .from("jobs")
+    .update(payload)
+    .eq("id", jobId)
+    .select("*")
+    .single();
+
+  return {
+    ok: !error,
+    data: data || null,
+    error: error?.message || ""
+  };
+}
+
+async function applyToSupabaseJob(jobId, coverNote = "") {
+  const client = getSupabaseClient();
+  const profile = await getSupabaseProfile();
+  if (!client || !profile) {
+    return { ok: false, error: "Authenticated worker profile is required." };
+  }
+
+  const { data, error } = await client
+    .from("job_applications")
+    .insert({
+      job_id: jobId,
+      worker_id: profile.id,
+      cover_note: coverNote,
+      status: "applied"
+    })
+    .select("*")
+    .single();
+
+  return {
+    ok: !error,
+    data: data || null,
+    error: error?.message || ""
+  };
+}
+
+async function listSupabaseApplicationsForJob(jobId) {
+  const client = getSupabaseClient();
+  if (!client) return [];
+  const { data, error } = await client
+    .from("job_applications")
+    .select("id, status, cover_note, applied_at, worker:profiles!job_applications_worker_id_fkey(id, full_name, contact, country_code, verification_status)")
+    .eq("job_id", jobId)
+    .order("applied_at", { ascending: false });
+
+  if (error || !Array.isArray(data)) return [];
+  return data;
+}
+
+async function listSupabaseEmployerPipeline() {
+  const jobs = await listSupabaseEmployerJobs();
+  if (!jobs.length) return [];
+
+  const pipeline = await Promise.all(jobs.map(async (job) => {
+    const applications = await listSupabaseApplicationsForJob(job.id);
+    const applicationThreads = await Promise.all(applications.map(async (application) => {
+      const messages = await listSupabaseChatMessages(application.id);
+      return {
+        ...application,
+        messages
+      };
+    }));
+    return {
+      job,
+      applications: applicationThreads
+    };
+  }));
+
+  return pipeline;
+}
+
+async function listSupabaseWorkerApplications() {
+  const client = getSupabaseClient();
+  const profile = await getSupabaseProfile();
+  if (!client || !profile) return [];
+  const { data, error } = await client
+    .from("job_applications")
+    .select("id, status, cover_note, applied_at, job:jobs!job_applications_job_id_fkey(id, title, category, hirer_type, booking_mode, pay_unit, country_code, location, service_address, start_window, pay_rate, duration, required_skills, employer:profiles!jobs_employer_id_fkey(id, full_name, company_name, country_code))")
+    .eq("worker_id", profile.id)
+    .order("applied_at", { ascending: false });
+
+  if (error || !Array.isArray(data)) return [];
+  return data;
+}
+
+async function listSupabaseWorkerApplicationsWithMessages() {
+  const applications = await listSupabaseWorkerApplications();
+  const withMessages = await Promise.all(applications.map(async (application) => ({
+    ...application,
+    messages: await listSupabaseChatMessages(application.id)
+  })));
+  return withMessages;
+}
+
+async function listSupabaseAdminQueue() {
+  const client = getSupabaseClient();
+  if (!client) return [];
+  const { data, error } = await client
+    .from("verification_reviews")
+    .select("id, review_type, region, risk_level, status, onboarding_mode, helper_name, voice_language, profile:profiles!verification_reviews_profile_id_fkey(id, role, full_name, company_name, country_code, verification_status)")
+    .order("created_at", { ascending: false });
+
+  if (error || !Array.isArray(data)) return [];
+  return data;
+}
+
+async function updateSupabaseVerificationStatus(reviewId, profileId, status, note = "") {
+  const client = getSupabaseClient();
+  if (!client || !reviewId || !profileId) {
+    return { ok: false, error: "Review and profile ids are required." };
+  }
+
+  const { data, error } = await client
+    .from("verification_reviews")
+    .update({
+      status,
+      review_note: note,
+      reviewer_id: (await getSupabaseSession()).user?.id || null,
+      reviewed_at: timezoneSafeNow()
+    })
+    .eq("id", reviewId)
+    .select("*")
+    .single();
+
+  if (error) {
+    return { ok: false, error: error.message || "" };
+  }
+
+  await client
+    .from("profiles")
+    .update({ verification_status: status })
+    .eq("id", profileId);
+
+  return {
+    ok: true,
+    data: data || null,
+    error: ""
+  };
+}
+
+async function listSupabaseDisputes() {
+  const client = getSupabaseClient();
+  if (!client) return [];
+  const { data, error } = await client
+    .from("disputes")
+    .select("id, opened_by, against_profile_id, reason, status, resolution_note, evidence, amount, currency_code, created_at, application:job_applications!disputes_application_id_fkey(id, job:jobs!job_applications_job_id_fkey(title)), escrow:escrow_transactions!disputes_escrow_id_fkey(id, status, job:jobs!escrow_transactions_job_id_fkey(title)), opened_by_profile:profiles!disputes_opened_by_fkey(id, full_name, company_name), against_profile:profiles!disputes_against_profile_id_fkey(id, full_name, company_name)")
+    .order("created_at", { ascending: false });
+
+  if (error || !Array.isArray(data)) return [];
+  return data;
+}
+
+async function listSupabaseMyDisputes() {
+  const client = getSupabaseClient();
+  const profile = await getSupabaseProfile();
+  if (!client || !profile) return [];
+  const { data, error } = await client
+    .from("disputes")
+    .select("id, opened_by, against_profile_id, reason, status, resolution_note, evidence, amount, currency_code, created_at, escrow_id, application:job_applications!disputes_application_id_fkey(id, job:jobs!job_applications_job_id_fkey(title)), escrow:escrow_transactions!disputes_escrow_id_fkey(id, status, job:jobs!escrow_transactions_job_id_fkey(title)), opened_by_profile:profiles!disputes_opened_by_fkey(id, full_name, company_name), against_profile:profiles!disputes_against_profile_id_fkey(id, full_name, company_name)")
+    .or(`opened_by.eq.${profile.id},against_profile_id.eq.${profile.id}`)
+    .order("created_at", { ascending: false });
+
+  if (error || !Array.isArray(data)) return [];
+  return data.map((item) => mapSupabaseDisputeToPortalItem(item, profile));
+}
+
+async function updateSupabaseDisputeStatus(disputeId, status, resolutionNote = "") {
+  const client = getSupabaseClient();
+  if (!client || !disputeId) {
+    return { ok: false, error: "Dispute id is required." };
+  }
+
+  const payload = {
+    status,
+    resolution_note: resolutionNote,
+    resolved_at: ["Refund issued", "Resolved", "Closed"].includes(status) ? timezoneSafeNow() : null
+  };
+
+  const { data, error } = await client
+    .from("disputes")
+    .update(payload)
+    .eq("id", disputeId)
+    .select("*")
+    .single();
+
+  return {
+    ok: !error,
+    data: data || null,
+    error: error?.message || ""
+  };
+}
+
+async function listSupabaseAdminPayments() {
+  const client = getSupabaseClient();
+  if (!client) return [];
+  const { data, error } = await client
+    .from("escrow_transactions")
+    .select("id, gross_amount, country_code, status, employer:profiles!escrow_transactions_employer_id_fkey(full_name, company_name), worker:profiles!escrow_transactions_worker_id_fkey(full_name), job:jobs!escrow_transactions_job_id_fkey(title)")
+    .order("created_at", { ascending: false });
+
+  if (error || !Array.isArray(data)) return [];
+  return data;
+}
+
+async function listSupabaseEmployerEscrows() {
+  const client = getSupabaseClient();
+  const profile = await getSupabaseProfile();
+  if (!client || !profile) return [];
+  const { data, error } = await client
+    .from("escrow_transactions")
+    .select("id, application_id, job_id, worker_id, gross_amount, platform_fee, net_amount, country_code, currency_code, payout_rail, status, note, released_at, refunded_at, worker:profiles!escrow_transactions_worker_id_fkey(full_name), job:jobs!escrow_transactions_job_id_fkey(title)")
+    .eq("employer_id", profile.id)
+    .order("created_at", { ascending: false });
+
+  if (error || !Array.isArray(data)) return [];
+  return data;
+}
+
+async function listSupabaseWorkerEscrows() {
+  const client = getSupabaseClient();
+  const profile = await getSupabaseProfile();
+  if (!client || !profile) return [];
+  const { data, error } = await client
+    .from("escrow_transactions")
+    .select("id, application_id, job_id, worker_id, gross_amount, platform_fee, net_amount, country_code, currency_code, payout_rail, status, note, released_at, refunded_at, employer:profiles!escrow_transactions_employer_id_fkey(full_name, company_name), job:jobs!escrow_transactions_job_id_fkey(title)")
+    .eq("worker_id", profile.id)
+    .order("created_at", { ascending: false });
+
+  if (error || !Array.isArray(data)) return [];
+  return data;
+}
+
+async function listSupabaseWalletEntriesForCurrentProfile() {
+  const client = getSupabaseClient();
+  const profile = await getSupabaseProfile();
+  if (!client || !profile) return [];
+  const { data, error } = await client
+    .from("wallet_ledger_entries")
+    .select("id, escrow_id, entry_key, direction, amount, currency_code, status, note, created_at")
+    .eq("profile_id", profile.id)
+    .order("created_at", { ascending: false });
+
+  if (error || !Array.isArray(data)) return [];
+  return data;
+}
+
+async function updateSupabaseApplicationStatus(applicationId, status) {
+  const client = getSupabaseClient();
+  if (!client || !applicationId) {
+    return { ok: false, error: "Application id is required." };
+  }
+
+  const payload = {
+    status: String(status || "applied").toLowerCase()
+  };
+
+  const { data, error } = await client
+    .from("job_applications")
+    .update(payload)
+    .eq("id", applicationId)
+    .select("*")
+    .single();
+
+  return {
+    ok: !error,
+    data: data || null,
+    error: error?.message || ""
+  };
+}
+
+async function upsertSupabaseEscrowTransaction(payload) {
+  const client = getSupabaseClient();
+  const profile = await getSupabaseProfile();
+  if (!client || !profile) {
+    return { ok: false, error: "Authenticated profile is required." };
+  }
+
+  const countryRule = getCountryRule(payload.countryCode || profile.country_code || "NP");
+  const grossAmount = Number(payload.grossAmount || 0);
+  const platformFee = Number(payload.platformFee ?? (grossAmount * 0.1));
+  const netAmount = Number(payload.netAmount ?? Math.max(0, grossAmount - platformFee));
+  const upsertPayload = {
+    application_id: payload.applicationId || null,
+    job_id: payload.jobId,
+    employer_id: payload.employerId || profile.id,
+    worker_id: payload.workerId || null,
+    country_code: countryRule.code,
+    currency_code: countryRule.currencyCode,
+    payout_rail: countryRule.payoutRail,
+    gross_amount: grossAmount,
+    platform_fee: platformFee,
+    net_amount: netAmount,
+    status: String(payload.status || "draft").toLowerCase(),
+    note: payload.note || ""
+  };
+
+  const query = client
+    .from("escrow_transactions")
+    .upsert(upsertPayload, payload.applicationId ? { onConflict: "application_id" } : undefined)
+    .select("*")
+    .single();
+  const { data, error } = await query;
+
+  return {
+    ok: !error,
+    data: data || null,
+    error: error?.message || ""
+  };
+}
+
+async function updateSupabaseEscrowStatus(escrowId, status, note = "") {
+  const client = getSupabaseClient();
+  if (!client || !escrowId) {
+    return { ok: false, error: "Escrow id is required." };
+  }
+  const normalizedStatus = String(status || "draft").toLowerCase();
+  const payload = {
+    status: normalizedStatus,
+    note,
+    released_at: normalizedStatus === "released" ? timezoneSafeNow() : null,
+    refunded_at: normalizedStatus === "refunded" ? timezoneSafeNow() : null
+  };
+  const { data, error } = await client
+    .from("escrow_transactions")
+    .update(payload)
+    .eq("id", escrowId)
+    .select("*")
+    .single();
+
+  return {
+    ok: !error,
+    data: data || null,
+    error: error?.message || ""
+  };
+}
+
+async function createSupabaseDispute(payload) {
+  const client = getSupabaseClient();
+  const profile = await getSupabaseProfile();
+  if (!client || !profile) {
+    return { ok: false, error: "Authenticated profile is required." };
+  }
+
+  const { data, error } = await client
+    .from("disputes")
+    .insert({
+      application_id: payload.applicationId || null,
+      escrow_id: payload.escrowId || null,
+      opened_by: payload.openedBy || profile.id,
+      against_profile_id: payload.againstProfileId || null,
+      reason: payload.reason || "Manual review requested",
+      status: payload.status || "Open",
+      resolution_note: payload.resolutionNote || "",
+      evidence: Array.isArray(payload.evidence) ? payload.evidence : [],
+      amount: Number(payload.amount || 0),
+      currency_code: payload.currencyCode || "NPR"
+    })
+    .select("*")
+    .single();
+
+  return {
+    ok: !error,
+    data: data || null,
+    error: error?.message || ""
+  };
+}
+
+async function createSupabaseWalletEntry(payload) {
+  const client = getSupabaseClient();
+  if (!client || !payload.profileId || !payload.entryKey) {
+    return { ok: false, error: "Wallet entry profile and key are required." };
+  }
+
+  const { data, error } = await client
+    .from("wallet_ledger_entries")
+    .upsert({
+      profile_id: payload.profileId,
+      escrow_id: payload.escrowId || null,
+      entry_key: payload.entryKey,
+      direction: payload.direction || "credit",
+      amount: Number(payload.amount || 0),
+      currency_code: payload.currencyCode || "NPR",
+      status: payload.status || "completed",
+      note: payload.note || ""
+    }, { onConflict: "entry_key" })
+    .select("*")
+    .single();
+
+  return {
+    ok: !error,
+    data: data || null,
+    error: error?.message || ""
+  };
+}
+
+async function uploadSupabaseFile(file, options = {}) {
+  if (!file) {
+    return { ok: false, error: "A file is required.", data: null };
+  }
+
+  const settings = getSupabaseSettings();
+  const bucket = options.bucket || settings.documentBucket;
+  const folder = String(options.folder || "uploads").trim().replace(/^\/+|\/+$/g, "");
+  const pathName = `${folder}/${Date.now()}-${storageSafeFileName(file.name)}`;
+
+  if (!supabaseEnabled()) {
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      return {
+        ok: true,
+        data: {
+          path: pathName,
+          url: dataUrl,
+          bucket,
+          provider: "local-demo",
+          fileName: file.name,
+          mimeType: file.type || "application/octet-stream",
+          size: Number(file.size || 0)
+        },
+        error: ""
+      };
+    } catch (error) {
+      return { ok: false, error: error.message || "File reading failed.", data: null };
+    }
+  }
+
+  const client = getSupabaseClient();
+  const profile = await getSupabaseProfile();
+  if (!client || !profile) {
+    return { ok: false, error: "Authenticated Supabase profile is required for upload.", data: null };
+  }
+
+  const { error: uploadError } = await client.storage
+    .from(bucket)
+    .upload(pathName, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type || undefined
+    });
+
+  if (uploadError) {
+    return { ok: false, error: uploadError.message || "Upload failed.", data: null };
+  }
+
+  const { data: publicData } = client.storage.from(bucket).getPublicUrl(pathName);
+  return {
+    ok: true,
+    data: {
+      path: pathName,
+      url: publicData?.publicUrl || "",
+      bucket,
+      provider: "supabase-storage",
+      fileName: file.name,
+      mimeType: file.type || "application/octet-stream",
+      size: Number(file.size || 0)
+    },
+    error: ""
+  };
+}
+
+function subscribeToSupabaseWorkerApplications(workerId, callback) {
+  const client = getSupabaseClient();
+  if (!client || !workerId || typeof callback !== "function") return null;
+
+  const channel = client
+    .channel(`worker-applications-${workerId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "job_applications",
+        filter: `worker_id=eq.${workerId}`
+      },
+      callback
+    )
+    .subscribe();
+
+  return channel;
+}
+
+function subscribeToSupabaseEmployerJobs(employerId, callback) {
+  const client = getSupabaseClient();
+  if (!client || !employerId || typeof callback !== "function") return null;
+
+  const channel = client
+    .channel(`employer-jobs-${employerId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "jobs",
+        filter: `employer_id=eq.${employerId}`
+      },
+      callback
+    )
+    .subscribe();
+
+  return channel;
+}
+
+function subscribeToSupabaseJobApplications(jobId, callback) {
+  const client = getSupabaseClient();
+  if (!client || !jobId || typeof callback !== "function") return null;
+
+  const channel = client
+    .channel(`job-applications-${jobId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "job_applications",
+        filter: `job_id=eq.${jobId}`
+      },
+      callback
+    )
+    .subscribe();
+
+  return channel;
+}
+
+function unsubscribeSupabaseChannel(channel) {
+  const client = getSupabaseClient();
+  if (!client || !channel) return;
+  client.removeChannel(channel);
+}
+
+async function sendSupabaseChatMessage(applicationId, body, senderRole) {
+  const client = getSupabaseClient();
+  const profile = await getSupabaseProfile();
+  if (!client || !profile) {
+    return { ok: false, error: "Authenticated profile is required." };
+  }
+
+  const { data, error } = await client
+    .from("job_messages")
+    .insert({
+      application_id: applicationId,
+      sender_id: profile.id,
+      sender_role: senderRole,
+      body
+    })
+    .select("*")
+    .single();
+
+  return {
+    ok: !error,
+    data: data || null,
+    error: error?.message || ""
+  };
+}
+
+async function listSupabaseChatMessages(applicationId) {
+  const client = getSupabaseClient();
+  if (!client) return [];
+  const { data, error } = await client
+    .from("job_messages")
+    .select("id, body, sender_role, created_at, sender:profiles!job_messages_sender_id_fkey(full_name)")
+    .eq("application_id", applicationId)
+    .order("created_at", { ascending: true });
+
+  if (error || !Array.isArray(data)) return [];
+  return data;
+}
+
+function subscribeToSupabaseApplicationMessages(applicationId, callback) {
+  const client = getSupabaseClient();
+  if (!client || !applicationId || typeof callback !== "function") return null;
+
+  const channel = client
+    .channel(`job-messages-${applicationId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "job_messages",
+        filter: `application_id=eq.${applicationId}`
+      },
+      callback
+    )
+    .subscribe();
+
+  return channel;
+}
+
+async function signOutSupabase() {
+  const client = getSupabaseClient();
+  if (!client) return { ok: true };
+  const { error } = await client.auth.signOut();
+  return { ok: !error, error: error?.message || "" };
+}
+
+
 // FILE: scripts/data.js
+const workerTypeCatalog = [
+  { name: "Plumbing", icon: "Pipe", blurb: "Leak repair, pipe fitting, bathroom and kitchen fixes" },
+  { name: "Electrician", icon: "Volt", blurb: "Wiring, lighting, sockets, panels, and urgent electrical work" },
+  { name: "Carpentry", icon: "Wood", blurb: "Furniture fitting, framing, doors, shelves, and wood repairs" },
+  { name: "Painting", icon: "Paint", blurb: "Interior, exterior, touch-up, and finishing support" },
+  { name: "Cleaning", icon: "Clean", blurb: "Home cleaning, hotel housekeeping, events, and sanitization" },
+  { name: "Housekeeping", icon: "Home", blurb: "Daily household upkeep, room reset, and laundry support" },
+  { name: "Nanny", icon: "Care", blurb: "Childcare, meal prep, family support, and repeat-family bookings" },
+  { name: "Elder Care", icon: "Assist", blurb: "Companionship, routine support, and home care assistance" },
+  { name: "Security", icon: "Guard", blurb: "Gate control, patrol, event safety, and property monitoring" },
+  { name: "Driver", icon: "Drive", blurb: "Family driver, delivery, shuttle, and route support" },
+  { name: "Cook", icon: "Cook", blurb: "Home cooking, catering prep, restaurant line support" },
+  { name: "Waitstaff", icon: "Serve", blurb: "Restaurant floor service, banquet support, and hosting" },
+  { name: "Bartender", icon: "Bar", blurb: "Event beverage service, bar setup, and hospitality support" },
+  { name: "Warehouse", icon: "Stock", blurb: "Loading, packing, dispatch, and inventory reset" },
+  { name: "Forklift", icon: "Lift", blurb: "Warehouse lifting, pallet movement, and yard operations" },
+  { name: "Delivery", icon: "Move", blurb: "Last-mile drop-offs, courier work, and route fulfillment" },
+  { name: "Agriculture", icon: "Farm", blurb: "Harvest, planting, sorting, packing, and seasonal farm work" },
+  { name: "Construction", icon: "Build", blurb: "General labor, site prep, material movement, and crew support" },
+  { name: "Masonry", icon: "Brick", blurb: "Blockwork, plaster, tile prep, and concrete support" },
+  { name: "HVAC", icon: "Air", blurb: "Cooling, ventilation, maintenance, and filter servicing" },
+  { name: "Appliance Repair", icon: "Fix", blurb: "Washer, fridge, oven, and home appliance troubleshooting" },
+  { name: "Gardening", icon: "Leaf", blurb: "Landscape care, trimming, planting, and outdoor upkeep" },
+  { name: "Hospitality", icon: "Guest", blurb: "Hotels, restaurants, catering, and front-of-house support" },
+  { name: "General Help", icon: "Help", blurb: "Flexible local assistance for short jobs and urgent needs" }
+];
+
 const workerTemplate = {
   role: "worker",
   id: "",
   fullName: "",
   contact: "",
+  countryCode: "NP",
   skill: "Plumbing",
   notes: "",
   onboardingMode: "self",
@@ -57,14 +1612,15 @@ const workerTemplate = {
     }
   },
   jobs: [
-    { id: "w1", title: "Emergency Pipe Repair", company: "Riverside Bistro", pay: "$280/day", distance: "2 km", status: "Open", applied: false, saved: false, summary: "Urgent plumbing repair before breakfast service.", skills: "Plumbing / Leak Fix / Urgent" },
-    { id: "w2", title: "Hotel Deep Cleaning", company: "Aurora Grand Hotel", pay: "$120/day", distance: "4 km", status: "Open", applied: false, saved: false, summary: "Conference weekend cleaning support for 2 days.", skills: "Cleaning / Hospitality / Teamwork" },
-    { id: "w3", title: "Harvest Team Support", company: "Valley Orchard", pay: "$95/day", distance: "11 km", status: "Open", applied: false, saved: false, summary: "Seasonal farm labor for harvest and packaging.", skills: "Agriculture / Packing / Seasonal" }
+    { id: "w1", title: "Emergency Pipe Repair", company: "Riverside Bistro", pay: "NPR 280/day", distance: "2 km", status: "Open", applied: false, saved: false, summary: "Urgent plumbing repair before breakfast service.", skills: "Plumbing / Leak Fix / Urgent", country: "Nepal" },
+    { id: "w2", title: "Hotel Deep Cleaning", company: "Aurora Grand Hotel", pay: "NPR 120/day", distance: "4 km", status: "Open", applied: false, saved: false, summary: "Conference weekend cleaning support for 2 days.", skills: "Cleaning / Hospitality / Teamwork", country: "Nepal" },
+    { id: "w3", title: "Harvest Team Support", company: "Valley Orchard", pay: "NPR 95/day", distance: "11 km", status: "Open", applied: false, saved: false, summary: "Seasonal farm labor for harvest and packaging.", skills: "Agriculture / Packing / Seasonal", country: "Nepal" }
   ],
   chatStream: [
     { from: "Employer", text: "Can you reach the site before 7:00 AM?", time: "06:12" },
     { from: "Worker", text: "Yes, I am on the way with tools.", time: "06:14" }
   ],
+  disputes: [],
   applications: [
     { title: "Emergency Pipe Repair", status: "Applied", cover: "Available immediately" },
     { title: "Hotel Deep Cleaning", status: "Interviewing", cover: "Experienced in hospitality shifts" }
@@ -74,10 +1630,14 @@ const workerTemplate = {
 
 const employerTemplate = {
   role: "employer",
+  accountType: "business",
   id: "",
   fullName: "",
   contact: "",
   company: "",
+  homeLabel: "",
+  serviceAddress: "",
+  countryCode: "NP",
   skill: "Facilities",
   notes: "",
   verificationStatus: "Pending",
@@ -125,9 +1685,9 @@ const employerTemplate = {
     ]
   },
   jobs: [
-    { id: "e1", title: "50 Harvest Workers", category: "Agriculture", location: "Kathmandu Valley", status: "Open", applicants: 72, shortlisted: 4, escrow: false, spend: "$4,800", broadcasted: false, dailyRate: 96, bidStep: 8, biddingHistory: [84, 90, 96], urgency: "High" },
-    { id: "e2", title: "Hotel Overflow Cleaning Crew", category: "Hospitality", location: "Lalitpur", status: "Ongoing", applicants: 26, shortlisted: 6, escrow: true, spend: "$1,900", broadcasted: true, dailyRate: 120, bidStep: 10, biddingHistory: [105, 112, 120], urgency: "Medium" },
-    { id: "e3", title: "Overnight Inventory Reset", category: "Warehouse", location: "Bhaktapur", status: "Completed", applicants: 18, shortlisted: 3, escrow: true, spend: "$760", broadcasted: true, dailyRate: 88, bidStep: 6, biddingHistory: [76, 82, 88], urgency: "Filled" }
+    { id: "e1", title: "50 Harvest Workers", category: "Agriculture", location: "Kathmandu Valley", status: "Open", applicants: 72, shortlisted: 4, escrow: false, spend: "Rs4800", broadcasted: false, dailyRate: 96, bidStep: 8, biddingHistory: [84, 90, 96], urgency: "High", country: "Nepal", countryCode: "NP" },
+    { id: "e2", title: "Hotel Overflow Cleaning Crew", category: "Hospitality", location: "Lalitpur", status: "Ongoing", applicants: 26, shortlisted: 6, escrow: true, spend: "Rs1900", broadcasted: true, dailyRate: 120, bidStep: 10, biddingHistory: [105, 112, 120], urgency: "Medium", country: "Nepal", countryCode: "NP" },
+    { id: "e3", title: "Overnight Inventory Reset", category: "Warehouse", location: "Bhaktapur", status: "Completed", applicants: 18, shortlisted: 3, escrow: true, spend: "Rs760", broadcasted: true, dailyRate: 88, bidStep: 6, biddingHistory: [76, 82, 88], urgency: "Filled", country: "Nepal", countryCode: "NP" }
   ],
   applicants: [
     {
@@ -265,6 +1825,132 @@ const employerTemplate = {
       reviews: [
         { author: "Valley Orchard", rating: 4.8, note: "Consistent output and strong stamina during peak season." }
       ]
+    },
+    {
+      id: "pool-5",
+      name: "Prakash Lama",
+      skills: ["electrician", "wiring", "lighting"],
+      locationLabel: "Kathmandu",
+      distanceKm: 2.1,
+      avgRating: 4.8,
+      verified: true,
+      completionRate: 0.95,
+      responseRate: 0.93,
+      availability: "available",
+      historyCategories: ["facilities", "electrical"],
+      experienceSummary: "Licensed electrician for home maintenance, hotels, and retail fit-outs.",
+      documentBadges: ["ID Verified", "Electrical License", "Background Checked"],
+      workHistory: [
+        { role: "Electrical Technician", company: "Metro Maintenance", location: "Kathmandu", period: "2023-2026", result: "Trusted for urgent call-outs" }
+      ],
+      reviews: [
+        { author: "Metro Maintenance", rating: 4.9, note: "Fast troubleshooting and clean handover." }
+      ]
+    },
+    {
+      id: "pool-6",
+      name: "Rina Tamang",
+      skills: ["nanny", "childcare", "meal prep"],
+      locationLabel: "Lalitpur",
+      distanceKm: 3.4,
+      avgRating: 4.9,
+      verified: true,
+      completionRate: 0.98,
+      responseRate: 0.94,
+      availability: "available",
+      historyCategories: ["childcare", "household"],
+      experienceSummary: "Repeat-family nanny with early learning and evening support experience.",
+      documentBadges: ["ID Verified", "Family References", "Childcare Experience"],
+      workHistory: [
+        { role: "Family Nanny", company: "Private Households", location: "Lalitpur", period: "2022-2026", result: "High repeat-booking rate" }
+      ],
+      reviews: [
+        { author: "Karki Residence", rating: 5, note: "Reliable, calm, and great with children." }
+      ]
+    },
+    {
+      id: "pool-7",
+      name: "Dinesh Shrestha",
+      skills: ["driver", "delivery", "route planning"],
+      locationLabel: "Bhaktapur",
+      distanceKm: 5.2,
+      avgRating: 4.7,
+      verified: true,
+      completionRate: 0.93,
+      responseRate: 0.9,
+      availability: "available",
+      historyCategories: ["driver", "delivery"],
+      experienceSummary: "Licensed commercial and family driver with strong local route knowledge.",
+      documentBadges: ["ID Verified", "Driver License", "Vehicle Verified"],
+      workHistory: [
+        { role: "Route Driver", company: "City Drop", location: "Bhaktapur", period: "2021-2026", result: "Consistent on-time delivery" }
+      ],
+      reviews: [
+        { author: "City Drop", rating: 4.8, note: "Safe driving and dependable communication." }
+      ]
+    },
+    {
+      id: "pool-8",
+      name: "Kamal BK",
+      skills: ["painting", "surface prep", "finishing"],
+      locationLabel: "Kathmandu Valley",
+      distanceKm: 4.1,
+      avgRating: 4.6,
+      verified: true,
+      completionRate: 0.91,
+      responseRate: 0.88,
+      availability: "available",
+      historyCategories: ["painting", "construction"],
+      experienceSummary: "Interior and exterior painter for homes, shops, and refresh work.",
+      documentBadges: ["ID Verified", "Trade Certificate"],
+      workHistory: [
+        { role: "Painting Contractor", company: "Fresh Coat Nepal", location: "Kathmandu", period: "2022-2026", result: "Known for quick turnarounds" }
+      ],
+      reviews: [
+        { author: "Fresh Coat Nepal", rating: 4.7, note: "Consistent finish quality and punctuality." }
+      ]
+    },
+    {
+      id: "pool-9",
+      name: "Sujan Rai",
+      skills: ["security", "gate control", "event patrol"],
+      locationLabel: "Kathmandu",
+      distanceKm: 3.7,
+      avgRating: 4.7,
+      verified: true,
+      completionRate: 0.94,
+      responseRate: 0.92,
+      availability: "available",
+      historyCategories: ["security", "events"],
+      experienceSummary: "Security guard for gated properties, hotels, and event access control.",
+      documentBadges: ["ID Verified", "Security Clearance"],
+      workHistory: [
+        { role: "Event Security", company: "SafeLine Events", location: "Kathmandu", period: "2023-2026", result: "Strong incident prevention record" }
+      ],
+      reviews: [
+        { author: "SafeLine Events", rating: 4.8, note: "Professional and attentive throughout long shifts." }
+      ]
+    },
+    {
+      id: "pool-10",
+      name: "Maya Ale",
+      skills: ["cook", "hospitality", "prep kitchen"],
+      locationLabel: "Lalitpur",
+      distanceKm: 2.9,
+      avgRating: 4.8,
+      verified: true,
+      completionRate: 0.95,
+      responseRate: 0.93,
+      availability: "available",
+      historyCategories: ["cook", "hospitality"],
+      experienceSummary: "Home and commercial cook for short events, meal prep, and overflow service.",
+      documentBadges: ["ID Verified", "Food Handling"],
+      workHistory: [
+        { role: "Prep Cook", company: "Garden Banquet", location: "Lalitpur", period: "2022-2026", result: "Trusted for event-day execution" }
+      ],
+      reviews: [
+        { author: "Garden Banquet", rating: 4.9, note: "Great prep discipline and food safety habits." }
+      ]
     }
   ],
   workerSearch: {
@@ -282,6 +1968,7 @@ const employerTemplate = {
     autoReleaseHours: 24,
     nextRelease: "2026-03-28 09:00"
   },
+  disputes: [],
   chatStream: [
     { from: "Employer", text: "Crew check-in starts at service gate.", time: "06:10" },
     { from: "Worker", text: "Received. Two workers are already nearby.", time: "06:13" }
@@ -291,6 +1978,144 @@ const employerTemplate = {
     { candidate: "Mina Gurung", status: "Invited" },
     { candidate: "Rakesh Shahi", status: "Shortlisted" }
   ]
+};
+
+const householdEmployerTemplate = {
+  ...cloneTemplate(employerTemplate),
+  accountType: "household",
+  company: "",
+  homeLabel: "Sharma Family Home",
+  serviceAddress: "Jawalakhel, Lalitpur",
+  skill: "Home Services",
+  account: {
+    registration: "Phone or email + household verification",
+    onboarding: "Home hirer setup"
+  },
+  documents: [
+    { id: "hproof", name: "Home Address Proof", status: "Missing", required: true },
+    { id: "hid", name: "Primary Contact ID", status: "Missing", required: true },
+    { id: "hbill", name: "Payment Method", status: "Missing", required: true },
+    { id: "hsafety", name: "Emergency Contact", status: "Optional", required: false }
+  ],
+  profile: {
+    ...cloneTemplate(employerTemplate.profile),
+    logo: "Home badge pending",
+    industry: "Household Services",
+    size: "Family / individual",
+    verificationBadge: "Pending",
+    notifications: [
+      "Two verified plumbers are available nearby this afternoon.",
+      "Your nanny booking can require repeat-family preference and emergency contact.",
+      "Escrow protects the worker payout until the home service is confirmed."
+    ],
+    analytics: [
+      { label: "Home bookings", value: "12" },
+      { label: "Repeat helpers", value: "4" },
+      { label: "Average response", value: "6 min" }
+    ],
+    analyticsDashboard: [
+      { label: "Completed Services", value: "28" },
+      { label: "Trusted Favorites", value: "9" },
+      { label: "Escrow Protected", value: "$1.9K" },
+      { label: "Safety Notes", value: "2 active" }
+    ],
+    payments: [
+      { reference: "home_pay_001", amount: "$90", status: "Released" },
+      { reference: "home_pay_002", amount: "$120", status: "Escrow funded" }
+    ]
+  },
+  jobs: [
+    {
+      id: "h1",
+      title: "Kitchen Sink Plumbing Fix",
+      category: "Plumbing",
+      location: "Jawalakhel, Lalitpur",
+      serviceAddress: "Sharma Family Home, Jawalakhel",
+      status: "Open",
+      applicants: 5,
+      shortlisted: 1,
+      escrow: false,
+      spend: "Rs3500",
+      broadcasted: false,
+      dailyRate: 3500,
+      bidStep: 300,
+      biddingHistory: [3000, 3200, 3500],
+      urgency: "Today",
+      country: "Nepal",
+      countryCode: "NP",
+      payUnit: "Fixed job",
+      bookingMode: "Direct booking",
+      duration: "2-3 hours",
+      shiftStart: "14:00",
+      requiredSkillsText: "plumbing, leak repair, sink fitting",
+      notes: "Please bring basic repair tools. Parking available near the gate."
+    },
+    {
+      id: "h2",
+      title: "Evening Childcare Support",
+      category: "Nanny",
+      location: "Bhanimandal, Lalitpur",
+      serviceAddress: "Karki Residence, Bhanimandal",
+      status: "Ongoing",
+      applicants: 3,
+      shortlisted: 1,
+      escrow: true,
+      spend: "Rs2400",
+      broadcasted: true,
+      dailyRate: 300,
+      bidStep: 50,
+      biddingHistory: [250, 280, 300],
+      urgency: "Repeat booking",
+      country: "Nepal",
+      countryCode: "NP",
+      payUnit: "Hourly",
+      bookingMode: "Request quotes",
+      duration: "4 hours",
+      shiftStart: "17:30",
+      requiredSkillsText: "childcare, feeding, evening routine",
+      notes: "Prior family experience preferred. Emergency contact is shared after booking."
+    }
+  ],
+  applicants: [
+    {
+      id: "ha1",
+      name: "Aarav Tamang",
+      score: "96%",
+      distance: "1.6 km",
+      rating: "4.9",
+      invited: false,
+      status: "New",
+      skills: ["Plumbing", "Leak repair", "Home maintenance"],
+      reliability: "95%",
+      jobId: "h1",
+      chatThread: [
+        { from: "Worker", text: "I can inspect the sink after 2 PM and bring the usual plumbing tools.", time: "11:04" }
+      ]
+    },
+    {
+      id: "ha2",
+      name: "Mina Gurung",
+      score: "93%",
+      distance: "2.2 km",
+      rating: "4.8",
+      invited: true,
+      status: "Invited",
+      skills: ["Nanny", "Meal prep", "Hospitality"],
+      reliability: "92%",
+      jobId: "h2",
+      chatThread: [
+        { from: "Employer", text: "This is a family booking from 5:30 PM to 9:30 PM. Are you comfortable with evening childcare?", time: "09:20" },
+        { from: "Worker", text: "Yes, I have repeat-family childcare experience and can arrive by 5:15 PM.", time: "09:28" }
+      ]
+    }
+  ],
+  escrow: {
+    funded: true,
+    status: "Awaiting home service confirmation",
+    autoReleaseHours: 12,
+    nextRelease: "2026-03-28 21:30"
+  },
+  disputes: []
 };
 
 const adminTemplate = {
@@ -488,7 +2313,9 @@ function normalizeUser(user) {
   const template = user.role === "worker"
     ? workerTemplate
     : user.role === "employer"
-    ? employerTemplate
+    ? user.accountType === "household"
+      ? householdEmployerTemplate
+      : employerTemplate
     : user.role === "admin"
     ? adminTemplate
     : user.role === "super_admin"
@@ -502,6 +2329,7 @@ function normalizeAppData(data) {
   normalized.registeredUsers = (normalized.registeredUsers || []).map((user) => normalizeUser(user));
   normalized.adminAccounts = Array.isArray(normalized.adminAccounts) ? normalized.adminAccounts : cloneTemplate(superAdminTemplate.admins);
   normalized.approvalQueue = Array.isArray(normalized.approvalQueue) ? normalized.approvalQueue : [];
+  normalized.disputes = Array.isArray(normalized.disputes) ? normalized.disputes : cloneTemplate(adminTemplate.disputes);
   return normalized;
 }
 
@@ -509,6 +2337,7 @@ function defaultAppData() {
   return {
     registeredUsers: [],
     approvalQueue: [],
+    disputes: cloneTemplate(adminTemplate.disputes),
     adminAccounts: cloneTemplate(superAdminTemplate.admins),
     superAdminCode: "ROOT2026"
   };
@@ -540,6 +2369,7 @@ const savedSession = loadSessionState();
 const session = {
   currentUser: savedSession.currentUser ? normalizeUser(savedSession.currentUser) : null,
   signupRole: savedSession.signupRole || "worker",
+  signupEmployerType: savedSession.signupEmployerType || "business",
   signupMode: savedSession.signupMode || "self",
   signupStep: savedSession.signupStep || "work",
   loginRole: savedSession.loginRole || "worker",
@@ -547,7 +2377,7 @@ const session = {
   workerJobsFilter: savedSession.workerJobsFilter || "discover",
   workerJobSearchTerm: savedSession.workerJobSearchTerm || "",
   workerJobSearchLocation: savedSession.workerJobSearchLocation || "",
-  workerJobSearchCountry: savedSession.workerJobSearchCountry || "Nepal",
+  workerJobSearchCountry: savedSession.workerJobSearchCountry || "All Countries",
   selectedWorkerJob: savedSession.selectedWorkerJob || "w1",
   selectedEmployerJob: savedSession.selectedEmployerJob || "e1",
   selectedApplicant: savedSession.selectedApplicant || "a1",
@@ -562,9 +2392,12 @@ const session = {
   workerProfileModalOpen: savedSession.workerProfileModalOpen || false,
   workerJobModalOpen: savedSession.workerJobModalOpen || false,
   jobPostModalOpen: savedSession.jobPostModalOpen || false,
+  disputeModalOpen: savedSession.disputeModalOpen || false,
   jobPostStep: savedSession.jobPostStep || 1,
   editingJobId: savedSession.editingJobId || "",
   jobPostDraft: savedSession.jobPostDraft || null,
+  disputeDraft: savedSession.disputeDraft || null,
+  supabaseMarketplaceJobs: Array.isArray(savedSession.supabaseMarketplaceJobs) ? savedSession.supabaseMarketplaceJobs : [],
   toasts: [],
   activityLog: [
     "UI refactored into reusable modules.",
@@ -592,6 +2425,7 @@ function persistSession() {
     window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({
       currentUser: session.currentUser,
       signupRole: session.signupRole,
+      signupEmployerType: session.signupEmployerType,
       signupMode: session.signupMode,
       signupStep: session.signupStep,
       loginRole: session.loginRole,
@@ -614,9 +2448,12 @@ function persistSession() {
       workerProfileModalOpen: session.workerProfileModalOpen,
       workerJobModalOpen: session.workerJobModalOpen,
       jobPostModalOpen: session.jobPostModalOpen,
+      disputeModalOpen: session.disputeModalOpen,
       jobPostStep: session.jobPostStep,
       editingJobId: session.editingJobId,
-      jobPostDraft: session.jobPostDraft
+      jobPostDraft: session.jobPostDraft,
+      disputeDraft: session.disputeDraft,
+      supabaseMarketplaceJobs: session.supabaseMarketplaceJobs
     }));
   } catch {
     if (!storageWarningShown) {
@@ -647,7 +2484,8 @@ function initializeSelectionsForCurrentUser() {
     session.workerJobsFilter = marketplaceJobs.length ? "discover" : "applied";
     session.workerJobSearchTerm = "";
     session.workerJobSearchLocation = "";
-    session.workerJobSearchCountry = "Nepal";
+    session.workerJobSearchCountry = "All Countries";
+    session.selectedDispute = session.currentUser.disputes?.[0]?.id || "";
     session.activePortalView = "dashboard";
     session.workerJobModalOpen = false;
   }
@@ -655,6 +2493,7 @@ function initializeSelectionsForCurrentUser() {
     session.selectedEmployerJob = session.currentUser.jobs[0]?.id || "";
     session.selectedApplicant = session.currentUser.applicants[0]?.id || "";
     session.selectedSearchWorker = session.currentUser.workerPool[0]?.id || "";
+    session.selectedDispute = session.currentUser.disputes?.[0]?.id || "";
     session.employerSearchSkill = "";
     session.employerSearchLocation = "";
     session.employerSortBy = "best_match";
@@ -665,6 +2504,12 @@ function initializeSelectionsForCurrentUser() {
     if (!session.jobPostDraft) {
       session.jobPostDraft = defaultJobPostDraft();
     }
+    if (!session.disputeDraft) {
+      session.disputeDraft = defaultDisputeDraft();
+    }
+  }
+  if (session.currentUser?.role === "worker" && !session.disputeDraft) {
+    session.disputeDraft = defaultDisputeDraft();
   }
 }
 
@@ -672,14 +2517,41 @@ function defaultJobPostDraft() {
   return {
     title: "",
     category: "Agriculture",
+    countryCode: "NP",
     location: "",
+    serviceAddress: "",
     headcount: 1,
     dailyRate: 90,
+    payUnit: "Per day",
+    bookingMode: "Crew hire",
     requiredSkillsText: "",
     duration: "1 day",
     shiftStart: "06:00",
+    startWindow: "",
+    safetyNotes: "",
     notes: "",
     urgency: "New"
+  };
+}
+
+function defaultDisputeDraft() {
+  return {
+    jobId: "",
+    jobSupabaseId: "",
+    applicationId: "",
+    applicationSupabaseId: "",
+    escrowId: "",
+    againstProfileId: "",
+    againstName: "",
+    title: "",
+    reason: "Payment issue",
+    summary: "",
+    requestedResolution: "Review and mediate",
+    amount: 0,
+    currencyCode: "",
+    evidenceNotes: "",
+    evidenceLinks: "",
+    evidence: []
   };
 }
 
@@ -696,6 +2568,7 @@ function syncCurrentUserToRegistry() {
 function hydrateAdmin() {
   const adminUser = normalizeUser(cloneTemplate(adminTemplate));
   adminUser.queue = appData.approvalQueue.length ? cloneTemplate(appData.approvalQueue) : cloneTemplate(adminTemplate.queue);
+  adminUser.disputes = appData.disputes.length ? cloneTemplate(appData.disputes) : cloneTemplate(adminTemplate.disputes);
   return adminUser;
 }
 
@@ -754,6 +2627,7 @@ function saveRegisteredUserRecord(user) {
 }
 
 function getMarketplaceJobs() {
+  const supabaseJobs = Array.isArray(session.supabaseMarketplaceJobs) ? session.supabaseMarketplaceJobs : [];
   const employerJobs = appData.registeredUsers
     .filter((item) => item.role === "employer")
     .flatMap((employer) => employer.jobs
@@ -761,19 +2635,35 @@ function getMarketplaceJobs() {
       .map((job) => ({
         id: job.id,
         title: job.title,
-        company: employer.company || employer.fullName || "Verified Employer",
+        company: employer.accountType === "household"
+          ? (employer.homeLabel || employer.fullName || "Verified Home Client")
+          : (employer.company || employer.fullName || "Verified Employer"),
         companyLogo: employer.profile?.logoData || "",
-        pay: job.dailyRate ? `$${job.dailyRate}/day` : job.spend,
+        pay: job.dailyRate ? `${formatCountryMoney(job.dailyRate, job.countryCode || employer.countryCode || "NP")}/${job.payUnit || "day"}` : job.spend,
         distance: employer.notes?.includes("Lalitpur") ? "4 km" : "2 km",
         status: job.status,
         applied: false,
         saved: false,
-        summary: `${job.category} / ${job.location} / ${job.urgency || "Active hiring"}`,
+        summary: `${job.category} / ${(job.serviceAddress || job.location)} / ${countryName(job.countryCode || employer.countryCode || "NP")} / ${job.bookingMode || job.urgency || "Active hiring"}`,
         skills: job.requiredSkillsText || `${job.category} / Local crew`,
-        location: job.location
+        location: job.location,
+        serviceAddress: job.serviceAddress || "",
+        country: job.country || countryName(job.countryCode || employer.countryCode || "NP"),
+        countryCode: job.countryCode || employer.countryCode || "NP",
+        payUnit: job.payUnit || "day",
+        bookingMode: job.bookingMode || "Crew hire",
+        hirerType: job.hirerType || employer.accountType || "business"
       })));
 
-  if (employerJobs.length) return employerJobs;
+  if (supabaseJobs.length || employerJobs.length) {
+    const merged = [...supabaseJobs];
+    employerJobs.forEach((job) => {
+      if (!merged.some((item) => item.id === job.id || (item.supabaseId && item.supabaseId === job.supabaseId))) {
+        merged.push(job);
+      }
+    });
+    return merged;
+  }
 
   const fallbackWorker = appData.registeredUsers.find((item) => item.role === "worker");
   if (fallbackWorker?.jobs?.length) return cloneTemplate(fallbackWorker.jobs);
@@ -798,7 +2688,7 @@ function createUser(payload) {
       accountId: user.id,
       name: user.fullName,
       type: payload.onboardingMode === "voice" ? "Worker Voice Onboarding" : payload.onboardingMode === "assisted" ? "Worker Assisted Registration" : queueTypeFor(user.role),
-      region: "Kathmandu",
+      region: countryName(user.countryCode || "NP"),
       status: "Pending",
       risk: queueRiskFor(user.role),
       onboardingMode: payload.onboardingMode || "self",
@@ -806,15 +2696,16 @@ function createUser(payload) {
       voiceLanguage: payload.voiceLanguage || ""
     });
   } else if (payload.role === "employer") {
-    const user = { ...cloneTemplate(employerTemplate), ...payload, id: `employer_${Date.now()}` };
+    const template = payload.accountType === "household" ? householdEmployerTemplate : employerTemplate;
+    const user = { ...cloneTemplate(template), ...payload, id: `employer_${Date.now()}` };
     session.currentUser = normalizeUser(user);
     appData.registeredUsers.push(normalizeUser(cloneTemplate(user)));
     appData.approvalQueue.unshift({
       id: `queue_${Date.now()}`,
       accountId: user.id,
-      name: user.company || user.fullName,
-      type: queueTypeFor(user.role),
-      region: "Kathmandu",
+      name: user.accountType === "household" ? (user.homeLabel || user.fullName) : (user.company || user.fullName),
+      type: user.accountType === "household" ? "Home Hirer Verification" : queueTypeFor(user.role),
+      region: countryName(user.countryCode || "NP"),
       status: "Pending",
       risk: queueRiskFor(user.role)
     });
@@ -839,6 +2730,7 @@ function loginAdmin() {
   session.currentUser = hydrateAdmin();
   session.selectedQueue = session.currentUser.queue[0]?.id || "";
   session.selectedDispute = session.currentUser.disputes[0]?.id || "";
+  session.disputeDraft = defaultDisputeDraft();
   persistSession();
 }
 
@@ -899,7 +2791,7 @@ function logout() {
   session.workerJobsFilter = "discover";
   session.workerJobSearchTerm = "";
   session.workerJobSearchLocation = "";
-  session.workerJobSearchCountry = "Nepal";
+  session.workerJobSearchCountry = "All Countries";
   session.employerSearchSkill = "";
   session.employerSearchLocation = "";
   session.employerSortBy = "best_match";
@@ -909,9 +2801,12 @@ function logout() {
   session.workerProfileModalOpen = false;
   session.workerJobModalOpen = false;
   session.jobPostModalOpen = false;
+  session.disputeModalOpen = false;
   session.jobPostStep = 1;
   session.editingJobId = "";
   session.jobPostDraft = null;
+  session.disputeDraft = null;
+  session.supabaseMarketplaceJobs = [];
   persistSession();
 }
 
@@ -920,6 +2815,14 @@ function setSignupRole(role) {
   if (role === "employer") {
     session.signupMode = "self";
   }
+  if (role === "worker") {
+    session.signupEmployerType = "business";
+  }
+  persistSession();
+}
+
+function setSignupEmployerType(accountType) {
+  session.signupEmployerType = accountType === "household" ? "household" : "business";
   persistSession();
 }
 
@@ -1035,17 +2938,26 @@ function openJobPostModal(jobId = "") {
     session.jobPostDraft = job ? {
       title: job.title || "",
       category: job.category || "Facilities",
+      countryCode: job.countryCode || session.currentUser.countryCode || "NP",
       location: job.location || "",
+      serviceAddress: job.serviceAddress || "",
       headcount: job.headcount || 1,
       dailyRate: job.dailyRate || 90,
+      payUnit: job.payUnit || "Per day",
+      bookingMode: job.bookingMode || "Crew hire",
       requiredSkillsText: job.requiredSkillsText || "",
       duration: job.duration || "1 day",
       shiftStart: job.shiftStart || "06:00",
+      startWindow: job.startWindow || "",
+      safetyNotes: job.safetyNotes || "",
       notes: job.notes || "",
       urgency: job.urgency || "New"
     } : defaultJobPostDraft();
   } else {
-    session.jobPostDraft = defaultJobPostDraft();
+    session.jobPostDraft = {
+      ...defaultJobPostDraft(),
+      countryCode: session.currentUser?.countryCode || "NP"
+    };
   }
   persistSession();
 }
@@ -1054,7 +2966,35 @@ function closeJobPostModal() {
   session.jobPostModalOpen = false;
   session.jobPostStep = 1;
   session.editingJobId = "";
-  session.jobPostDraft = defaultJobPostDraft();
+  session.jobPostDraft = {
+    ...defaultJobPostDraft(),
+    countryCode: session.currentUser?.countryCode || "NP"
+  };
+  persistSession();
+}
+
+function openDisputeModal(patch = {}) {
+  session.disputeModalOpen = true;
+  session.disputeDraft = {
+    ...defaultDisputeDraft(),
+    ...(session.disputeDraft || {}),
+    ...patch
+  };
+  persistSession();
+}
+
+function closeDisputeModal() {
+  session.disputeModalOpen = false;
+  session.disputeDraft = defaultDisputeDraft();
+  persistSession();
+}
+
+function saveDisputeDraft(patch) {
+  session.disputeDraft = {
+    ...defaultDisputeDraft(),
+    ...(session.disputeDraft || {}),
+    ...patch
+  };
   persistSession();
 }
 
@@ -1084,8 +3024,40 @@ function pushToast(title, message) {
   }, 3000);
 }
 
+function hydrateCurrentUser(user) {
+  session.currentUser = normalizeUser(cloneTemplate(user));
+  initializeSelectionsForCurrentUser();
+  persistSession();
+}
+
+function setSupabaseMarketplaceJobs(jobs) {
+  session.supabaseMarketplaceJobs = Array.isArray(jobs) ? cloneTemplate(jobs) : [];
+  persistSession();
+}
+
 function saveCurrentUser() {
   syncCurrentUserToRegistry();
+}
+
+function addDisputeRecord(record) {
+  appData.disputes.unshift(cloneTemplate(record));
+  persistAppData();
+}
+
+function updateStoredDispute(disputeId, patch) {
+  if (!disputeId) return;
+  appData.disputes = (appData.disputes || []).map((item) => item.id === disputeId ? { ...item, ...cloneTemplate(patch) } : item);
+  appData.registeredUsers = (appData.registeredUsers || []).map((user) => ({
+    ...user,
+    disputes: Array.isArray(user.disputes)
+      ? user.disputes.map((item) => item.id === disputeId ? { ...item, ...cloneTemplate(patch) } : item)
+      : user.disputes
+  }));
+  if (session.currentUser?.id && Array.isArray(session.currentUser.disputes)) {
+    session.currentUser.disputes = session.currentUser.disputes.map((item) => item.id === disputeId ? { ...item, ...cloneTemplate(patch) } : item);
+  }
+  persistAppData();
+  persistSession();
 }
 
 function selectedWorkerJob() {
@@ -1099,9 +3071,10 @@ function selectedWorkerJob() {
 
 function selectedEmployerJob() {
   const jobs = session.currentUser?.jobs || [];
+  const fallbackTemplate = session.currentUser?.accountType === "household" ? householdEmployerTemplate : employerTemplate;
   return jobs.find((job) => job.id === session.selectedEmployerJob)
     || jobs[0]
-    || cloneTemplate(employerTemplate.jobs[0]);
+    || cloneTemplate(fallbackTemplate.jobs[0]);
 }
 
 function selectedApplicant() {
@@ -1124,11 +3097,23 @@ function selectedSearchWorker(workerList = []) {
 }
 
 function selectedQueueItem() {
-  return session.currentUser.queue.find((item) => item.id === session.selectedQueue) || session.currentUser.queue[0];
+  return session.currentUser?.queue?.find((item) => item.id === session.selectedQueue) || session.currentUser?.queue?.[0] || {
+    id: "queue_empty",
+    name: "No pending verification",
+    type: "Verification Queue",
+    region: "Global",
+    status: "Empty",
+    risk: "Low"
+  };
 }
 
 function selectedDisputeItem() {
-  return session.currentUser.disputes.find((item) => item.id === session.selectedDispute) || session.currentUser.disputes[0];
+  return session.currentUser?.disputes?.find((item) => item.id === session.selectedDispute) || session.currentUser?.disputes?.[0] || {
+    id: "dispute_empty",
+    title: "No active dispute",
+    status: "Closed",
+    note: "No dispute is currently selected."
+  };
 }
 
 
@@ -1137,6 +3122,7 @@ const dom = {
   publicShell: document.querySelector("#publicShell"),
   portalShell: document.querySelector("#portalShell"),
   signupTabs: document.querySelector("#signupTabs"),
+  signupEmployerTypeTabs: document.querySelector("#signupEmployerTypeTabs"),
   signupModeTabs: document.querySelector("#signupModeTabs"),
   signupForm: document.querySelector("#signupForm"),
   signupFeedback: document.querySelector("#signupFeedback"),
@@ -1144,6 +3130,8 @@ const dom = {
   loginForm: document.querySelector("#loginForm"),
   loginFeedback: document.querySelector("#loginFeedback"),
   companyField: document.querySelector("#companyField"),
+  companyFieldLabel: document.querySelector("#companyFieldLabel"),
+  homeAddressField: document.querySelector("#homeAddressField"),
   assistedField: document.querySelector("#assistedField"),
   voiceField: document.querySelector("#voiceField"),
   workerEasySteps: document.querySelector("#workerEasySteps"),
@@ -1176,6 +3164,11 @@ const dom = {
   authModal: document.querySelector("#authModal"),
   authBackdrop: document.querySelector("#authBackdrop"),
   authRoleTabs: document.querySelector("#authRoleTabs"),
+  authHelper: document.querySelector("#authHelper"),
+  authContactField: document.querySelector("#authContactField"),
+  authContact: document.querySelector("#authContact"),
+  authOtpRow: document.querySelector("#authOtpRow"),
+  authRequestOtp: document.querySelector("#authRequestOtp"),
   authCode: document.querySelector("#authCode"),
   authCancel: document.querySelector("#authCancel"),
   authSubmit: document.querySelector("#authSubmit"),
@@ -1206,8 +3199,11 @@ function setAuthRole(role) {
   authRole = role;
 }
 
-function openSignupRole(role) {
+function openSignupRole(role, employerType = "business") {
   setSignupRole(role);
+  if (role === "employer") {
+    setSignupEmployerType(employerType);
+  }
   renderSignupRole();
   const section = document.querySelector("#signup");
   section?.scrollIntoView({ behavior: "smooth" });
@@ -1224,10 +3220,22 @@ function openAuthModal(role = "admin") {
     button.classList.toggle("active", button.dataset.authRole === authRole);
   });
   if (dom.authFeedback) dom.authFeedback.textContent = "";
+  const liveMode = supabaseEnabled();
+  dom.authContactField?.classList.toggle("is-hidden", !liveMode);
+  dom.authOtpRow?.classList.toggle("is-hidden", !liveMode);
+  if (dom.authHelper) {
+    dom.authHelper.textContent = liveMode
+      ? "Use your approved admin or super-admin work contact to request OTP, then finish sign-in from the live Supabase session."
+      : "This entry is hidden from public users. Use a valid internal access code to continue.";
+  }
+  if (dom.authContact) {
+    dom.authContact.value = "";
+  }
   if (dom.authCode) {
     dom.authCode.value = "";
-    dom.authCode.focus();
+    if (!liveMode) dom.authCode.focus();
   }
+  if (liveMode) dom.authContact?.focus();
 }
 
 function closeAuthModal() {
@@ -1236,7 +3244,70 @@ function closeAuthModal() {
   if (dom.authFeedback) dom.authFeedback.textContent = "";
 }
 
-function submitAuth() {
+async function requestAuthOtp() {
+  const contact = dom.authContact?.value.trim();
+  if (!supabaseEnabled()) {
+    dom.authFeedback.textContent = "Live admin OTP is only available when Supabase is configured.";
+    return;
+  }
+  if (!contact) {
+    dom.authFeedback.textContent = "Enter your approved admin work contact first.";
+    return;
+  }
+  const result = await requestSupabaseOtp(contact, {
+    shouldCreateUser: false,
+    data: {
+      role: authRole
+    }
+  });
+  if (!result.ok) {
+    dom.authFeedback.textContent = `Could not start admin verification: ${result.error}`;
+    pushToast("Admin auth", result.error || "OTP request failed.");
+    renderToasts();
+    return;
+  }
+  dom.authFeedback.textContent = `OTP or magic link requested for ${contact}. Complete verification, then click Enter Secure Portal.`;
+  pushToast("Admin auth", `Verification requested for ${contact}.`);
+  renderToasts();
+}
+
+async function submitAuth() {
+  if (supabaseEnabled()) {
+    const authState = await getSupabaseProfileForCurrentSession();
+    if (!authState.ok || !authState.profile) {
+      dom.authFeedback.textContent = authState.error || "Complete the OTP sign-in first, then try again.";
+      return;
+    }
+    const role = String(authState.profile.role || "");
+    if (role !== authRole) {
+      dom.authFeedback.textContent = `Authenticated role is ${role || "unknown"}, but ${authRole} access is required.`;
+      return;
+    }
+
+    if (authRole === "admin") {
+      loginAdmin();
+      getSession().currentUser.id = authState.profile.id;
+      getSession().currentUser.fullName = authState.profile.full_name || getSession().currentUser.fullName;
+      getSession().currentUser.contact = authState.profile.contact || getSession().currentUser.contact;
+      addActivity("Authenticated live admin access opened.");
+      pushToast("Admin access", "Live admin dashboard loaded from Supabase session.");
+    } else {
+      loginSuperAdmin();
+      getSession().currentUser.id = authState.profile.id;
+      getSession().currentUser.fullName = authState.profile.full_name || getSession().currentUser.fullName;
+      getSession().currentUser.contact = authState.profile.contact || getSession().currentUser.contact;
+      addActivity("Authenticated live super admin access opened.");
+      pushToast("Super admin access", "Live super admin dashboard loaded from Supabase session.");
+    }
+
+    closeAuthModal();
+    renderPublicVisibility();
+    renderPortal();
+    renderToasts();
+    window.dispatchEvent(new CustomEvent("workshift:hydrate-supabase"));
+    return;
+  }
+
   const code = dom.authCode?.value.trim();
   const validAdmin = authRole === "admin" && validateAdminCode("admin", code);
   const validSuper = authRole === "super_admin" && validateAdminCode("super_admin", code);
@@ -1262,7 +3333,7 @@ function submitAuth() {
   renderToasts();
 }
 
-function sendOtpFeedback() {
+async function sendOtpFeedback() {
   const session = getSession();
   const contact = document.querySelector("#signupContact")?.value.trim();
   if (!contact) {
@@ -1270,6 +3341,30 @@ function sendOtpFeedback() {
     return;
   }
   setSignupStep("verify");
+  if (supabaseEnabled()) {
+    const result = await requestSupabaseOtp(contact, {
+      shouldCreateUser: true,
+      data: {
+        role: session.signupRole,
+        accountType: session.signupRole === "employer" ? session.signupEmployerType : "",
+        onboardingMode: session.signupMode
+      }
+    });
+    if (!result.ok) {
+      dom.signupFeedback.textContent = `Supabase verification could not start: ${result.error}`;
+      pushToast("Supabase auth", result.error || "Failed to start OTP.");
+      renderSignupRole();
+      renderToasts();
+      return;
+    }
+
+    const deliveryLabel = contact.includes("@") ? "magic link / email OTP" : "phone OTP";
+    dom.signupFeedback.textContent = `Supabase ${deliveryLabel} requested for ${contact}. Complete verification with the delivered code or link, then continue account setup.`;
+    pushToast("Supabase auth", `Real ${deliveryLabel} request sent for ${contact}.`);
+    renderSignupRole();
+    renderToasts();
+    return;
+  }
   const modeLabel = session.signupMode === "voice" ? "Voice onboarding call initiated" : "OTP sent";
   dom.signupFeedback.textContent = session.signupMode === "voice"
     ? `Voice signup started for ${contact}. Follow the guided prompts shown on screen.`
@@ -1292,6 +3387,189 @@ function syncVisibleSearchSelection(session, job) {
   } else {
     setSelectedSearchWorker("");
   }
+}
+
+async function syncEmployerPipelineFromSupabase(session, jobId = "") {
+  if (!supabaseEnabled() || session.currentUser?.role !== "employer") return;
+  const targetJobId = jobId || session.selectedEmployerJob;
+  const targetJob = (session.currentUser.jobs || []).find((item) => item.id === targetJobId);
+  if (!targetJob?.supabaseId) return;
+
+  const liveApplications = await listSupabaseApplicationsForJob(targetJob.supabaseId);
+  const liveApplicants = await Promise.all(liveApplications.map(async (application) => {
+    const messages = await listSupabaseChatMessages(application.id);
+    return mapSupabaseApplicationToEmployerApplicant(application, {
+      id: targetJob.supabaseId,
+      title: targetJob.title,
+      category: targetJob.category,
+      location: targetJob.location,
+      required_skills: String(targetJob.requiredSkillsText || "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean)
+    }, messages);
+  }));
+
+  session.currentUser.applicants = [
+    ...(session.currentUser.applicants || []).filter((item) => item.jobId !== targetJob.id && item.jobSupabaseId !== targetJob.supabaseId),
+    ...liveApplicants
+  ];
+  session.currentUser.hiring = [
+    ...(session.currentUser.hiring || []).filter((item) => !liveApplicants.some((applicant) => applicant.name === item.candidate)),
+    ...liveApplicants.map((applicant) => ({ candidate: applicant.name, status: applicant.status }))
+  ];
+  targetJob.applicants = liveApplicants.length;
+  targetJob.shortlisted = liveApplicants.filter((applicant) => ["Shortlisted", "Invited", "Hired", "Rated"].includes(applicant.status)).length;
+  if (!liveApplicants.some((applicant) => applicant.id === session.selectedApplicant)) {
+    session.selectedApplicant = liveApplicants[0]?.id || "";
+  }
+}
+
+async function syncWorkerPipelineFromSupabase(session) {
+  if (!supabaseEnabled() || session.currentUser?.role !== "worker") return;
+  const applications = await listSupabaseWorkerApplicationsWithMessages();
+  const mappedApplications = applications.map((application) => mapSupabaseApplicationToWorkerApplication(application, application.messages));
+  const mappedJobs = applications.map((application) => mapSupabaseApplicationToWorkerJob(application));
+  session.currentUser.applications = mappedApplications;
+  session.currentUser.jobs = mappedJobs;
+  const selectedJob = mappedJobs.find((job) => job.id === session.selectedWorkerJob) || mappedJobs[0] || null;
+  const selectedApplication = mappedApplications.find((item) => item.supabaseApplicationId === selectedJob?.supabaseApplicationId)
+    || mappedApplications[0]
+    || null;
+  session.currentUser.chatStream = selectedApplication?.chatThread || [];
+  if (selectedJob?.id) session.selectedWorkerJob = selectedJob.id;
+  await syncCurrentUserDisputesFromSupabase(session);
+  window.dispatchEvent(new CustomEvent("workshift:worker-live-sync"));
+}
+
+async function syncEmployerEscrowsFromSupabase(session) {
+  if (!supabaseEnabled() || session.currentUser?.role !== "employer") return;
+  const escrows = await listSupabaseEmployerEscrows();
+  const latestEscrow = escrows[0] || null;
+  session.currentUser.profile.payments = escrows.slice(0, 6).map((escrow) => mapSupabaseEscrowToAdminPayment(escrow));
+  session.currentUser.escrow = latestEscrow ? {
+    funded: ["funded", "released"].includes(String(latestEscrow.status || "").toLowerCase()),
+    status: formatSupabaseApplicationStatus(latestEscrow.status || "draft"),
+    autoReleaseHours: 24,
+    nextRelease: latestEscrow.released_at || latestEscrow.refunded_at || "Pending release",
+    escrowId: latestEscrow.id
+  } : session.currentUser.escrow;
+
+  const escrowByJobId = new Map(escrows.map((escrow) => [escrow.job_id, escrow]));
+  (session.currentUser.jobs || []).forEach((item) => {
+    const matched = escrowByJobId.get(item.supabaseId || item.jobSupabaseId || "");
+    if (!matched) return;
+    item.escrow = ["funded", "released"].includes(String(matched.status || "").toLowerCase());
+    item.escrowId = matched.id;
+  });
+  await syncCurrentUserDisputesFromSupabase(session);
+}
+
+async function syncAdminStateFromSupabase(session) {
+  if (!supabaseEnabled() || session.currentUser?.role !== "admin") return;
+  const [queueRecords, disputeRecords, paymentRecords] = await Promise.all([
+    listSupabaseAdminQueue(),
+    listSupabaseDisputes(),
+    listSupabaseAdminPayments()
+  ]);
+  session.currentUser.queue = queueRecords.map((item) => mapSupabaseReviewToQueueItem(item));
+  session.currentUser.disputes = disputeRecords.map((item) => mapSupabaseDisputeToAdminItem(item));
+  session.currentUser.payments = paymentRecords.map((item) => mapSupabaseEscrowToAdminPayment(item));
+  if (!session.currentUser.queue.some((item) => item.id === session.selectedQueue)) {
+    session.selectedQueue = session.currentUser.queue[0]?.id || "";
+  }
+  if (!session.currentUser.disputes.some((item) => item.id === session.selectedDispute)) {
+    session.selectedDispute = session.currentUser.disputes[0]?.id || "";
+  }
+}
+
+async function syncCurrentUserDisputesFromSupabase(session) {
+  if (!supabaseEnabled() || !["worker", "employer"].includes(session.currentUser?.role || "")) return;
+  const disputes = await listSupabaseMyDisputes();
+  session.currentUser.disputes = disputes;
+  if (!session.currentUser.disputes.some((item) => item.id === session.selectedDispute)) {
+    session.selectedDispute = session.currentUser.disputes[0]?.id || "";
+  }
+}
+
+function buildEvidenceItems(notes = "", links = "") {
+  const noteItems = String(notes || "")
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((value, index) => ({ label: `Note ${index + 1}`, value }));
+  const linkItems = String(links || "")
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((value, index) => ({ label: `Link ${index + 1}`, value }));
+  return [...noteItems, ...linkItems];
+}
+
+function buildDisputeContext(session) {
+  if (!session.currentUser || !["worker", "employer"].includes(session.currentUser.role)) return null;
+
+  if (session.currentUser.role === "worker") {
+    const job = selectedWorkerJob();
+    const application = (session.currentUser.applications || []).find((item) => item.supabaseApplicationId === job?.supabaseApplicationId)
+      || (session.currentUser.applications || []).find((item) => item.title === job?.title)
+      || null;
+    return {
+      jobId: job?.id || "",
+      jobSupabaseId: job?.supabaseId || "",
+      applicationId: application?.supabaseApplicationId ? `sbapp-${application.supabaseApplicationId}` : application?.id || "",
+      applicationSupabaseId: application?.supabaseApplicationId || "",
+      escrowId: job?.escrowId || session.currentUser.escrow?.escrowId || "",
+      againstProfileId: application?.employerId || job?.employerId || "",
+      againstName: job?.company || "Employer",
+      title: job?.title || "Current shift",
+      amount: Number(String(job?.pay || "").replace(/[^\d.]/g, "")) || Number(job?.dailyRate || 0) || 0,
+      currencyCode: getCountryRule(job?.countryCode || session.currentUser.countryCode || "NP").currencyCode
+    };
+  }
+
+  const job = selectedEmployerJob();
+  const applicant = selectedApplicant();
+  return {
+    jobId: job?.id || "",
+    jobSupabaseId: job?.supabaseId || "",
+    applicationId: applicant?.supabaseApplicationId ? `sbapp-${applicant.supabaseApplicationId}` : applicant?.id || "",
+    applicationSupabaseId: applicant?.supabaseApplicationId || "",
+    escrowId: job?.escrowId || session.currentUser.escrow?.escrowId || "",
+    againstProfileId: applicant?.workerId || "",
+    againstName: applicant?.name || "Worker",
+    title: job?.title || "Current booking",
+    amount: Number(job?.dailyRate || 0) * Math.max(1, Number(job?.headcount || 1)),
+    currencyCode: getCountryRule(job?.countryCode || session.currentUser.countryCode || "NP").currencyCode
+  };
+}
+
+function createLocalDisputeRecord(session, draft, evidence) {
+  const recordId = `disp_${Date.now()}`;
+  const amount = Number(draft.amount || 0);
+  const title = `${draft.title || "WorkShift case"}: ${draft.reason || "Dispute opened"}`;
+  const note = `${draft.requestedResolution || "Review and mediate"} / Amount ${formatCountryMoney(amount, draft.currencyCode || session.currentUser.countryCode || "NP")}`;
+  const record = {
+    id: recordId,
+    disputeId: "",
+    escrowId: draft.escrowId || "",
+    title,
+    status: "Open",
+    note,
+    amount,
+    currencyCode: draft.currencyCode || getCountryRule(session.currentUser.countryCode || "NP").currencyCode,
+    jobTitle: draft.title || "Work item",
+    againstName: draft.againstName || "Counterparty",
+    requestedResolution: draft.requestedResolution || "Review and mediate",
+    summary: draft.summary || "",
+    evidence,
+    openedByRole: session.currentUser.role,
+    openedByName: session.currentUser.accountType === "household"
+      ? (session.currentUser.homeLabel || session.currentUser.fullName)
+      : (session.currentUser.company || session.currentUser.fullName),
+    createdAt: new Date().toISOString()
+  };
+  return record;
 }
 
 function ensureApplicantForWorker(employer, worker, job) {
@@ -1363,6 +3641,69 @@ function ensureApplicantForPoolWorker(employer, candidate, job) {
   return applicant;
 }
 
+async function uploadDocumentAsset(token, file) {
+  const session = getSession();
+  if (!session.currentUser || !file) return;
+  const [, docId] = token.split(":");
+  const documentItem = session.currentUser.documents.find((item) => item.id === docId);
+  if (!documentItem) return;
+
+  documentItem.status = "Uploading";
+  documentItem.fileName = file.name;
+
+  const folder = `documents/${session.currentUser.role}/${session.currentUser.id || "local-user"}/${docId}`;
+  const result = await uploadSupabaseFile(file, { folder });
+  if (!result.ok) {
+    documentItem.status = "Missing";
+    pushToast("Upload issue", result.error || "The document could not be uploaded.");
+    renderToasts();
+    return;
+  }
+
+  documentItem.status = "Uploaded";
+  documentItem.fileName = result.data?.fileName || file.name;
+  documentItem.url = result.data?.url || "";
+  documentItem.storagePath = result.data?.path || "";
+  documentItem.storageBucket = result.data?.bucket || "";
+  documentItem.storageProvider = result.data?.provider || "local-demo";
+  addActivity(`Uploaded document ${documentItem.name}.`);
+  pushToast("Document uploaded", `${documentItem.name} is now attached and ready for review.`);
+  saveCurrentUser();
+  renderPortal();
+  renderToasts();
+}
+
+async function uploadDisputeEvidenceFiles(fileList) {
+  const session = getSession();
+  if (!session.currentUser || !fileList?.length) return;
+  const files = Array.from(fileList);
+  const existingDraft = session.disputeDraft || {};
+  const evidence = Array.isArray(existingDraft.evidence) ? [...existingDraft.evidence] : [];
+
+  for (const file of files) {
+    const folder = `evidence/${session.currentUser.role}/${session.currentUser.id || "local-user"}`;
+    const result = await uploadSupabaseFile(file, { bucket: "workshift-evidence", folder });
+    if (!result.ok) {
+      pushToast("Evidence upload issue", result.error || `Could not upload ${file.name}.`);
+      continue;
+    }
+    evidence.push({
+      label: `File: ${result.data?.fileName || file.name}`,
+      value: result.data?.url || result.data?.path || file.name,
+      fileName: result.data?.fileName || file.name,
+      url: result.data?.url || "",
+      path: result.data?.path || "",
+      bucket: result.data?.bucket || "",
+      provider: result.data?.provider || "local-demo"
+    });
+  }
+
+  saveDisputeDraft({ evidence });
+  pushToast("Evidence ready", `${files.length} evidence file${files.length === 1 ? "" : "s"} attached to the dispute draft.`);
+  renderPortal();
+  renderToasts();
+}
+
 function appendWorkerChat(worker, from, text) {
   if (!Array.isArray(worker.chatStream)) worker.chatStream = [];
   if (!worker.profile) worker.profile = {};
@@ -1399,14 +3740,16 @@ function syncWorkerJobState(worker, job, employerName, status, note) {
       id: job.id,
       title: job.title,
       company: employerName,
-      pay: `$${job.dailyRate}/day`,
+      pay: `${formatCountryMoney(job.dailyRate, job.countryCode || "NP")}/${job.payUnit || "day"}`,
       distance: job.location || "Nearby",
       status,
       applied: true,
       saved: false,
-      summary: `${job.category} / ${job.location}`,
+      summary: `${job.category} / ${(job.serviceAddress || job.location)} / ${countryName(job.countryCode || "NP")} / ${job.bookingMode || "direct booking"}`,
       skills: job.requiredSkillsText || job.category,
-      location: job.location
+      location: job.location,
+      country: job.country || countryName(job.countryCode || "NP"),
+      countryCode: job.countryCode || "NP"
     };
     worker.jobs.unshift(workerJob);
   }
@@ -1415,8 +3758,11 @@ function syncWorkerJobState(worker, job, employerName, status, note) {
   workerJob.status = status;
   workerJob.applied = true;
   workerJob.location = job.location;
-  workerJob.pay = `$${job.dailyRate}/day`;
+  workerJob.serviceAddress = job.serviceAddress || workerJob.serviceAddress || "";
+  workerJob.pay = `${formatCountryMoney(job.dailyRate, job.countryCode || "NP")}/${job.payUnit || "day"}`;
   workerJob.skills = job.requiredSkillsText || job.category;
+  workerJob.country = job.country || countryName(job.countryCode || "NP");
+  workerJob.countryCode = job.countryCode || "NP";
 
   let application = worker.applications.find((item) => item.title === job.title);
   if (!application) {
@@ -1440,11 +3786,11 @@ function exportCurrentRole() {
   link.click();
   URL.revokeObjectURL(url);
   addActivity(`Exported ${session.currentUser.role} portal data.`);
-  pushToast("complete", `${session.currentUser.role} data downloaded.`);
+  pushToast("Export complete", `${session.currentUser.role} data downloaded.`);
   renderToasts();
 }
 
-function saveProfile() {
+async function saveProfile() {
   const session = getSession();
   if (!session.currentUser) return;
   session.currentUser.fullName = document.querySelector("#profileFullName")?.value || session.currentUser.fullName;
@@ -1453,8 +3799,14 @@ function saveProfile() {
   session.currentUser.notes = document.querySelector("#profileNotes")?.value || session.currentUser.notes;
   if (session.currentUser.role === "employer") {
     session.currentUser.company = document.querySelector("#profileCompany")?.value || session.currentUser.company;
+    if (session.currentUser.accountType === "household") {
+      session.currentUser.homeLabel = document.querySelector("#profileCompany")?.value || session.currentUser.homeLabel;
+      session.currentUser.serviceAddress = document.querySelector("#profileNotes")?.value || session.currentUser.serviceAddress;
+    }
+    session.currentUser.countryCode = document.querySelector("#profileCountryCode")?.value || session.currentUser.countryCode || "NP";
   }
   if (session.currentUser.role === "worker") {
+    session.currentUser.countryCode = document.querySelector("#profileCountryCode")?.value || session.currentUser.countryCode || "NP";
     session.currentUser.availability = document.querySelector("#profileAvailability")?.value || session.currentUser.availability;
     session.currentUser.profile.experience = document.querySelector("#profileExperience")?.value || session.currentUser.profile.experience;
     session.currentUser.profile.bio = document.querySelector("#profileBio")?.value || session.currentUser.profile.bio;
@@ -1462,11 +3814,19 @@ function saveProfile() {
   addActivity(`Saved ${session.currentUser.role} profile changes.`);
   pushToast("Profile saved", "Changes are visible in the private portal.");
   saveCurrentUser();
+  if (supabaseEnabled() && ["worker", "employer"].includes(session.currentUser.role)) {
+    const result = await upsertSupabaseProfile(session.currentUser);
+    if (result.ok) {
+      pushToast("Supabase synced", "Profile changes were saved to the live backend.");
+    } else {
+      pushToast("Supabase sync issue", result.error || "Profile stayed local because the backend save failed.");
+    }
+  }
   renderPortal();
   renderToasts();
 }
 
-function updateMediaPreview(kind, file) {
+async function updateMediaPreview(kind, file) {
   const session = getSession();
   if (!session.currentUser || !file) return;
   if (kind === "worker-photo" && session.currentUser.role === "worker") {
@@ -1475,21 +3835,21 @@ function updateMediaPreview(kind, file) {
   if (kind === "employer-logo" && session.currentUser.role === "employer") {
     session.currentUser.profile.logo = file.name;
   }
-  const reader = new FileReader();
-  reader.onload = () => {
-    if (kind === "worker-photo" && session.currentUser.role === "worker") {
-      session.currentUser.profile.photoData = String(reader.result || "");
-    }
-    if (kind === "employer-logo" && session.currentUser.role === "employer") {
-      session.currentUser.profile.logoData = String(reader.result || "");
-    }
-    addActivity(`Updated ${kind} preview with ${file.name}.`);
-    pushToast("Media ready", `${file.name} is now visible across the portal.`);
-    saveCurrentUser();
-    renderPortal();
+  const folder = `media/${session.currentUser.role}/${session.currentUser.id || "local-user"}/${kind}`;
+  const result = await uploadSupabaseFile(file, { folder });
+  if (!result.ok) {
+    pushToast("Media issue", result.error || "The media preview could not be updated.");
     renderToasts();
-  };
-  reader.readAsDataURL(file);
+    return;
+  }
+  if (kind === "worker-photo" && session.currentUser.role === "worker") {
+    session.currentUser.profile.photoData = result.data?.url || "";
+  }
+  if (kind === "employer-logo" && session.currentUser.role === "employer") {
+    session.currentUser.profile.logoData = result.data?.url || "";
+  }
+  addActivity(`Updated ${kind} preview with ${file.name}.`);
+  pushToast("Media ready", `${file.name} is now visible across the portal.`);
   saveCurrentUser();
   renderPortal();
   renderToasts();
@@ -1508,7 +3868,112 @@ function markDocumentUploaded(token) {
   renderToasts();
 }
 
-function workerAction(action, payload = "") {
+function openDisputeComposer() {
+  const session = getSession();
+  const context = buildDisputeContext(session);
+  if (!context) return;
+  openDisputeModal({
+    ...context,
+    reason: "Payment issue",
+    requestedResolution: "Review and mediate",
+    summary: "",
+    evidenceNotes: "",
+    evidenceLinks: ""
+  });
+  renderPortal();
+  renderToasts();
+}
+
+async function submitDispute() {
+  const session = getSession();
+  if (!session.currentUser || !["worker", "employer"].includes(session.currentUser.role)) return;
+
+  const existingDraft = session.disputeDraft || {};
+  const draft = {
+    ...existingDraft,
+    reason: document.querySelector("#disputeReason")?.value || existingDraft.reason || "Payment issue",
+    requestedResolution: document.querySelector("#disputeResolution")?.value || existingDraft.requestedResolution || "Review and mediate",
+    amount: Number(document.querySelector("#disputeAmount")?.value || existingDraft.amount || 0),
+    summary: document.querySelector("#disputeSummary")?.value.trim() || existingDraft.summary || "",
+    evidenceNotes: document.querySelector("#disputeEvidenceNotes")?.value.trim() || existingDraft.evidenceNotes || "",
+    evidenceLinks: document.querySelector("#disputeEvidenceLinks")?.value.trim() || existingDraft.evidenceLinks || ""
+  };
+  saveDisputeDraft(draft);
+
+  if (!draft.summary) {
+    pushToast("Dispute details", "Explain what happened before submitting the dispute.");
+    renderToasts();
+    return;
+  }
+
+  const evidence = [
+    ...(Array.isArray(draft.evidence) ? draft.evidence : []),
+    ...buildEvidenceItems(draft.evidenceNotes, draft.evidenceLinks)
+  ];
+  if (!evidence.length) {
+    pushToast("Evidence needed", "Add at least one evidence note or reference link so admin can review the case.");
+    renderToasts();
+    return;
+  }
+
+  const localRecord = createLocalDisputeRecord(session, draft, evidence);
+  session.currentUser.disputes = [localRecord, ...(session.currentUser.disputes || [])];
+  session.selectedDispute = localRecord.id;
+  addDisputeRecord(localRecord);
+  if (session.currentUser.escrow?.status) {
+    session.currentUser.escrow.status = "Disputed";
+  }
+  if (session.currentUser.role === "worker") {
+    const job = selectedWorkerJob();
+    const linkedEmployer = findRegisteredEmployerByCompany(job?.company || "");
+    if (linkedEmployer) {
+      linkedEmployer.disputes = [localRecord, ...(linkedEmployer.disputes || [])];
+      saveRegisteredUserRecord(linkedEmployer);
+    }
+  } else {
+    const applicant = selectedApplicant();
+    const linkedWorker = findRegisteredWorkerByReference({ id: applicant?.id, name: applicant?.name });
+    if (linkedWorker) {
+      linkedWorker.disputes = [localRecord, ...(linkedWorker.disputes || [])];
+      saveRegisteredUserRecord(linkedWorker);
+    }
+  }
+
+  if (supabaseEnabled()) {
+    const result = await createSupabaseDispute({
+      applicationId: draft.applicationSupabaseId || null,
+      escrowId: draft.escrowId || null,
+      againstProfileId: draft.againstProfileId || null,
+      reason: draft.reason,
+      resolutionNote: `${draft.requestedResolution}: ${draft.summary}`,
+      amount: draft.amount,
+      currencyCode: draft.currencyCode || getCountryRule(session.currentUser.countryCode || "NP").currencyCode,
+      evidence
+    });
+    if (result.ok) {
+      updateStoredDispute(localRecord.id, { disputeId: result.data?.id || "" });
+      if (draft.escrowId) {
+        await updateSupabaseEscrowStatus(draft.escrowId, "disputed", `${draft.reason}: ${draft.summary}`);
+      }
+      await syncCurrentUserDisputesFromSupabase(session);
+      if (session.currentUser.role === "admin") {
+        await syncAdminStateFromSupabase(session);
+      }
+      pushToast("Supabase synced", `${draft.title || "Dispute"} was submitted to the live dispute queue.`);
+    } else {
+      pushToast("Supabase dispute issue", result.error || "The dispute stayed local because backend sync failed.");
+    }
+  }
+
+  closeDisputeModal();
+  addActivity(`Dispute opened for ${draft.title || "current job"}.`);
+  pushToast("Dispute opened", `${draft.reason} was submitted with ${evidence.length} evidence item${evidence.length === 1 ? "" : "s"}.`);
+  saveCurrentUser();
+  renderPortal();
+  renderToasts();
+}
+
+async function workerAction(action, payload = "") {
   const session = getSession();
   if ((action === "quick-open" || action === "quick-apply") && payload) {
     session.selectedWorkerJob = payload;
@@ -1529,8 +3994,20 @@ function workerAction(action, payload = "") {
       session.currentUser.applications.unshift({
         title: job.title,
         status: "Applied",
-        cover: "Applied from live marketplace board"
+        cover: "Applied from live marketplace board",
+        countryCode: job.countryCode || session.currentUser.countryCode || "NP"
       });
+    }
+    if (supabaseEnabled() && job.supabaseId) {
+      const result = await applyToSupabaseJob(job.supabaseId, `Worker applied from ${job.country || countryName(job.countryCode || "NP")} marketplace flow.`);
+      if (result.ok) {
+        const application = session.currentUser.applications.find((item) => item.title === job.title);
+        if (application) application.supabaseApplicationId = result.data?.id || "";
+        await syncWorkerPipelineFromSupabase(session);
+        pushToast("Live application", `${job.title} was submitted to the Supabase backend.`);
+      } else if (!String(result.error || "").toLowerCase().includes("duplicate")) {
+        pushToast("Application sync issue", result.error || "The application was saved locally only.");
+      }
     }
     const linkedEmployer = findRegisteredEmployerByCompany(job.company);
     if (linkedEmployer) {
@@ -1576,6 +4053,16 @@ function workerAction(action, payload = "") {
       appendEmployerApplicantChat(linkedEmployer, linkedApplicant, "Employer", "Received. Your update is visible inside the employer hiring workspace.");
       saveRegisteredUserRecord(linkedEmployer);
     }
+    const currentApplication = (session.currentUser.applications || []).find((item) => item.title === job.title);
+    if (supabaseEnabled() && currentApplication?.supabaseApplicationId) {
+      const result = await sendSupabaseChatMessage(currentApplication.supabaseApplicationId, text, "worker");
+      if (result.ok) {
+        await syncWorkerPipelineFromSupabase(session);
+        pushToast("Supabase synced", `Message saved to the live thread for ${job.title}.`);
+      } else {
+        pushToast("Supabase chat issue", result.error || "The message stayed local because backend sync failed.");
+      }
+    }
     input.value = "";
   }
   addActivity(`Worker action completed: ${action}.`);
@@ -1587,7 +4074,7 @@ function workerAction(action, payload = "") {
   renderToasts();
 }
 
-function employerAction(action, payload = "") {
+async function employerAction(action, payload = "") {
   const session = getSession();
   const job = selectedEmployerJob();
   const applicant = selectedApplicant();
@@ -1608,6 +4095,67 @@ function employerAction(action, payload = "") {
     }
     setHiringStatus(applicant.name, status);
   };
+  const syncJobIfNeeded = async (message) => {
+    if (supabaseEnabled() && job?.supabaseId) {
+      const result = await updateSupabaseJob(job.supabaseId, job);
+      if (result.ok) {
+        if (message) pushToast("Supabase synced", message);
+      } else {
+        pushToast("Supabase sync issue", result.error || "The job update stayed local because backend sync failed.");
+      }
+    }
+  };
+  const persistApplicantStatus = async (status) => {
+    const formattedStatus = formatSupabaseApplicationStatus(status);
+    setApplicantStatus(formattedStatus);
+    if (supabaseEnabled() && applicant?.supabaseApplicationId) {
+      const result = await updateSupabaseApplicationStatus(applicant.supabaseApplicationId, status);
+      if (result.ok) {
+        if (status === "hired" && job?.supabaseId) {
+          await updateSupabaseJob(job.supabaseId, { ...job, status: "Ongoing" });
+        }
+        await syncEmployerPipelineFromSupabase(session, job.id);
+        pushToast("Supabase synced", `${applicant.name} is now ${formattedStatus.toLowerCase()} in the live hiring pipeline.`);
+      } else {
+        pushToast("Supabase sync issue", result.error || "The applicant status stayed local because backend sync failed.");
+      }
+    }
+  };
+  const syncEscrowIfNeeded = async (status, note) => {
+    if (!supabaseEnabled() || !job?.supabaseId) return null;
+    const workerId = applicant?.workerId || "";
+    const result = await upsertSupabaseEscrowTransaction({
+      applicationId: applicant?.supabaseApplicationId || null,
+      jobId: job.supabaseId,
+      workerId: workerId || null,
+      countryCode: job.countryCode || session.currentUser.countryCode || "NP",
+      grossAmount: Number(job.dailyRate || 0) * Math.max(1, Number(job.headcount || 1)),
+      status,
+      note
+    });
+    if (!result.ok) {
+      pushToast("Supabase escrow issue", result.error || "Escrow stayed local because backend sync failed.");
+      return null;
+    }
+    await syncEmployerEscrowsFromSupabase(session);
+    return result.data || null;
+  };
+
+  if (action === "select-job") {
+    session.selectedEmployerJob = payload;
+    await syncEmployerPipelineFromSupabase(session, payload);
+    await syncEmployerEscrowsFromSupabase(session);
+    renderPortal();
+    renderToasts();
+    return;
+  }
+
+  if (action === "select-applicant") {
+    session.selectedApplicant = payload;
+    renderPortal();
+    renderToasts();
+    return;
+  }
 
   if (action === "open-job-modal") openJobPostModal();
   if (action === "edit-job") openJobPostModal(job.id);
@@ -1615,15 +4163,22 @@ function employerAction(action, payload = "") {
 
   if (action === "job-modal-next" || action === "job-modal-back" || action === "save-job-post") {
     const existingDraft = session.jobPostDraft || {};
+    const isHousehold = session.currentUser.accountType === "household";
     const draftPatch = {
       title: document.querySelector("#jobPostTitle") ? document.querySelector("#jobPostTitle").value.trim() : (existingDraft.title || ""),
-      category: document.querySelector("#jobPostCategory") ? document.querySelector("#jobPostCategory").value : (existingDraft.category || "Facilities"),
+      category: document.querySelector("#jobPostCategory") ? document.querySelector("#jobPostCategory").value : (existingDraft.category || (isHousehold ? "General Help" : "Facilities")),
+      countryCode: document.querySelector("#jobPostCountry") ? document.querySelector("#jobPostCountry").value : (existingDraft.countryCode || session.currentUser.countryCode || "NP"),
       location: document.querySelector("#jobPostLocation") ? document.querySelector("#jobPostLocation").value.trim() : (existingDraft.location || ""),
+      serviceAddress: document.querySelector("#jobPostServiceAddress") ? document.querySelector("#jobPostServiceAddress").value.trim() : (existingDraft.serviceAddress || ""),
       headcount: document.querySelector("#jobPostHeadcount") ? Number(document.querySelector("#jobPostHeadcount").value || 1) : Number(existingDraft.headcount || 1),
       dailyRate: document.querySelector("#jobPostRate") ? Number(document.querySelector("#jobPostRate").value || 90) : Number(existingDraft.dailyRate || 90),
+      payUnit: document.querySelector("#jobPostPayUnit") ? document.querySelector("#jobPostPayUnit").value : (existingDraft.payUnit || "Per day"),
+      bookingMode: document.querySelector("#jobPostBookingMode") ? document.querySelector("#jobPostBookingMode").value : (existingDraft.bookingMode || "Crew hire"),
       requiredSkillsText: document.querySelector("#jobPostSkills") ? document.querySelector("#jobPostSkills").value.trim() : (existingDraft.requiredSkillsText || ""),
       duration: document.querySelector("#jobPostDuration") ? document.querySelector("#jobPostDuration").value : (existingDraft.duration || "1 day"),
       shiftStart: document.querySelector("#jobPostShiftStart") ? document.querySelector("#jobPostShiftStart").value : (existingDraft.shiftStart || "06:00"),
+      startWindow: document.querySelector("#jobPostStartWindow") ? document.querySelector("#jobPostStartWindow").value.trim() : (existingDraft.startWindow || ""),
+      safetyNotes: document.querySelector("#jobPostSafetyNotes") ? document.querySelector("#jobPostSafetyNotes").value.trim() : (existingDraft.safetyNotes || ""),
       notes: document.querySelector("#jobPostNotes") ? document.querySelector("#jobPostNotes").value.trim() : (existingDraft.notes || ""),
       urgency: document.querySelector("#jobPostUrgency") ? document.querySelector("#jobPostUrgency").value : (existingDraft.urgency || "New")
     };
@@ -1639,6 +4194,12 @@ function employerAction(action, payload = "") {
       renderToasts();
       return;
     }
+    if (session.currentUser.accountType === "household" && !draft.serviceAddress) {
+      pushToast("Home booking", "Add the home or service address before publishing the request.");
+      renderToasts();
+      return;
+    }
+    const countryRule = getCountryRule(draft.countryCode || session.currentUser.countryCode || "NP");
     if (getSession().editingJobId) {
       const existingJob = session.currentUser.jobs.find((item) => item.id === getSession().editingJobId);
       if (!existingJob) {
@@ -1649,34 +4210,56 @@ function employerAction(action, payload = "") {
       Object.assign(existingJob, {
         title: draft.title,
         category: draft.category,
+        hirerType: session.currentUser.accountType || "business",
+        countryCode: draft.countryCode,
+        country: countryRule.name,
         location: draft.location,
+        serviceAddress: draft.serviceAddress,
         status: existingJob.status === "Completed" ? "Completed" : existingJob.status === "Cancelled" ? "Cancelled" : existingJob.status === "Paused" ? "Paused" : "Open",
-        spend: `$${draft.dailyRate * draft.headcount}`,
+        spend: formatCountryMoney(draft.dailyRate * draft.headcount, draft.countryCode),
         dailyRate: draft.dailyRate,
+        payUnit: draft.payUnit,
+        bookingMode: draft.bookingMode,
         urgency: draft.urgency,
         headcount: draft.headcount,
         requiredSkillsText: draft.requiredSkillsText,
         duration: draft.duration,
         shiftStart: draft.shiftStart,
+        startWindow: draft.startWindow,
+        safetyNotes: draft.safetyNotes,
         notes: draft.notes,
         biddingHistory: [...(existingJob.biddingHistory || [existingJob.dailyRate || draft.dailyRate]), draft.dailyRate]
       });
       session.selectedEmployerJob = existingJob.id;
       addActivity(`Employer updated job post ${draft.title}.`);
       pushToast("Job updated", `${draft.title} has been refreshed and republished.`);
+      if (supabaseEnabled() && existingJob.supabaseId) {
+        const result = await updateSupabaseJob(existingJob.supabaseId, existingJob);
+        if (result.ok) {
+          pushToast("Supabase synced", `${draft.title} was updated in the live backend.`);
+        } else {
+          pushToast("Supabase sync issue", result.error || "The job update stayed local because backend sync failed.");
+        }
+      }
     } else {
       const newJob = {
         id: `e${Date.now()}`,
         title: draft.title,
         category: draft.category,
+        hirerType: session.currentUser.accountType || "business",
+        countryCode: draft.countryCode,
+        country: countryRule.name,
         location: draft.location,
+        serviceAddress: draft.serviceAddress,
         status: "Open",
         applicants: 0,
         shortlisted: 0,
         escrow: false,
-        spend: `$${draft.dailyRate * draft.headcount}`,
+        spend: formatCountryMoney(draft.dailyRate * draft.headcount, draft.countryCode),
         broadcasted: false,
         dailyRate: draft.dailyRate,
+        payUnit: draft.payUnit,
+        bookingMode: draft.bookingMode,
         bidStep: 8,
         biddingHistory: [draft.dailyRate],
         urgency: draft.urgency,
@@ -1684,12 +4267,25 @@ function employerAction(action, payload = "") {
         requiredSkillsText: draft.requiredSkillsText,
         duration: draft.duration,
         shiftStart: draft.shiftStart,
+        startWindow: draft.startWindow,
+        safetyNotes: draft.safetyNotes,
         notes: draft.notes
       };
       session.currentUser.jobs.unshift(newJob);
       session.selectedEmployerJob = newJob.id;
       addActivity(`Employer created job post ${draft.title}.`);
-      pushToast("Job posted", `${draft.title} is now visible in the marketplace.`);
+      pushToast("Job posted", `${draft.title} is now visible in the marketplace for ${countryRule.name}.`);
+      if (supabaseEnabled()) {
+        const result = await createSupabaseJob(newJob);
+        if (result.ok) {
+          newJob.supabaseId = result.data?.id || "";
+          newJob.id = newJob.supabaseId ? `sb-${newJob.supabaseId}` : newJob.id;
+          session.selectedEmployerJob = newJob.id;
+          pushToast("Supabase synced", `${draft.title} was published to the live backend.`);
+        } else {
+          pushToast("Supabase sync issue", result.error || "The job was created locally because backend publishing failed.");
+        }
+      }
     }
     closeJobPostModal();
   }
@@ -1702,7 +4298,8 @@ function employerAction(action, payload = "") {
   }
   if (action === "shortlist") {
     if (applicant.status === "New") job.shortlisted += 1;
-    setApplicantStatus("Shortlisted");
+    if (supabaseEnabled() && applicant?.supabaseApplicationId) await persistApplicantStatus("shortlisted");
+    else setApplicantStatus("Shortlisted");
     applicant.score = "Shortlisted";
     const linkedWorker = findRegisteredWorkerByReference({ id: applicant.id, name: applicant.name });
     if (linkedWorker) {
@@ -1711,7 +4308,8 @@ function employerAction(action, payload = "") {
     }
   }
   if (action === "invite") {
-    setApplicantStatus("Invited");
+    if (supabaseEnabled() && applicant?.supabaseApplicationId) await persistApplicantStatus("invited");
+    else setApplicantStatus("Invited");
     const linkedWorker = findRegisteredWorkerByReference({ id: applicant.id, name: applicant.name });
     if (linkedWorker) {
       syncWorkerJobState(linkedWorker, job, session.currentUser.company || session.currentUser.fullName, "Invited", `${session.currentUser.company || "Employer"} invited you to ${job.title}.`);
@@ -1719,11 +4317,17 @@ function employerAction(action, payload = "") {
     }
   }
   if (action === "hire-worker") {
-    setApplicantStatus("Hired");
+    if (supabaseEnabled() && applicant?.supabaseApplicationId) await persistApplicantStatus("hired");
+    else setApplicantStatus("Hired");
     job.status = "Ongoing";
     if (!job.escrow) {
       job.escrow = true;
       session.currentUser.escrow.status = "Funded";
+      const fundedEscrow = await syncEscrowIfNeeded("funded", `${job.title} escrow funded during hire.`);
+      if (fundedEscrow?.id) {
+        job.escrowId = fundedEscrow.id;
+        session.currentUser.escrow.escrowId = fundedEscrow.id;
+      }
     }
     const linkedWorker = findRegisteredWorkerByReference({ id: applicant.id, name: applicant.name });
     if (linkedWorker) {
@@ -1736,12 +4340,53 @@ function employerAction(action, payload = "") {
   if (action === "escrow") {
     job.escrow = true;
     session.currentUser.escrow.status = "Funded";
-    session.currentUser.profile.payments[1].status = "Escrow funded";
+    if (session.currentUser.profile?.payments?.[1]) session.currentUser.profile.payments[1].status = "Escrow funded";
+    const fundedEscrow = await syncEscrowIfNeeded("funded", `${job.title} escrow funded from employer workspace.`);
+    if (fundedEscrow?.id) {
+      job.escrowId = fundedEscrow.id;
+      session.currentUser.escrow.escrowId = fundedEscrow.id;
+      pushToast("Supabase synced", `${job.title} escrow funding was saved to the live backend.`);
+    }
   }
   if (action === "release-escrow") {
     session.currentUser.escrow.status = "Released";
-    session.currentUser.profile.payments[1].status = "Released";
+    if (session.currentUser.profile?.payments?.[1]) session.currentUser.profile.payments[1].status = "Released";
     job.escrow = true;
+    if (supabaseEnabled() && (job.escrowId || session.currentUser.escrow?.escrowId)) {
+      const escrowId = job.escrowId || session.currentUser.escrow?.escrowId;
+      const releaseResult = await updateSupabaseEscrowStatus(escrowId, "released", `${job.title} escrow released to worker.`);
+      if (releaseResult.ok) {
+        const currencyCode = getCountryRule(job.countryCode || session.currentUser.countryCode || "NP").currencyCode;
+        const grossAmount = Number(job.dailyRate || 0) * Math.max(1, Number(job.headcount || 1));
+        const netAmount = Math.max(0, grossAmount - (grossAmount * 0.1));
+        await createSupabaseWalletEntry({
+          profileId: session.currentUser.id,
+          escrowId,
+          entryKey: `${escrowId}:employer:release`,
+          direction: "debit",
+          amount: grossAmount,
+          currencyCode,
+          status: "completed",
+          note: `${job.title} employer payout released`
+        });
+        if (applicant?.workerId) {
+          await createSupabaseWalletEntry({
+            profileId: applicant.workerId,
+            escrowId,
+            entryKey: `${escrowId}:worker:release`,
+            direction: "credit",
+            amount: netAmount,
+            currencyCode,
+            status: "completed",
+            note: `${job.title} worker payout received`
+          });
+        }
+        await syncEmployerEscrowsFromSupabase(session);
+        pushToast("Supabase synced", `${job.title} escrow release and wallet ledger updates were saved.`);
+      } else {
+        pushToast("Supabase escrow issue", releaseResult.error || "Escrow release stayed local because backend sync failed.");
+      }
+    }
   }
   if (action === "toggle-map") {
     session.currentUser.mapView = session.currentUser.mapView === "map" ? "list" : "map";
@@ -1761,11 +4406,21 @@ function employerAction(action, payload = "") {
       appendWorkerChat(linkedWorker, "Worker", "Received. I can see the update in my hiring chat.");
       saveRegisteredUserRecord(linkedWorker);
     }
+    if (supabaseEnabled() && applicant?.supabaseApplicationId) {
+      const result = await sendSupabaseChatMessage(applicant.supabaseApplicationId, text, "employer");
+      if (result.ok) {
+        await syncEmployerPipelineFromSupabase(session, job.id);
+        pushToast("Supabase synced", `Message saved to the live thread for ${applicant.name}.`);
+      } else {
+        pushToast("Supabase chat issue", result.error || "The message stayed local because backend sync failed.");
+      }
+    }
     input.value = "";
   }
   if (action === "rate-worker") {
     session.currentUser.profile.ratings.unshift({ worker: applicant.name, score: "5/5", note: "Rated after completion" });
-    setApplicantStatus("Rated");
+    if (supabaseEnabled() && applicant?.supabaseApplicationId) await persistApplicantStatus("rated");
+    else setApplicantStatus("Rated");
     const linkedWorker = findRegisteredWorkerByReference({ id: applicant.id, name: applicant.name });
     if (linkedWorker) {
       syncWorkerJobState(linkedWorker, job, session.currentUser.company || session.currentUser.fullName, "Rated", `${session.currentUser.company || "Employer"} rated your work on ${job.title}.`);
@@ -1787,24 +4442,28 @@ function employerAction(action, payload = "") {
     job.urgency = "Boosted";
     const spendAmount = Number(String(job.spend).replace(/[^0-9.]/g, "")) || 0;
     const projectedSpend = spendAmount + (raiseBy * Math.max(1, job.shortlisted || 1));
-    job.spend = `$${projectedSpend.toLocaleString()}`;
-    addActivity(`Employer raised wage bid for ${job.title} by $${raiseBy}/day.`);
-    pushToast("Wage bid raised", `${job.title} now offers $${job.dailyRate}/day and is attracting more workers.`);
+    job.spend = formatCountryMoney(projectedSpend.toLocaleString().replace(/,/g, ""), job.countryCode || session.currentUser.countryCode || "NP");
+    addActivity(`Employer raised wage bid for ${job.title} by ${formatCountryMoney(raiseBy, job.countryCode || session.currentUser.countryCode || "NP")}/day.`);
+    pushToast("Wage bid raised", `${job.title} now offers ${formatCountryMoney(job.dailyRate, job.countryCode || session.currentUser.countryCode || "NP")}/day and is attracting more workers.`);
+    await syncJobIfNeeded(`${job.title} wage changes were saved to the live backend.`);
   }
   if (action === "pause-job") {
     job.status = "Paused";
     addActivity(`Employer paused job ${job.title}.`);
     pushToast("Job paused", `${job.title} is hidden from active recruiting until reopened.`);
+    await syncJobIfNeeded(`${job.title} was paused in the live backend.`);
   }
   if (action === "reopen-job") {
     job.status = "Open";
     addActivity(`Employer reopened job ${job.title}.`);
     pushToast("Job reopened", `${job.title} is live in the marketplace again.`);
+    await syncJobIfNeeded(`${job.title} was reopened in the live backend.`);
   }
   if (action === "cancel-job") {
     job.status = "Cancelled";
     addActivity(`Employer cancelled job ${job.title}.`);
     pushToast("Job cancelled", `${job.title} was moved out of the active hiring pipeline.`);
+    await syncJobIfNeeded(`${job.title} was cancelled in the live backend.`);
   }
   if (action === "search-skill") {
     const skill = document.querySelector("#employerSearchSkill")?.value.trim() || "";
@@ -1963,7 +4622,8 @@ function employerAction(action, payload = "") {
   renderToasts();
 }
 
-function adminAction(action) {
+async function adminAction(action) {
+  const session = getSession();
   const queue = selectedQueueItem();
   const dispute = selectedDisputeItem();
   if (!queue && (action === "approve" || action === "rerequest" || action === "suspend")) return;
@@ -1971,17 +4631,79 @@ function adminAction(action) {
   if (action === "approve") {
     queue.status = "Approved";
     updateApproval(queue.accountId, "Approved");
+    if (supabaseEnabled() && queue.reviewId && queue.accountId) {
+      const result = await updateSupabaseVerificationStatus(queue.reviewId, queue.accountId, "Approved", "Approved by admin dashboard.");
+      if (result.ok) {
+        await syncAdminStateFromSupabase(session);
+        pushToast("Supabase synced", `${queue.name} was approved in the live verification queue.`);
+      } else {
+        pushToast("Supabase admin issue", result.error || "Verification stayed local because backend sync failed.");
+      }
+    }
   }
   if (action === "rerequest") {
     queue.status = "Re-upload requested";
     updateApproval(queue.accountId, "Re-upload requested");
+    if (supabaseEnabled() && queue.reviewId && queue.accountId) {
+      const result = await updateSupabaseVerificationStatus(queue.reviewId, queue.accountId, "Re-upload requested", "Admin requested another document upload.");
+      if (result.ok) {
+        await syncAdminStateFromSupabase(session);
+        pushToast("Supabase synced", `${queue.name} was moved to re-upload requested in the live queue.`);
+      } else {
+        pushToast("Supabase admin issue", result.error || "Verification stayed local because backend sync failed.");
+      }
+    }
   }
   if (action === "suspend") {
     queue.status = "Suspended";
     updateApproval(queue.accountId, "Suspended");
+    if (supabaseEnabled() && queue.reviewId && queue.accountId) {
+      const result = await updateSupabaseVerificationStatus(queue.reviewId, queue.accountId, "Suspended", "Admin suspended the account during verification review.");
+      if (result.ok) {
+        await syncAdminStateFromSupabase(session);
+        pushToast("Supabase synced", `${queue.name} was suspended in the live queue.`);
+      } else {
+        pushToast("Supabase admin issue", result.error || "Verification stayed local because backend sync failed.");
+      }
+    }
   }
-  if (action === "resolve") dispute.status = "Closed";
-  if (action === "refund") dispute.status = "Refund issued";
+  if (action === "resolve") {
+    dispute.status = "Closed";
+    dispute.note = "Closed by admin review.";
+    updateStoredDispute(dispute.id, { status: "Closed", note: "Closed by admin review." });
+    if (supabaseEnabled() && dispute.disputeId) {
+      const result = await updateSupabaseDisputeStatus(dispute.disputeId, "Closed", "Closed by admin review.");
+      if (result.ok) {
+        await syncAdminStateFromSupabase(session);
+        pushToast("Supabase synced", `${dispute.title} was closed in the live dispute inbox.`);
+      } else {
+        pushToast("Supabase admin issue", result.error || "Dispute stayed local because backend sync failed.");
+      }
+    }
+  }
+  if (action === "refund") {
+    dispute.status = "Refund issued";
+    dispute.note = "Admin issued a partial refund.";
+    updateStoredDispute(dispute.id, { status: "Refund issued", note: "Admin issued a partial refund." });
+    if (supabaseEnabled() && dispute.disputeId) {
+      const result = await updateSupabaseDisputeStatus(dispute.disputeId, "Refund issued", "Admin issued a partial refund.");
+      if (result.ok) {
+        await syncAdminStateFromSupabase(session);
+        const latestEscrow = (session.currentUser.payments || []).find((item) => item.id === dispute.escrowId);
+        if (latestEscrow?.id) {
+          await updateSupabaseEscrowStatus(latestEscrow.id, "refunded", "Refund issued by admin dispute workflow.");
+        }
+        pushToast("Supabase synced", `${dispute.title} refund was saved to the live backend.`);
+      } else {
+        pushToast("Supabase admin issue", result.error || "Refund stayed local because backend sync failed.");
+      }
+    } else if (supabaseEnabled()) {
+      const payment = session.currentUser.payments?.[0];
+      if (payment?.id) {
+        await updateSupabaseEscrowStatus(payment.id, "refunded", "Refund issued from admin dashboard.");
+      }
+    }
+  }
   addActivity(`Admin action completed: ${action}.`);
   pushToast("Admin update", `${action} action processed successfully.`);
   renderPortal();
@@ -2024,13 +4746,18 @@ function superAdminAction(action, payload = "") {
 
 
 // FILE: scripts/renderers/shared.js
+
 function mapsUrl(label) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(label)}`;
 }
 
 function formatAccountId(user) {
   if (!user?.id) return "Pending generation";
-  const prefix = user.role === "employer" ? "WS-EMP" : "WS-WKR";
+  const prefix = user.role === "employer"
+    ? user.accountType === "household"
+      ? "WS-HME"
+      : "WS-EMP"
+    : "WS-WKR";
   const suffix = user.id.split("_").at(-1)?.slice(-6) || "000000";
   return `${prefix}-${suffix.toUpperCase()}`;
 }
@@ -2046,13 +4773,13 @@ function identityCard(user) {
         ${mediaSrc ? `<img class="identity-media" src="${mediaSrc}" alt="${mediaLabel}">` : `<div class="identity-media identity-fallback">${mediaLabel.slice(0, 2).toUpperCase()}</div>`}
         <div>
         <p class="eyebrow">Verified Identity</p>
-        <h3>${user.role === "employer" ? "Employer" : "Worker"} ID ${formatAccountId(user)}</h3>
+        <h3>${user.role === "employer" ? user.accountType === "household" ? "Home Hirer" : "Employer" : "Worker"} ID ${formatAccountId(user)}</h3>
         <p>${approvedText}</p>
         </div>
       </div>
       <div class="button-row">
         <span class="status-pill ${statusTone}">${user.verificationStatus}</span>
-        <span class="icon-chip">${user.role === "employer" ? "Portal access" : "Ready for shifts"}</span>
+        <span class="icon-chip">${user.role === "employer" ? user.accountType === "household" ? "Home booking access" : "Portal access" : "Ready for shifts"}</span>
       </div>
     </section>
   `;
@@ -2228,6 +4955,63 @@ function chatFeed(messages) {
   `;
 }
 
+function evidenceList(evidence = []) {
+  const items = Array.isArray(evidence) ? evidence.filter((item) => item?.label || item?.value) : [];
+  if (!items.length) {
+    return `<article class="info-card"><strong>No evidence attached yet</strong><p>Add notes, links, screenshots, or job proof references when opening a dispute.</p></article>`;
+  }
+  return items.map((item) => `
+    <article class="info-card">
+      <strong>${item.label || "Evidence item"}</strong>
+      <p>${item.value || ""}</p>
+    </article>
+  `).join("");
+}
+
+function disputeComposer(user, session) {
+  if (!["worker", "employer"].includes(user?.role || "")) return "";
+  const draft = session.disputeDraft || {};
+  const currencyRule = getCountryRule(draft.currencyCode || user.countryCode || "NP");
+  const accountLabel = user.accountType === "household" ? "home hirer" : user.role;
+  return `
+    <div class="job-post-modal ${session.disputeModalOpen ? "" : "is-hidden"}">
+      <div class="job-post-backdrop" data-close-dispute></div>
+      <div class="job-post-panel">
+        <div class="job-post-header">
+          <div>
+            <p class="eyebrow">Safety And Payments</p>
+            <h3>Open Dispute</h3>
+            <p>Flag payment, service, safety, or quality issues for admin review. This creates a real case record for the ${accountLabel} side and the admin inbox.</p>
+          </div>
+          <button class="ghost-button small-button" type="button" data-close-dispute>Close</button>
+        </div>
+        <div class="document-grid">
+          <article class="info-card"><strong>Job</strong><p>${draft.title || "Current booking or shift"}</p></article>
+          <article class="info-card"><strong>Against</strong><p>${draft.againstName || "Counterparty will be attached automatically"}</p></article>
+          <article class="info-card"><strong>Escrow</strong><p>${draft.escrowId || "No escrow linked yet"}</p></article>
+          <article class="info-card"><strong>Currency</strong><p>${currencyRule.currencyCode}</p></article>
+        </div>
+        <div class="profile-grid">
+          <label><span>Issue Type</span><select id="disputeReason"><option ${draft.reason === "Payment issue" ? "selected" : ""}>Payment issue</option><option ${draft.reason === "No-show or late arrival" ? "selected" : ""}>No-show or late arrival</option><option ${draft.reason === "Quality issue" ? "selected" : ""}>Quality issue</option><option ${draft.reason === "Scope mismatch" ? "selected" : ""}>Scope mismatch</option><option ${draft.reason === "Safety concern" ? "selected" : ""}>Safety concern</option><option ${draft.reason === "Damage claim" ? "selected" : ""}>Damage claim</option><option ${draft.reason === "Harassment or misconduct" ? "selected" : ""}>Harassment or misconduct</option></select></label>
+          <label><span>Requested Resolution</span><select id="disputeResolution"><option ${draft.requestedResolution === "Review and mediate" ? "selected" : ""}>Review and mediate</option><option ${draft.requestedResolution === "Partial refund" ? "selected" : ""}>Partial refund</option><option ${draft.requestedResolution === "Full refund" ? "selected" : ""}>Full refund</option><option ${draft.requestedResolution === "Release held payment" ? "selected" : ""}>Release held payment</option><option ${draft.requestedResolution === "Safety review" ? "selected" : ""}>Safety review</option></select></label>
+          <label><span>Amount In Question (${currencyRule.currencyCode})</span><input id="disputeAmount" type="number" min="0" value="${Number(draft.amount || 0)}"></label>
+        </div>
+        <label><span>What happened?</span><textarea id="disputeSummary" placeholder="Explain the issue, what was agreed, what happened instead, and what outcome you are requesting.">${draft.summary || ""}</textarea></label>
+        <label><span>Evidence Notes</span><textarea id="disputeEvidenceNotes" placeholder="One line per item. Example: Before photo at 10:12 AM&#10;Chat promise to arrive by 6:30 AM&#10;Completion proof missing">${draft.evidenceNotes || ""}</textarea></label>
+        <label><span>Evidence Links Or References</span><textarea id="disputeEvidenceLinks" placeholder="Paste storage links, screenshot URLs, payment references, or external ticket IDs on separate lines.">${draft.evidenceLinks || ""}</textarea></label>
+        <label><span>Upload Evidence Files</span><input id="disputeEvidenceFiles" type="file" accept="image/*,.pdf,.doc,.docx" multiple data-dispute-file-upload></label>
+        <div class="document-grid">
+          ${evidenceList(draft.evidence || [])}
+        </div>
+        <div class="button-row">
+          <button class="secondary-button small-button" type="button" data-close-dispute>Cancel</button>
+          <button class="primary-button small-button" type="button" data-submit-dispute>Submit Dispute</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function workerMapBoard(jobs) {
   return `
     <div class="map-board">
@@ -2259,7 +5043,10 @@ function documentList(documents, prefix) {
     <article class="info-card">
       <strong>${doc.name}</strong>
       <p>Status: ${doc.status}${doc.required ? " / Required" : " / Optional"}</p>
-      <button class="secondary-button small-button" type="button" data-upload="${prefix}:${doc.id}">Mark Uploaded</button>
+      <p>${doc.fileName ? `File: ${doc.fileName}` : "No file selected yet."}</p>
+      ${doc.url ? `<p><a href="${doc.url}" target="_blank" rel="noreferrer">Open uploaded file</a></p>` : ""}
+      <input type="file" accept="image/*,.pdf,.doc,.docx" data-document-file-upload="${prefix}:${doc.id}">
+      <button class="secondary-button small-button" type="button" data-upload="${prefix}:${doc.id}">${doc.status === "Uploaded" ? "Mark Reviewed Locally" : "Use Local Mark Uploaded"}</button>
     </article>
   `).join("");
 }
@@ -2305,56 +5092,80 @@ function workerJobModal(user, session, job) {
 function jobPostWizard(user, session) {
   const draft = session.jobPostDraft || {};
   const isEditing = Boolean(session.editingJobId);
+  const isHousehold = user.accountType === "household";
+  const countryOptions = listCountryRules();
+  const countryRule = getCountryRule(draft.countryCode || user.countryCode || "NP");
   return `
     <div class="job-post-modal ${session.jobPostModalOpen ? "" : "is-hidden"}">
       <div class="job-post-backdrop" data-job-modal-cancel></div>
       <div class="job-post-panel">
         <div class="job-post-header">
           <div>
-            <p class="eyebrow">Hiring Wizard</p>
-            <h3>${isEditing ? "Edit Job Post" : "Post New Job"}</h3>
-            <p>${isEditing ? "Refine the role, pay, and hiring details before republishing." : "Build a strong job post with the details workers care about most."}</p>
+            <p class="eyebrow">${isHousehold ? "Home Booking Wizard" : "Hiring Wizard"}</p>
+            <h3>${isEditing ? (isHousehold ? "Edit Home Request" : "Edit Job Post") : (isHousehold ? "Post Home Service Request" : "Post New Job")}</h3>
+            <p>${isEditing ? "Refine the role, pay, timing, and trust details before republishing." : isHousehold ? "Keep it simple: describe the home task, time window, and budget, then review trusted nearby helpers." : "Build a strong job post with the details workers care about most."}</p>
           </div>
           <button class="ghost-button small-button" type="button" data-job-modal-cancel>Close</button>
         </div>
         <div class="wizard-steps">
-          <span class="wizard-step ${session.jobPostStep === 1 ? "active" : ""}">Role</span>
-          <span class="wizard-step ${session.jobPostStep === 2 ? "active" : ""}">Pay</span>
+          <span class="wizard-step ${session.jobPostStep === 1 ? "active" : ""}">${isHousehold ? "Service" : "Role"}</span>
+          <span class="wizard-step ${session.jobPostStep === 2 ? "active" : ""}">${isHousehold ? "Budget" : "Pay"}</span>
           <span class="wizard-step ${session.jobPostStep === 3 ? "active" : ""}">Review</span>
         </div>
 
         ${session.jobPostStep === 1 ? `
         <div class="profile-grid">
-          <label><span>Job title</span><input id="jobPostTitle" type="text" value="${draft.title || ""}" placeholder="50 harvest workers"></label>
-          <label><span>Category</span><select id="jobPostCategory"><option ${draft.category === "Agriculture" ? "selected" : ""}>Agriculture</option><option ${draft.category === "Hospitality" ? "selected" : ""}>Hospitality</option><option ${draft.category === "Warehouse" ? "selected" : ""}>Warehouse</option><option ${draft.category === "Construction" ? "selected" : ""}>Construction</option><option ${draft.category === "Facilities" ? "selected" : ""}>Facilities</option></select></label>
-          <label><span>Location</span><input id="jobPostLocation" type="text" value="${draft.location || ""}" placeholder="Kathmandu Valley"></label>
-          <label><span>Headcount</span><input id="jobPostHeadcount" type="number" min="1" value="${draft.headcount || 1}"></label>
-          <label><span>Shift start</span><input id="jobPostShiftStart" type="time" value="${draft.shiftStart || "06:00"}"></label>
-          <label><span>Duration</span><select id="jobPostDuration"><option ${draft.duration === "1 day" ? "selected" : ""}>1 day</option><option ${draft.duration === "2-3 days" ? "selected" : ""}>2-3 days</option><option ${draft.duration === "1 week" ? "selected" : ""}>1 week</option><option ${draft.duration === "Project based" ? "selected" : ""}>Project based</option></select></label>
+          <label><span>${isHousehold ? "Service title" : "Job title"}</span><input id="jobPostTitle" type="text" value="${draft.title || ""}" placeholder="${isHousehold ? "Fix kitchen sink leak" : "50 harvest workers"}"></label>
+          <label><span>Category</span><select id="jobPostCategory">${isHousehold
+            ? `<option ${draft.category === "Plumbing" ? "selected" : ""}>Plumbing</option><option ${draft.category === "Electrician" ? "selected" : ""}>Electrician</option><option ${draft.category === "Painter" ? "selected" : ""}>Painter</option><option ${draft.category === "Cleaner" ? "selected" : ""}>Cleaner</option><option ${draft.category === "Nanny" ? "selected" : ""}>Nanny</option><option ${draft.category === "Elder Care" ? "selected" : ""}>Elder Care</option><option ${draft.category === "General Help" ? "selected" : ""}>General Help</option>`
+            : `<option ${draft.category === "Agriculture" ? "selected" : ""}>Agriculture</option><option ${draft.category === "Hospitality" ? "selected" : ""}>Hospitality</option><option ${draft.category === "Warehouse" ? "selected" : ""}>Warehouse</option><option ${draft.category === "Construction" ? "selected" : ""}>Construction</option><option ${draft.category === "Facilities" ? "selected" : ""}>Facilities</option>`}</select></label>
+          <label><span>Country</span><select id="jobPostCountry">${countryOptions.map((country) => `<option value="${country.code}" ${country.code === (draft.countryCode || user.countryCode || "NP") ? "selected" : ""}>${country.name}</option>`).join("")}</select></label>
+          <label><span>${isHousehold ? "Neighborhood / Area" : "Location"}</span><input id="jobPostLocation" type="text" value="${draft.location || ""}" placeholder="${isHousehold ? "Jawalakhel, Lalitpur" : "Kathmandu Valley"}"></label>
+          <label><span>${isHousehold ? "Home / Service Address" : "Headcount"}</span>${isHousehold
+            ? `<input id="jobPostServiceAddress" type="text" value="${draft.serviceAddress || ""}" placeholder="Street, area, apartment, or home address">`
+            : `<input id="jobPostHeadcount" type="number" min="1" value="${draft.headcount || 1}">`}</label>
+          <label><span>${isHousehold ? "Preferred Start Time" : "Shift start"}</span><input id="jobPostShiftStart" type="time" value="${draft.shiftStart || "06:00"}"></label>
+          <label><span>${isHousehold ? "Duration" : "Duration"}</span><select id="jobPostDuration">${isHousehold
+            ? `<option ${draft.duration === "1-2 hours" ? "selected" : ""}>1-2 hours</option><option ${draft.duration === "Half day" ? "selected" : ""}>Half day</option><option ${draft.duration === "Full day" ? "selected" : ""}>Full day</option><option ${draft.duration === "Repeat booking" ? "selected" : ""}>Repeat booking</option>`
+            : `<option ${draft.duration === "1 day" ? "selected" : ""}>1 day</option><option ${draft.duration === "2-3 days" ? "selected" : ""}>2-3 days</option><option ${draft.duration === "1 week" ? "selected" : ""}>1 week</option><option ${draft.duration === "Project based" ? "selected" : ""}>Project based</option>`}</select></label>
+          ${isHousehold ? `<label><span>Booking Mode</span><select id="jobPostBookingMode"><option ${draft.bookingMode === "Direct booking" ? "selected" : ""}>Direct booking</option><option ${draft.bookingMode === "Request quotes" ? "selected" : ""}>Request quotes</option><option ${draft.bookingMode === "Repeat family" ? "selected" : ""}>Repeat family</option></select></label>` : ""}
+          ${isHousehold ? `<label><span>Arrival Window</span><input id="jobPostStartWindow" type="text" value="${draft.startWindow || ""}" placeholder="Today 2 PM - 4 PM"></label>` : ""}
         </div>
         ` : ""}
 
         ${session.jobPostStep === 2 ? `
         <div class="profile-grid">
-          <label><span>Daily pay</span><input id="jobPostRate" type="number" min="1" value="${draft.dailyRate || 90}"></label>
-          <label><span>Urgency</span><select id="jobPostUrgency"><option ${draft.urgency === "New" ? "selected" : ""}>New</option><option ${draft.urgency === "High" ? "selected" : ""}>High</option><option ${draft.urgency === "Urgent" ? "selected" : ""}>Urgent</option></select></label>
-          <label class="job-post-wide"><span>Skills needed</span><input id="jobPostSkills" type="text" value="${draft.requiredSkillsText || ""}" placeholder="harvest, packing, punctual crew"></label>
-          <label class="job-post-wide"><span>Notes for workers</span><textarea id="jobPostNotes" placeholder="What should workers know before arriving?">${draft.notes || ""}</textarea></label>
+          <label><span>${isHousehold ? "Budget" : "Daily pay"} (${countryRule.currencyCode})</span><input id="jobPostRate" type="number" min="1" value="${draft.dailyRate || 90}"></label>
+          <label><span>${isHousehold ? "Pay Unit" : "Urgency"}</span>${isHousehold
+            ? `<select id="jobPostPayUnit"><option ${draft.payUnit === "Fixed job" ? "selected" : ""}>Fixed job</option><option ${draft.payUnit === "Hourly" ? "selected" : ""}>Hourly</option><option ${draft.payUnit === "Half day" ? "selected" : ""}>Half day</option><option ${draft.payUnit === "Full day" ? "selected" : ""}>Full day</option></select>`
+            : `<select id="jobPostUrgency"><option ${draft.urgency === "New" ? "selected" : ""}>New</option><option ${draft.urgency === "High" ? "selected" : ""}>High</option><option ${draft.urgency === "Urgent" ? "selected" : ""}>Urgent</option></select>`}</label>
+          ${isHousehold ? `<label><span>Helpers Needed</span><input id="jobPostHeadcount" type="number" min="1" value="${draft.headcount || 1}"></label>` : ""}
+          <label class="job-post-wide"><span>${isHousehold ? "Skills or service details" : "Skills needed"}</span><input id="jobPostSkills" type="text" value="${draft.requiredSkillsText || ""}" placeholder="${isHousehold ? "leak repair, bring tools, child care experience" : "harvest, packing, punctual crew"}"></label>
+          <label class="job-post-wide"><span>${isHousehold ? "Home notes and instructions" : "Notes for workers"}</span><textarea id="jobPostNotes" placeholder="${isHousehold ? "Parking, pet in house, tools provided, repeat family preference" : "What should workers know before arriving?"}">${draft.notes || ""}</textarea></label>
+          ${isHousehold ? `<label class="job-post-wide"><span>Safety and trust notes</span><textarea id="jobPostSafetyNotes" placeholder="Emergency contact, child or elder care notes, background-check preference">${draft.safetyNotes || ""}</textarea></label>` : ""}
         </div>
         <div class="quick-card premium-callout">
           <strong>Projected spend</strong>
-          <p>$${Number((draft.dailyRate || 90) * (draft.headcount || 1)).toLocaleString()} for ${draft.headcount || 1} worker(s)</p>
+          <p>${formatCountryMoney((draft.dailyRate || 90) * (draft.headcount || 1), draft.countryCode || user.countryCode || "NP")} for ${draft.headcount || 1} worker(s)${isHousehold ? ` / ${draft.payUnit || "Fixed job"}` : ""}</p>
+        </div>
+        <div class="document-grid">
+          <article class="info-card"><strong>Phone Auth</strong><p>${countryRule.phoneAuthMode}</p></article>
+          <article class="info-card"><strong>Payout Rail</strong><p>${countryRule.payoutRail}</p></article>
+          <article class="info-card"><strong>Verification Rule</strong><p>${isHousehold ? `${countryRule.verificationRule} / plus home-address confirmation for trust-sensitive bookings.` : countryRule.verificationRule}</p></article>
+          <article class="info-card"><strong>Dial Code</strong><p>${countryRule.dialCode}</p></article>
         </div>
         ` : ""}
 
         ${session.jobPostStep === 3 ? `
         <div class="document-grid">
-          <article class="info-card"><strong>Role</strong><p>${draft.title || "Untitled role"} / ${draft.category || "No category"} / ${draft.location || "No location"}</p></article>
-          <article class="info-card"><strong>Shift</strong><p>${draft.shiftStart || "06:00"} / ${draft.duration || "1 day"} / ${draft.headcount || 1} worker(s)</p></article>
-          <article class="info-card"><strong>Offer</strong><p>$${draft.dailyRate || 90}/day / urgency ${draft.urgency || "New"}</p></article>
+          <article class="info-card"><strong>${isHousehold ? "Service" : "Role"}</strong><p>${draft.title || "Untitled role"} / ${draft.category || "No category"} / ${countryName(draft.countryCode || user.countryCode || "NP")} / ${draft.location || "No location"}</p></article>
+          <article class="info-card"><strong>${isHousehold ? "Visit Window" : "Shift"}</strong><p>${draft.shiftStart || "06:00"} / ${draft.duration || "1 day"} / ${draft.headcount || 1} worker(s)${draft.startWindow ? ` / ${draft.startWindow}` : ""}</p></article>
+          <article class="info-card"><strong>${isHousehold ? "Budget" : "Offer"}</strong><p>${formatCountryMoney(draft.dailyRate || 90, draft.countryCode || user.countryCode || "NP")}/${isHousehold ? (draft.payUnit || "Fixed job") : "day"} / urgency ${draft.urgency || "New"}</p></article>
           <article class="info-card"><strong>Skills</strong><p>${draft.requiredSkillsText || "No skills entered yet"}</p></article>
-          <article class="info-card"><strong>Employer</strong><p>${user.company || user.fullName}</p></article>
-          <article class="info-card"><strong>Worker notes</strong><p>${draft.notes || "No extra notes added."}</p></article>
+          <article class="info-card"><strong>${isHousehold ? "Home Hirer" : "Employer"}</strong><p>${user.homeLabel || user.company || user.fullName}</p></article>
+          <article class="info-card"><strong>${isHousehold ? "Home Address" : "Worker notes"}</strong><p>${isHousehold ? (draft.serviceAddress || "No service address added.") : (draft.notes || "No extra notes added.")}</p></article>
+          ${isHousehold ? `<article class="info-card"><strong>Trust Notes</strong><p>${draft.safetyNotes || "Standard home booking trust rules apply."}</p></article>` : ""}
+          <article class="info-card"><strong>Verification Rule</strong><p>${countryRule.verificationRule}</p></article>
         </div>
       ` : ""}
 
@@ -2386,32 +5197,42 @@ function workerDashboard(user) {
   const login = user.login || {};
   const withdrawal = profile.withdrawal || {};
   const reputation = user.reputation || {};
+  const countryRule = getCountryRule(user.countryCode || "NP");
+  const countryOptions = listCountryRules();
   const fallbackJob = availableJobs[0] || {
     id: "job_fallback",
     title: "No live job available",
     company: "WorkShift",
-    pay: "$0/day",
+    pay: `${formatCountryMoney(0, user.countryCode || "NP")}/day`,
     distance: "Location pending",
     skills: "No skills listed",
     summary: "Job marketplace is loading.",
     status: "Open",
-    location: "Nepal"
+    location: "Kathmandu Valley",
+    country: "Nepal"
   };
   const currentJob = userJobs.find((item) => item.applied) || job || fallbackJob;
   const currentApplication = applications.find((item) => item.title === currentJob.title) || applications[0];
+  const currentChatStream = Array.isArray(currentApplication?.chatThread) && currentApplication.chatThread.length
+    ? currentApplication.chatThread
+    : chatStream;
   const session = getSession();
   const activeView = session.activePortalView;
   const savedJobs = userJobs.filter((item) => item.saved);
   const workerSearchTerm = String(session.workerJobSearchTerm || "").trim().toLowerCase();
   const workerSearchLocation = String(session.workerJobSearchLocation || "").trim().toLowerCase();
-  const workerSearchCountry = session.workerJobSearchCountry || "Nepal";
+  const workerSearchCountry = session.workerJobSearchCountry || "All Countries";
   const allLocations = Array.from(new Set(availableJobs.map((item) => item.location || item.distance).filter(Boolean)));
   const discoverableJobs = availableJobs.filter((item) => {
     const haystack = [item.title, item.company, item.skills, item.summary].join(" ").toLowerCase();
     const itemLocation = String(item.location || item.distance || "").toLowerCase();
     const matchesTerm = !workerSearchTerm || haystack.includes(workerSearchTerm);
     const matchesLocation = !workerSearchLocation || itemLocation.includes(workerSearchLocation);
-    const matchesCountry = !workerSearchCountry || workerSearchCountry === "Nepal";
+    const itemCountry = String(item.country || "Nepal").toLowerCase();
+    const normalizedCountryFilter = String(workerSearchCountry || "").trim().toLowerCase();
+    const matchesCountry = !normalizedCountryFilter
+      || normalizedCountryFilter === "all countries"
+      || itemCountry === normalizedCountryFilter;
     return matchesTerm && matchesLocation && matchesCountry;
   });
   const appliedJobs = availableJobs.filter((item) => {
@@ -2452,6 +5273,7 @@ function workerDashboard(user) {
     <div class="stack">
       ${identityCard(user)}
       ${workerJobModal(user, session, job)}
+      ${disputeComposer(user, session)}
 
       ${(activeView === "dashboard" || activeView === "jobs") ? `
       <section class="panel">
@@ -2460,11 +5282,11 @@ function workerDashboard(user) {
             <span class="avatar-chip">${(user.fullName || "WU").slice(0, 2).toUpperCase()}</span>
             <div>
               <strong>${user.fullName || "Worker User"}</strong>
-              <p>Wallet balance $${user.wallet}</p>
+              <p>Wallet balance ${formatCountryMoney(user.wallet, user.countryCode || "NP")}</p>
             </div>
           </div>
           <div class="button-row">
-            <span class="icon-chip">Wallet $${user.wallet}</span>
+            <span class="icon-chip">Wallet ${formatCountryMoney(user.wallet, user.countryCode || "NP")}</span>
             <span class="icon-chip">Bell 2</span>
           </div>
         </div>
@@ -2488,8 +5310,8 @@ function workerDashboard(user) {
           </article>
           <article class="job-card selected">
             <header><div><strong>Chat With ${currentJob.company}</strong><div>${currentJob.title} / direct employer thread</div></div><span class="status-pill ${user.availability}">${user.availability}</span></header>
-            <div class="meta-row"><span>${currentApplication?.status || "Open"}</span><span>${chatStream.length} messages</span><span>${currentJob.pay}</span></div>
-            ${chatFeed(chatStream)}
+            <div class="meta-row"><span>${currentApplication?.status || "Open"}</span><span>${currentChatStream.length} messages</span><span>${currentJob.pay}</span></div>
+            ${chatFeed(currentChatStream)}
             <div class="button-row">
               <input id="chatInput" type="text" placeholder="Message ${currentJob.company}">
               <button class="primary-button small-button" type="button" data-worker-send-chat>Send</button>
@@ -2505,7 +5327,7 @@ function workerDashboard(user) {
         <div class="document-grid">
           <article class="info-card"><strong>Selected Job</strong><p>${currentJob.title} / ${currentJob.company}</p></article>
           <article class="info-card"><strong>Application Status</strong><p>${currentApplication?.status || workerJobStatus(user, currentJob).label}</p></article>
-          <article class="info-card"><strong>Employer Thread</strong><p>${chatStream.length} visible messages with ${currentJob.company}</p></article>
+          <article class="info-card"><strong>Employer Thread</strong><p>${currentChatStream.length} visible messages with ${currentJob.company}</p></article>
           <article class="info-card"><strong>Verification</strong><p>${user.verificationStatus}${user.approvedAt ? ` / approved ${new Date(user.approvedAt).toLocaleDateString()}` : ""}</p></article>
         </div>
         <div class="worker-timeline">
@@ -2534,9 +5356,9 @@ function workerDashboard(user) {
       <section class="panel">
         <h3>Wallet and Payout Breakdown</h3>
         <div class="summary-grid">
-          <article class="quick-card"><strong>Available Balance</strong><p>$${payoutAvailable}</p></article>
-          <article class="quick-card"><strong>Pending Payout</strong><p>$${payoutPending}</p></article>
-          <article class="quick-card"><strong>Weekly Earnings</strong><p>$${user.weeklyEarnings}</p></article>
+          <article class="quick-card"><strong>Available Balance</strong><p>${formatCountryMoney(payoutAvailable, user.countryCode || "NP")}</p></article>
+          <article class="quick-card"><strong>Pending Payout</strong><p>${formatCountryMoney(payoutPending, user.countryCode || "NP")}</p></article>
+          <article class="quick-card"><strong>Weekly Earnings</strong><p>${formatCountryMoney(user.weeklyEarnings, user.countryCode || "NP")}</p></article>
           <article class="quick-card"><strong>Last Payout Schedule</strong><p>${lastPayout}</p></article>
         </div>
       </section>
@@ -2571,13 +5393,15 @@ function workerDashboard(user) {
           <div class="profile-grid">
             <label><span>Search Work</span><input id="workerJobSearchTerm" type="text" value="${session.workerJobSearchTerm || ""}" placeholder="cleaning, plumbing, warehouse"></label>
             <label><span>Location</span><input id="workerJobSearchLocation" type="text" value="${session.workerJobSearchLocation || ""}" placeholder="Kathmandu Valley"></label>
-            <label><span>Country</span><select id="workerJobSearchCountry"><option ${workerSearchCountry === "Nepal" ? "selected" : ""}>Nepal</option><option ${workerSearchCountry === "India" ? "selected" : ""}>India</option></select></label>
+            <label><span>Country</span><select id="workerJobSearchCountry"><option ${workerSearchCountry === "All Countries" ? "selected" : ""}>All Countries</option>${countryOptions.map((country) => `<option ${workerSearchCountry === country.name ? "selected" : ""}>${country.name}</option>`).join("")}</select></label>
           </div>
           <div class="button-row">
             <span class="icon-chip">${discoverableJobs.length} jobs found</span>
             <span class="icon-chip">${workerSearchTerm || "All job types"}</span>
             <span class="icon-chip">${workerSearchLocation || "All locations"}</span>
+            <span class="icon-chip">${workerSearchCountry}</span>
           </div>
+          <div class="helper-text">Current product model supports ${countryOptions.length} countries. Countries without live jobs will simply show zero matches until employers post there.</div>
           <div class="button-row">
             <span class="helper-text">Quick locations:</span>
             ${allLocations.slice(0, 5).map((location) => `<button class="ghost-button small-button" type="button" data-worker-location-chip="${location}">${location}</button>`).join("")}
@@ -2618,12 +5442,16 @@ function workerDashboard(user) {
           <label><span>Full Name</span><input id="profileFullName" type="text" value="${user.fullName}"></label>
           <label><span>Contact</span><input id="profileContact" type="text" value="${user.contact}"></label>
           <label><span>Primary Skill</span><input id="profileSkill" type="text" value="${user.skill}"></label>
+          <label><span>Country</span><select id="profileCountryCode">${countryOptions.map((country) => `<option value="${country.code}" ${country.code === (user.countryCode || "NP") ? "selected" : ""}>${country.name}</option>`).join("")}</select></label>
           <label><span>Experience</span><input id="profileExperience" type="text" value="${profile.experience || ""}"></label>
           <label><span>Availability</span><select id="profileAvailability"><option ${user.availability === "available" ? "selected" : ""}>available</option><option ${user.availability === "busy" ? "selected" : ""}>busy</option><option ${user.availability === "offline" ? "selected" : ""}>offline</option></select></label>
         </div>
         <div class="document-grid">
           <article class="info-card"><strong>Profile Photo</strong><p>${profile.photo || "Not uploaded yet"}</p><input type="file" accept="image/*" data-preview-upload="worker-photo"></article>
           <article class="info-card"><strong>Verification Status</strong><p>${user.verificationStatus}</p></article>
+          <article class="info-card"><strong>Phone Auth</strong><p>${countryRule.phoneAuthMode}</p></article>
+          <article class="info-card"><strong>Payout Rail</strong><p>${countryRule.payoutRail}</p></article>
+          <article class="info-card"><strong>Verification Rule</strong><p>${countryRule.verificationRule}</p></article>
         </div>
         <label><span>Bio</span><textarea id="profileBio">${profile.bio || ""}</textarea></label>
         <label><span>Profile Notes</span><textarea id="profileNotes">${user.notes}</textarea></label>
@@ -2640,6 +5468,7 @@ function workerDashboard(user) {
         <div class="document-grid">
           <article class="info-card"><strong>Registration and Login</strong><p>${login.method || "otp"} / ${login.social || "Google ready"} / ${login.biometric || "Mobile ready"}</p></article>
           <article class="info-card"><strong>Geo Availability</strong><p>${user.availability} / location sharing ${user.geoSharing}</p></article>
+          <article class="info-card"><strong>Country Rules</strong><p>${countryName(user.countryCode || "NP")} / ${countryRule.phoneAuthMode}</p></article>
           <article class="info-card"><strong>Job Discovery</strong><p>Map and list discovery with category, distance, pay, and duration filtering.</p></article>
           <article class="info-card"><strong>Instant Acceptance</strong><p>${invitations.map((invite) => `${invite.title} - ${invite.status}`).join(" | ")}</p></article>
         </div>
@@ -2661,13 +5490,39 @@ function workerDashboard(user) {
           <article class="info-card"><strong>Job Applications</strong><p>${applications.map((application) => `${application.title}: ${application.status}`).join(" | ")}</p></article>
           <article class="info-card"><strong>Saved Jobs</strong><p>${savedJobs.map((item) => item.title).join(" | ") || "No saved jobs yet"}</p></article>
           <article class="info-card"><strong>Job Completion</strong><p>Timesheet ${shift.timesheet || "Not started"} / Stage ${shift.stage || "Queued"} / Proof ${shift.proofSubmitted ? "Uploaded" : "Pending"}</p></article>
-          <article class="info-card"><strong>Earnings Dashboard</strong><p>Weekly $${user.weeklyEarnings} / Monthly $${user.monthlyEarnings} / Tax via portal export.</p></article>
+          <article class="info-card"><strong>Earnings Dashboard</strong><p>Weekly ${formatCountryMoney(user.weeklyEarnings, user.countryCode || "NP")} / Monthly ${formatCountryMoney(user.monthlyEarnings, user.countryCode || "NP")} / Tax via portal export.</p></article>
           <article class="info-card"><strong>Wallet and Withdrawal</strong><p>${withdrawal.payoutMethod || "Bank transfer"} / ${withdrawal.schedule || "On demand"} / ${withdrawal.linkedAccount || "Not linked"}</p></article>
           <article class="info-card"><strong>Ratings and Reviews</strong><p>${reviews.map((review) => `${review.employer}: ${review.rating}/5`).join(" | ")}</p></article>
           <article class="info-card"><strong>Notifications</strong><p>${notifications.join(" | ")}</p></article>
           <article class="info-card"><strong>Reputation Score</strong><p>${reputation.score || 0} / 100 / ${reputation.tier || "Growing"}</p></article>
           <article class="info-card"><strong>Verification</strong><p>${user.verificationStatus}${user.approvedAt ? ` / approved ${new Date(user.approvedAt).toLocaleDateString()}` : ""}</p></article>
           <article class="info-card"><strong>Chat</strong><p>${(Array.isArray(profile.chat) ? profile.chat : []).join(" ")}</p></article>
+        </div>
+      </section>
+      ` : ""}
+
+      ${(activeView === "dashboard" || activeView === "profile") ? `
+      <section class="panel">
+        <h3>Disputes And Payment Safety</h3>
+        <div class="document-grid">
+          <article class="info-card"><strong>Current Job</strong><p>${currentJob.title} / ${currentApplication?.status || workerJobStatus(user, currentJob).label}</p></article>
+          <article class="info-card"><strong>Wallet Protection</strong><p>${formatCountryMoney(user.wallet, user.countryCode || "NP")} visible / ${currentJob.status === "Rated" ? "Ready for payout review" : "Escrow and dispute trail available"}</p></article>
+          <article class="info-card"><strong>Open Cases</strong><p>${(user.disputes || []).filter((item) => item.status !== "Closed").length}</p></article>
+          <article class="info-card"><strong>Counterparty</strong><p>${currentJob.company}</p></article>
+        </div>
+        <div class="button-row">
+          <button class="primary-button small-button" type="button" data-open-dispute>Open Dispute</button>
+        </div>
+        <div class="document-grid">
+          ${evidenceList((user.disputes || []).find((item) => item.id === session.selectedDispute)?.evidence || [])}
+        </div>
+        <div class="recent-feed">
+          ${(user.disputes || []).map((item) => `
+            <article class="timeline-card ${item.id === session.selectedDispute ? "selected" : ""}" data-select-dispute="${item.id}">
+              <header><strong>${item.title}</strong><span>${item.status}</span></header>
+              <div>${item.note || "Awaiting admin review."}</div>
+            </article>
+          `).join("") || `<article class="info-card"><strong>No disputes opened</strong><p>If pay, safety, timing, or service quality goes wrong, open a case here with notes and evidence.</p></article>`}
         </div>
       </section>
       ` : ""}
@@ -2726,9 +5581,9 @@ function workerDashboard(user) {
           <article class="info-card"><strong>Job Context</strong><p>${currentJob.title}</p></article>
           <article class="info-card"><strong>Status</strong><p>${currentApplication?.status || workerJobStatus(user, currentJob).label}</p></article>
           <article class="info-card"><strong>Employer</strong><p>${currentJob.company}</p></article>
-          <article class="info-card"><strong>Messages</strong><p>${chatStream.length} in this thread</p></article>
+          <article class="info-card"><strong>Messages</strong><p>${currentChatStream.length} in this thread</p></article>
         </div>
-        ${chatFeed(chatStream)}
+        ${chatFeed(currentChatStream)}
         <div class="button-row">
           <input id="chatInput" type="text" placeholder="Message ${currentJob.company}">
           <button class="primary-button small-button" type="button" data-worker-send-chat>Send</button>
@@ -2771,8 +5626,10 @@ function workerDashboard(user) {
 
 function employerDashboard(user) {
   const profile = user.profile || {};
+  const countryRule = getCountryRule(user.countryCode || "NP");
+  const countryOptions = listCountryRules();
   const jobs = Array.isArray(user.jobs) ? user.jobs : [];
-  const applicants = Array.isArray(user.applicants) ? user.applicants : [];
+  const allApplicants = Array.isArray(user.applicants) ? user.applicants : [];
   const hiring = Array.isArray(user.hiring) ? user.hiring : [];
   const analytics = Array.isArray(profile.analytics) ? profile.analytics : [];
   const analyticsDashboard = Array.isArray(profile.analyticsDashboard) ? profile.analyticsDashboard : [];
@@ -2780,10 +5637,12 @@ function employerDashboard(user) {
   const payments = Array.isArray(profile.payments) ? profile.payments : [];
   const ratings = Array.isArray(profile.ratings) ? profile.ratings : [];
   const workerPool = Array.isArray(user.workerPool) ? user.workerPool : [];
+  const session = getSession();
   const job = selectedEmployerJob() || jobs[0] || {
     id: "job_fallback",
     title: "No active job yet",
-    location: "Nepal",
+    location: "Kathmandu Valley",
+    countryCode: user.countryCode || "NP",
     status: "Draft",
     headcount: 1,
     dailyRate: 0,
@@ -2796,7 +5655,15 @@ function employerDashboard(user) {
     applicants: 0,
     spend: "$0"
   };
-  const applicant = selectedApplicant() || applicants[0] || {
+  const applicants = allApplicants.filter((item) =>
+    item.jobId === job.id
+    || (item.jobSupabaseId && item.jobSupabaseId === job.supabaseId)
+    || (!item.jobId && !item.jobSupabaseId)
+  );
+  const applicant = applicants.find((item) => item.id === session.selectedApplicant)
+    || selectedApplicant()
+    || applicants[0]
+    || {
     id: "applicant_fallback",
     name: "No applicant selected",
     distance: "Waiting",
@@ -2805,7 +5672,6 @@ function employerDashboard(user) {
     skills: [],
     chatThread: []
   };
-  const session = getSession();
   const workerSearch = user.workerSearch || {};
   const escrow = user.escrow || {};
   const account = user.account || {};
@@ -2825,7 +5691,7 @@ function employerDashboard(user) {
     ? applicants.find((item) => item.id === searchWorker.id || item.name === searchWorker.name) || null
     : null;
   const searchWorkerThread = Array.isArray(searchWorkerApplicant?.chatThread) ? searchWorkerApplicant.chatThread : [];
-  const hiredCount = applicants.filter((item) => ["Hired", "Rated"].includes(item.status)).length;
+  const hiredCount = allApplicants.filter((item) => ["Hired", "Rated"].includes(item.status)).length;
   const compareApplicant = comparisonTarget(user, applicant);
   const biddingHistory = Array.isArray(job.biddingHistory) ? job.biddingHistory : [];
   const searchSummary = [
@@ -2837,6 +5703,7 @@ function employerDashboard(user) {
     <div class="stack">
       ${identityCard(user)}
       ${jobPostWizard(user, session)}
+      ${disputeComposer(user, session)}
       ${workerProfileModal(session, searchWorker)}
 
       ${(activeView === "dashboard") ? `
@@ -2857,7 +5724,7 @@ function employerDashboard(user) {
           <article class="info-card"><strong>Job Lifecycle</strong><p>${job.title} is ${job.status}. Pause, reopen, or cancel directly from the controls below.</p></article>
           <article class="info-card"><strong>Hiring Pipeline</strong><p>New ${stageCount(applicants, "New")} / Shortlisted ${stageCount(applicants, "Shortlisted")} / Invited ${stageCount(applicants, "Invited")} / Hired ${stageCount(applicants, "Hired")} / Rated ${stageCount(applicants, "Rated")}</p></article>
           <article class="info-card"><strong>Applicant Chat</strong><p>${applicant.name} thread has ${applicantThread.length} messages and remains tied to the selected worker.</p></article>
-          <article class="info-card"><strong>Company Assets</strong><p>Logo preview ${profile.logo || "Pending"} / verification badge ${profile.verificationBadge || "Pending"}</p></article>
+          <article class="info-card"><strong>Company Assets</strong><p>Logo preview ${profile.logo || "Pending"} / verification badge ${profile.verificationBadge || "Pending"} / operating country ${countryName(user.countryCode || "NP")}</p></article>
         </div>
         <div class="button-row">
           <button class="secondary-button small-button" type="button" data-portal-view="jobs">Open Hiring Workspace</button>
@@ -2872,8 +5739,8 @@ function employerDashboard(user) {
         <h3>Live Hiring Workspace</h3>
         <div class="comparison-grid">
           <article class="job-card selected">
-            <header><div><strong>${job.title}</strong><div>${job.location}</div></div><span class="status-pill ${jobStatusTone(job.status)}">${job.status}</span></header>
-            <div class="meta-row"><span>${job.headcount || 1} workers</span><span>$${job.dailyRate}/day</span><span>${job.shortlisted} shortlisted</span><span>${job.escrow ? "Escrow ready" : "Escrow pending"}</span></div>
+            <header><div><strong>${job.title}</strong><div>${job.location} / ${countryName(job.countryCode || user.countryCode || "NP")}</div></div><span class="status-pill ${jobStatusTone(job.status)}">${job.status}</span></header>
+            <div class="meta-row"><span>${job.headcount || 1} workers</span><span>${formatCountryMoney(job.dailyRate, job.countryCode || user.countryCode || "NP")}/day</span><span>${job.shortlisted} shortlisted</span><span>${job.escrow ? "Escrow ready" : "Escrow pending"}</span></div>
             <div class="button-row">
               <button class="secondary-button small-button" type="button" data-shortlist>Shortlist</button>
               <button class="secondary-button small-button" type="button" data-invite>Invite</button>
@@ -3115,8 +5982,8 @@ function employerDashboard(user) {
         <section class="panel">
           <h3>Selected Job Controls</h3>
           <div class="job-card selected">
-            <header><div><strong>${job.title}</strong><div>${job.location}</div></div><span class="status-pill ${jobStatusTone(job.status)}">${job.status}</span></header>
-            <div class="meta-row"><span>${job.headcount || 1} workers</span><span>$${job.dailyRate}/day</span><span>${job.requiredSkillsText || job.category}</span><span>${job.shortlisted} shortlisted</span><span>${job.escrow ? "Escrow ready" : "Escrow pending"}</span></div>
+            <header><div><strong>${job.title}</strong><div>${job.location} / ${countryName(job.countryCode || user.countryCode || "NP")}</div></div><span class="status-pill ${jobStatusTone(job.status)}">${job.status}</span></header>
+            <div class="meta-row"><span>${job.headcount || 1} workers</span><span>${formatCountryMoney(job.dailyRate, job.countryCode || user.countryCode || "NP")}/day</span><span>${job.requiredSkillsText || job.category}</span><span>${job.shortlisted} shortlisted</span><span>${job.escrow ? "Escrow ready" : "Escrow pending"}</span></div>
           </div>
           <div class="button-row">
             <button class="secondary-button small-button" type="button" data-edit-job>Edit Job</button>
@@ -3135,7 +6002,7 @@ function employerDashboard(user) {
           <h3>Selected Applicant</h3>
           <div class="job-card selected">
             <header><div class="media-title">${applicant.photoData ? `<img class="mini-media" src="${applicant.photoData}" alt="${applicant.name}">` : `<div class="mini-media fallback">${(applicant.name || "WK").slice(0, 2).toUpperCase()}</div>`}<div><strong>${applicant.name}</strong><div>${applicant.distance}</div></div></div><span class="status-pill ${applicantStatusTone(applicantStatus)}">${applicantStatus}</span></header>
-            <div class="meta-row"><span>${applicant.rating} stars</span><span>Offer $${job.dailyRate}/day</span><span>${hiring.find((item) => item.candidate === applicant.name)?.status || "Reviewing"}</span><span>${applicant.chatThread?.length || 0} messages</span></div>
+            <div class="meta-row"><span>${applicant.rating} stars</span><span>Offer ${formatCountryMoney(job.dailyRate, job.countryCode || user.countryCode || "NP")}/day</span><span>${hiring.find((item) => item.candidate === applicant.name)?.status || "Reviewing"}</span><span>${applicant.chatThread?.length || 0} messages</span></div>
           </div>
           <div class="button-row">
             <button class="secondary-button small-button" type="button" data-shortlist>Shortlist</button>
@@ -3179,7 +6046,7 @@ function employerDashboard(user) {
         <h3>Wage Bidding to Hire Faster</h3>
         <div class="document-grid">
           <article class="info-card"><strong>Selected Job</strong><p>${job.title} / ${job.location}</p></article>
-          <article class="info-card"><strong>Current Wage Offer</strong><p>$${job.dailyRate}/day</p></article>
+          <article class="info-card"><strong>Current Wage Offer</strong><p>${formatCountryMoney(job.dailyRate, job.countryCode || user.countryCode || "NP")}/day</p></article>
           <article class="info-card"><strong>Suggested Raise</strong><p>$${job.bidStep}/day / urgency ${job.urgency}</p></article>
           <article class="info-card"><strong>Bidding Trail</strong><p>${biddingHistory.map((value) => `$${value}`).join(" -> ")}</p></article>
         </div>
@@ -3198,10 +6065,13 @@ function employerDashboard(user) {
           <label><span>Contact</span><input id="profileContact" type="text" value="${user.contact}"></label>
           <label><span>Company Name</span><input id="profileCompany" type="text" value="${user.company}"></label>
           <label><span>Industry</span><input id="profileSkill" type="text" value="${user.skill}"></label>
+          <label><span>Operating Country</span><select id="profileCountryCode">${countryOptions.map((country) => `<option value="${country.code}" ${country.code === (user.countryCode || "NP") ? "selected" : ""}>${country.name}</option>`).join("")}</select></label>
         </div>
         <div class="document-grid">
           <article class="info-card"><strong>Company Logo</strong><p>${profile.logo || "Not uploaded yet"}</p><input type="file" accept="image/*" data-preview-upload="employer-logo"></article>
           <article class="info-card"><strong>Verification Badge</strong><p>${profile.verificationBadge || "Pending review"}</p></article>
+          <article class="info-card"><strong>Phone Auth</strong><p>${countryRule.phoneAuthMode}</p></article>
+          <article class="info-card"><strong>Payout Rail</strong><p>${countryRule.payoutRail}</p></article>
         </div>
         <label><span>Company Notes</span><textarea id="profileNotes">${user.notes}</textarea></label>
         <button class="primary-button small-button" type="button" data-save-profile>Save Company Profile</button>
@@ -3213,8 +6083,8 @@ function employerDashboard(user) {
         <h3>Employer Account and Hiring</h3>
         <div class="document-grid">
           <article class="info-card"><strong>Account Registration</strong><p>${account.registration || "Phone or email"} / onboarding ${account.onboarding || "Company setup"}</p></article>
-          <article class="info-card"><strong>Company Profile</strong><p>Logo ${profile.logo || "Pending"} / size ${profile.size || "Team"} / badge ${profile.verificationBadge || "Pending"}</p></article>
-          <article class="info-card"><strong>Verification</strong><p>${user.verificationStatus}${user.approvedAt ? ` / approved ${new Date(user.approvedAt).toLocaleDateString()}` : ""} / ID ${formatAccountId(user)}</p></article>
+          <article class="info-card"><strong>Company Profile</strong><p>Logo ${profile.logo || "Pending"} / size ${profile.size || "Team"} / badge ${profile.verificationBadge || "Pending"} / ${countryName(user.countryCode || "NP")}</p></article>
+          <article class="info-card"><strong>Verification</strong><p>${user.verificationStatus}${user.approvedAt ? ` / approved ${new Date(user.approvedAt).toLocaleDateString()}` : ""} / ID ${formatAccountId(user)} / ${countryRule.verificationRule}</p></article>
           <article class="info-card"><strong>Job Posting</strong><p>Rich posting flow with title, category, location, pay, duration, and headcount.</p></article>
           <article class="info-card"><strong>Worker Search</strong><p>${workerSearch.mapMode || "Map"} / saved search: ${workerSearch.savedSearch || "None saved"}</p></article>
           <article class="info-card"><strong>Hiring</strong><p>${hiring.map((item) => `${item.candidate}: ${item.status}`).join(" | ")}</p></article>
@@ -3271,11 +6141,23 @@ function employerDashboard(user) {
           <article class="info-card"><strong>Escrow Status</strong><p>${escrow.status || "Pending"}</p></article>
           <article class="info-card"><strong>Auto Release</strong><p>${escrow.autoReleaseHours || 0}h / next ${escrow.nextRelease || "TBD"}</p></article>
           <article class="info-card"><strong>Payment Rail</strong><p>Stripe escrow flow simulated for local prototype.</p></article>
-          <article class="info-card"><strong>Selected Job Payment</strong><p>${job.title} / ${job.escrow ? "Escrow funded" : "Awaiting funding"}</p></article>
+          <article class="info-card"><strong>Selected Job Payment</strong><p>${job.title} / ${job.escrow ? "Escrow funded" : "Awaiting funding"} / ${countryRule.payoutRail}</p></article>
         </div>
         <div class="button-row">
           <button class="secondary-button small-button" type="button" data-release-escrow>Release Escrow</button>
           <button class="secondary-button small-button" type="button" data-rate-worker>Rate Selected Worker</button>
+          <button class="primary-button small-button" type="button" data-open-dispute>Open Dispute</button>
+        </div>
+        <div class="document-grid">
+          ${evidenceList((user.disputes || []).find((item) => item.id === session.selectedDispute)?.evidence || [])}
+        </div>
+        <div class="recent-feed">
+          ${(user.disputes || []).map((item) => `
+            <article class="timeline-card ${item.id === session.selectedDispute ? "selected" : ""}" data-select-dispute="${item.id}">
+              <header><strong>${item.title}</strong><span>${item.status}</span></header>
+              <div>${item.note || "Awaiting admin review."}</div>
+            </article>
+          `).join("") || `<article class="info-card"><strong>No active disputes</strong><p>Escrow, quality, timing, and conduct issues can be escalated here with evidence and payout context.</p></article>`}
         </div>
       </section>
       ` : ""}
@@ -3294,7 +6176,7 @@ function employerDashboard(user) {
           ${applicants.map((item) => `
             <article class="job-card ${item.id === applicant.id ? "selected" : ""}" data-select-applicant="${item.id}">
               <header><div class="media-title">${item.photoData ? `<img class="mini-media" src="${item.photoData}" alt="${item.name}">` : `<div class="mini-media fallback">${(item.name || "WK").slice(0, 2).toUpperCase()}</div>`}<div><strong>${item.name}</strong><div>${item.distance}</div></div></div><span class="status-pill ${applicantStatusTone(item.status || "New")}">${item.status || item.score}</span></header>
-              <div class="meta-row"><span>${item.rating} stars</span><span>AI ranked</span><span>Offer sees $${job.dailyRate}/day</span><span>${hiring.find((entry) => entry.candidate === item.name)?.status || "Reviewing"}</span></div>
+              <div class="meta-row"><span>${item.rating} stars</span><span>AI ranked</span><span>Offer sees ${formatCountryMoney(job.dailyRate, job.countryCode || user.countryCode || "NP")}/day</span><span>${hiring.find((entry) => entry.candidate === item.name)?.status || "Reviewing"}</span></div>
             </article>
           `).join("")}
         </div>
@@ -3350,6 +6232,206 @@ function employerDashboard(user) {
           <article class="timeline-card"><header><strong>New application</strong><span>2 min ago</span></header><div>${applicant.name} applied to ${job.title}</div></article>
           <article class="timeline-card"><header><strong>Payment update</strong><span>12 min ago</span></header><div>${job.escrow ? "Escrow funded successfully" : "Escrow awaiting funding"}</div></article>
           <article class="timeline-card"><header><strong>Completion event</strong><span>1 hr ago</span></header><div>Previous job completion confirmed and rating saved.</div></article>
+        </div>
+      </section>
+      ` : ""}
+    </div>
+  `;
+}
+
+
+// FILE: scripts/renderers/household.js
+
+function householdDashboard(user) {
+  const profile = user.profile || {};
+  const countryRule = getCountryRule(user.countryCode || "NP");
+  const jobs = Array.isArray(user.jobs) ? user.jobs : [];
+  const allApplicants = Array.isArray(user.applicants) ? user.applicants : [];
+  const notifications = Array.isArray(profile.notifications) ? profile.notifications : [];
+  const payments = Array.isArray(profile.payments) ? profile.payments : [];
+  const session = getSession();
+  const activeView = session.activePortalView;
+  const job = selectedEmployerJob() || jobs[0] || {
+    id: "home-fallback",
+    title: "No home service booking yet",
+    category: "Home Services",
+    location: user.serviceAddress || "Home address pending",
+    serviceAddress: user.serviceAddress || "Home address pending",
+    status: "Draft",
+    dailyRate: 0,
+    payUnit: "Fixed job",
+    bookingMode: "Direct booking",
+    duration: "Flexible",
+    shiftStart: "TBD",
+    shortlisted: 0,
+    applicants: 0,
+    countryCode: user.countryCode || "NP",
+    notes: "Create your first home service request to start hiring."
+  };
+  const applicants = allApplicants.filter((item) =>
+    item.jobId === job.id
+    || (item.jobSupabaseId && item.jobSupabaseId === job.supabaseId)
+    || (!item.jobId && !item.jobSupabaseId)
+  );
+  const applicant = applicants.find((item) => item.id === session.selectedApplicant)
+    || selectedApplicant()
+    || applicants[0]
+    || {
+      id: "home-applicant-fallback",
+      name: "No helper selected yet",
+      distance: "Nearby",
+      rating: "0.0",
+      status: "New",
+      skills: [],
+      reliability: "Pending",
+      chatThread: []
+    };
+  const chatThread = Array.isArray(applicant.chatThread) ? applicant.chatThread : [];
+  const bookedCount = jobs.filter((item) => ["Ongoing", "Completed"].includes(item.status)).length;
+  const trustCategories = ["Nanny", "Elder Care", "Housekeeper", "Childcare"];
+  const highTrustMode = trustCategories.includes(job.category);
+
+  return `
+    <div class="stack">
+      ${identityCard(user)}
+      ${jobPostWizard(user, session)}
+      ${disputeComposer(user, session)}
+
+      ${(activeView === "dashboard") ? `
+      <section class="panel">
+        <div class="summary-grid">
+          <article class="quick-card"><strong>Open Home Requests</strong><p>${jobs.filter((item) => !["Completed", "Cancelled"].includes(item.status)).length}</p></article>
+          <article class="quick-card"><strong>Trusted Favorites</strong><p>${allApplicants.filter((item) => ["Invited", "Hired", "Rated"].includes(item.status)).length}</p></article>
+          <article class="quick-card"><strong>Completed Visits</strong><p>${bookedCount}</p></article>
+          <article class="quick-card"><strong>Protected Spend</strong><p>${payments[0]?.amount || formatCountryMoney(0, user.countryCode || "NP")}</p></article>
+        </div>
+      </section>
+      ` : ""}
+
+      ${(activeView === "dashboard") ? `
+      <section class="panel">
+        <h3>Hire For Home</h3>
+        <div class="comparison-grid">
+          <article class="job-card selected">
+            <header><div><strong>${job.title}</strong><div>${job.category} / ${job.serviceAddress || job.location}</div></div><span class="status-pill ${jobStatusTone(job.status)}">${job.status}</span></header>
+            <div class="meta-row"><span>${formatCountryMoney(job.dailyRate || 0, job.countryCode || user.countryCode || "NP")}</span><span>${job.payUnit || "Fixed job"}</span><span>${job.bookingMode || "Direct booking"}</span></div>
+            <div>${job.notes || "Post a simple home task, choose the time window, and review trusted nearby helpers."}</div>
+            <div class="button-row">
+              <button class="primary-button small-button" type="button" data-open-job-modal>${jobs.length ? "Post Another Home Job" : "Create Home Request"}</button>
+              <button class="secondary-button small-button" type="button" data-shortlist ${!applicants.length ? "disabled" : ""}>Shortlist</button>
+              <button class="secondary-button small-button" type="button" data-invite ${!applicants.length ? "disabled" : ""}>Invite</button>
+              <button class="secondary-button small-button" type="button" data-escrow>${job.escrow ? "Escrow Funded" : "Fund Escrow"}</button>
+            </div>
+          </article>
+          <article class="job-card selected">
+            <header><div><strong>${applicant.name}</strong><div>${applicant.distance} / ${applicant.skills?.join(", ") || "Nearby helper"}</div></div><span class="status-pill ${applicantStatusTone(applicant.status || "New")}">${applicant.status || "New"}</span></header>
+            <div class="meta-row"><span>${applicant.rating} stars</span><span>${applicant.reliability || "Verified"}</span><span>${highTrustMode ? "Safety priority" : "Quick service"}</span></div>
+            ${chatFeed(chatThread.length ? chatThread : [{ from: "Employer", text: "Invite a trusted worker and continue the conversation here.", time: "Now" }])}
+            <div class="button-row">
+              <input id="chatInput" type="text" placeholder="Ask about timing, tools, safety, or family needs">
+              <button class="primary-button small-button" type="button" data-employer-send-chat>Send</button>
+            </div>
+          </article>
+        </div>
+      </section>
+      ` : ""}
+
+      ${(activeView === "dashboard" || activeView === "jobs") ? `
+      <section class="panel">
+        <h3>Home Booking Board</h3>
+        <div class="job-list">
+          ${jobs.map((item) => `
+            <article class="job-card ${item.id === job.id ? "selected" : ""}" data-select-employer-job="${item.id}">
+              <header><div><strong>${item.title}</strong><div>${item.serviceAddress || item.location}</div></div><span class="status-pill ${jobStatusTone(item.status)}">${item.status}</span></header>
+              <div class="meta-row"><span>${formatCountryMoney(item.dailyRate || 0, item.countryCode || user.countryCode || "NP")}</span><span>${item.payUnit || "Fixed job"}</span><span>${item.duration || "Flexible"}</span></div>
+              <div>${item.notes || "Home service request"}</div>
+            </article>
+          `).join("") || `<article class="info-card"><strong>No home requests yet</strong><p>Create your first request for a plumber, electrician, nanny, cleaner, or painter.</p></article>`}
+        </div>
+      </section>
+      ` : ""}
+
+      ${(activeView === "dashboard" || activeView === "jobs") ? `
+      <section class="panel">
+        <h3>Trusted Helpers Nearby</h3>
+        <div class="job-list">
+          ${applicants.map((item) => `
+            <article class="job-card ${item.id === applicant.id ? "selected" : ""}" data-select-applicant="${item.id}">
+              <header><div><strong>${item.name}</strong><div>${item.distance}</div></div><span class="status-pill ${applicantStatusTone(item.status || "New")}">${item.status || "New"}</span></header>
+              <div class="meta-row"><span>${item.rating} stars</span><span>${item.reliability || "Verified"}</span><span>${item.skills?.join(", ") || "General home support"}</span></div>
+            </article>
+          `).join("") || `<article class="info-card"><strong>No applicants yet</strong><p>Once you publish a home request, nearby verified workers will appear here.</p></article>`}
+        </div>
+        <div class="button-row">
+          <button class="secondary-button small-button" type="button" data-shortlist ${!applicants.length ? "disabled" : ""}>Shortlist</button>
+          <button class="secondary-button small-button" type="button" data-invite ${!applicants.length ? "disabled" : ""}>Invite</button>
+          <button class="primary-button small-button" type="button" data-hire-worker ${!applicants.length ? "disabled" : ""}>Book Helper</button>
+          <button class="secondary-button small-button" type="button" data-release-escrow ${!job.escrow ? "disabled" : ""}>Release Payment</button>
+        </div>
+      </section>
+      ` : ""}
+
+      ${(activeView === "profile") ? `
+      <section class="panel">
+        <h3>Home Hirer Profile</h3>
+        <div class="profile-grid">
+          <label><span>Primary Contact</span><input id="profileFullName" type="text" value="${user.fullName || ""}"></label>
+          <label><span>Phone or Email</span><input id="profileContact" type="text" value="${user.contact || ""}"></label>
+          <label><span>Household Name</span><input id="profileCompany" type="text" value="${user.homeLabel || user.company || ""}"></label>
+          <label><span>Service Category Focus</span><input id="profileSkill" type="text" value="${user.skill || "Home Services"}"></label>
+        </div>
+        <label><span>Home / Service Address</span><textarea id="profileNotes">${user.serviceAddress || user.notes || ""}</textarea></label>
+        <div class="document-grid">
+          <article class="info-card"><strong>Verification</strong><p>${user.verificationStatus} / ${formatAccountId(user)}</p></article>
+          <article class="info-card"><strong>Country</strong><p>${countryName(user.countryCode || "NP")}</p></article>
+          <article class="info-card"><strong>Phone Auth</strong><p>${countryRule.phoneAuthMode}</p></article>
+          <article class="info-card"><strong>Payout Rail</strong><p>${countryRule.payoutRail}</p></article>
+          <article class="info-card"><strong>Safety Mode</strong><p>${highTrustMode ? "Enhanced trust checks for care work" : "Standard home service trust checks"}</p></article>
+        </div>
+        <div class="button-row">
+          <button class="primary-button small-button" type="button" data-save-profile>Save Home Profile</button>
+        </div>
+      </section>
+      ` : ""}
+
+      ${(activeView === "profile" || activeView === "jobs") ? `
+      <section class="panel">
+        <h3>Trust, Safety, and Payment Protection</h3>
+        <div class="document-grid">
+          <article class="info-card"><strong>Service Address</strong><p>${job.serviceAddress || user.serviceAddress || "Add your address in the booking wizard."}</p></article>
+          <article class="info-card"><strong>Booking Mode</strong><p>${job.bookingMode || "Direct booking"} / ${job.payUnit || "Fixed job"}</p></article>
+          <article class="info-card"><strong>Escrow</strong><p>${user.escrow?.status || "Pending"} / auto release ${user.escrow?.autoReleaseHours || 12}h</p></article>
+          <article class="info-card"><strong>High-Trust Services</strong><p>${highTrustMode ? "Background-check friendly, repeat-family preferred, emergency contact recommended." : "Photo proof, tools note, and arrival confirmation supported."}</p></article>
+        </div>
+        <div class="button-row">
+          <button class="primary-button small-button" type="button" data-open-dispute>Open Dispute</button>
+        </div>
+        <div class="document-grid">
+          ${evidenceList((user.disputes || []).find((item) => item.id === session.selectedDispute)?.evidence || [])}
+        </div>
+        <div class="recent-feed">
+          ${(user.disputes || []).map((item) => `
+            <article class="timeline-card ${item.id === session.selectedDispute ? "selected" : ""}" data-select-dispute="${item.id}">
+              <header><strong>${item.title}</strong><span>${item.status}</span></header>
+              <div>${item.note || "Awaiting admin review."}</div>
+            </article>
+          `).join("") || `<article class="info-card"><strong>No trust or payment cases yet</strong><p>Open a case here if a helper no-shows, the work is unsafe, or a payout needs review before release.</p></article>`}
+        </div>
+      </section>
+      ` : ""}
+
+      ${(activeView === "documents") ? `
+      <section class="panel">
+        <h3>Home Hirer Verification</h3>
+        <div class="document-grid">${documentList(user.documents || [], "employer")}</div>
+      </section>
+      ` : ""}
+
+      ${(activeView === "dashboard" || activeView === "profile") ? `
+      <section class="panel">
+        <h3>Home Notifications</h3>
+        <div class="recent-feed">
+          ${notifications.map((item, index) => `<article class="timeline-card"><header><strong>Update ${index + 1}</strong><span>Live</span></header><div>${item}</div></article>`).join("")}
         </div>
       </section>
       ` : ""}
@@ -3435,6 +6517,12 @@ function adminDashboard(user) {
                 <div class="button-row">
                   <button class="primary-button small-button" type="button" data-resolve>Resolve</button>
                   <button class="secondary-button small-button" type="button" data-refund>Issue Partial Refund</button>
+                </div>
+                <div class="document-grid">
+                  <article class="info-card"><strong>Opened By</strong><p>${dispute.openedByName || "Participant"}</p></article>
+                  <article class="info-card"><strong>Against</strong><p>${dispute.againstName || "Counterparty"}</p></article>
+                  <article class="info-card"><strong>Escrow</strong><p>${dispute.escrowId || "Not linked"}</p></article>
+                  <article class="info-card"><strong>Evidence Items</strong><p>${Array.isArray(dispute.evidence) ? dispute.evidence.length : 0}</p></article>
                 </div>
               </div>
           ` : ""}
@@ -3535,13 +6623,63 @@ function renderPublicVisibility() {
 
 function renderSignupRole() {
   const session = getSession();
+  const selectedSkill = document.querySelector("#signupSkill")?.value || session.currentUser?.skill || "Plumbing";
+  const selectedCountry = document.querySelector("#signupCountry")?.value || session.currentUser?.countryCode || "NP";
+  const countryOptions = listCountryRules();
+  const featuredWorkerTypes = workerTypeCatalog.slice(0, 12);
+
+  const signupSkillSelect = document.querySelector("#signupSkill");
+  if (signupSkillSelect) {
+    signupSkillSelect.innerHTML = workerTypeCatalog.map((type) => `<option ${type.name === selectedSkill ? "selected" : ""}>${type.name}</option>`).join("");
+  }
+
+  const signupCountrySelect = document.querySelector("#signupCountry");
+  if (signupCountrySelect) {
+    signupCountrySelect.innerHTML = countryOptions.map((country) => `<option value="${country.code}" ${country.code === selectedCountry ? "selected" : ""}>${country.name}</option>`).join("");
+  }
+
+  if (dom.workerSkillPicker) {
+    dom.workerSkillPicker.innerHTML = featuredWorkerTypes.map((type, index) => `
+      <button class="skill-card ${type.name === selectedSkill || (!selectedSkill && index === 0) ? "is-active" : ""}" type="button" data-skill-choice="${type.name}">
+        <span class="skill-icon">${type.icon}</span>
+        <strong>${type.name}</strong>
+        <small>${type.blurb}</small>
+      </button>
+    `).join("");
+  }
+
+  const globalCountryList = document.querySelector("#globalCountryList");
+  if (globalCountryList) {
+    globalCountryList.innerHTML = countryOptions.map((country) => `<span class="icon-chip">${country.name} (${country.currencyCode})</span>`).join("");
+  }
+
+  const workerTypeBoard = document.querySelector("#workerTypeBoard");
+  if (workerTypeBoard) {
+    workerTypeBoard.innerHTML = workerTypeCatalog.map((type) => `
+      <article class="info-card">
+        <strong>${type.name}</strong>
+        <p>${type.blurb}</p>
+      </article>
+    `).join("");
+  }
+
+  const employerMode = session.signupRole === "employer";
+  const householdEmployerMode = employerMode && session.signupEmployerType === "household";
   dom.signupTabs.querySelectorAll("[data-signup-role]").forEach((button) => {
     button.classList.toggle("active", button.dataset.signupRole === session.signupRole);
+  });
+  dom.signupEmployerTypeTabs?.querySelectorAll("[data-signup-employer-type]").forEach((button) => {
+    button.classList.toggle("active", employerMode && button.dataset.signupEmployerType === session.signupEmployerType);
   });
   dom.signupModeTabs?.querySelectorAll("[data-signup-mode]").forEach((button) => {
     button.classList.toggle("active", button.dataset.signupMode === session.signupMode);
   });
-  dom.companyField.classList.toggle("is-hidden", session.signupRole !== "employer");
+  dom.companyField.classList.toggle("is-hidden", !employerMode);
+  dom.homeAddressField?.classList.toggle("is-hidden", !householdEmployerMode);
+  dom.signupEmployerTypeTabs?.classList.toggle("is-hidden", !employerMode);
+  if (dom.companyFieldLabel) {
+    dom.companyFieldLabel.textContent = householdEmployerMode ? "Household or Family Name" : "Company Name";
+  }
 
   const workerMode = session.signupRole === "worker";
   dom.signupModeTabs?.classList.toggle("is-hidden", !workerMode);
@@ -3560,12 +6698,18 @@ function renderSignupRole() {
   });
 
   if (dom.signupSectionTitle) {
-    dom.signupSectionTitle.textContent = workerMode ? "Create a worker or employer account" : "Create an employer account";
+    dom.signupSectionTitle.textContent = workerMode
+      ? "Create a worker or hirer account"
+      : householdEmployerMode
+      ? "Create a home hirer account"
+      : "Create an employer account";
   }
 
   if (dom.onboardingHint) {
     dom.onboardingHint.textContent = !workerMode
-      ? "Employer onboarding uses standard business verification and company registration."
+      ? householdEmployerMode
+        ? "Home hirers use a lighter trust flow with address confirmation, payment setup, and safer short-term booking."
+        : "Employer onboarding uses standard business verification and company registration."
       : session.signupMode === "assisted"
       ? "Assisted signup lets a field agent, employer, or kiosk operator create the worker account with them."
       : session.signupMode === "voice"
@@ -3575,7 +6719,9 @@ function renderSignupRole() {
 
   if (dom.signupSubmitLabel) {
     dom.signupSubmitLabel.textContent = !workerMode
-      ? "Create Employer Account"
+      ? householdEmployerMode
+        ? "Create Home Hirer Account"
+        : "Create Employer Account"
       : session.signupMode === "assisted"
       ? "Create Assisted Worker Account"
       : session.signupMode === "voice"
@@ -3670,16 +6816,20 @@ function renderPortal() {
   if (!session.currentUser) return;
 
   const user = session.currentUser;
-  dom.portalTitle.textContent = `${user.role.charAt(0).toUpperCase() + user.role.slice(1)} Portal`;
-  dom.portalRoleBadge.textContent = user.role.toUpperCase();
+  dom.portalTitle.textContent = user.role === "employer" && user.accountType === "household"
+    ? "Home Hirer Portal"
+    : `${user.role.charAt(0).toUpperCase() + user.role.slice(1)} Portal`;
+  dom.portalRoleBadge.textContent = user.role === "employer" && user.accountType === "household" ? "HOME HIRER" : user.role.toUpperCase();
   dom.portalRoleBadge.className = `status-pill ${user.availability || "available"}`;
-  dom.portalUserName.textContent = user.fullName || user.company || "WorkShift User";
+  dom.portalUserName.textContent = user.fullName || user.homeLabel || user.company || "WorkShift User";
   dom.portalSubtitle.textContent = user.role === "super_admin"
     ? "Platform configuration, commissions, feature flags, and master analytics"
     : user.role === "admin"
     ? "Verification, disputes, analytics, and risk moderation"
     : user.role === "employer"
-    ? "Company, jobs, applicants, payments, and verification"
+    ? user.accountType === "household"
+      ? "Home requests, trusted helpers, protected payments, and safer short-term bookings"
+      : "Company, jobs, applicants, payments, and verification"
     : "Profile, jobs, wallet, reviews, notifications, and verification";
 
   const navItems = user.role === "super_admin"
@@ -3688,10 +6838,15 @@ function renderPortal() {
     ? ["dashboard", "verifications", "jobs", "disputes", "payments", "analytics"]
     : ["dashboard", "profile", "jobs", "documents"];
 
-  dom.portalNav.innerHTML = navItems.map((item) => `<button class="role-tab ${session.activePortalView === item ? "active" : ""}" type="button" data-portal-view="${item}">${item.charAt(0).toUpperCase() + item.slice(1)}</button>`).join("");
+  dom.portalNav.innerHTML = navItems.map((item) => {
+    const label = user.role === "employer" && user.accountType === "household" && item === "jobs"
+      ? "Bookings"
+      : item.charAt(0).toUpperCase() + item.slice(1);
+    return `<button class="role-tab ${session.activePortalView === item ? "active" : ""}" type="button" data-portal-view="${item}">${label}</button>`;
+  }).join("");
 
   if (user.role === "worker") dom.portalContent.innerHTML = workerDashboard(user);
-  if (user.role === "employer") dom.portalContent.innerHTML = employerDashboard(user);
+  if (user.role === "employer") dom.portalContent.innerHTML = user.accountType === "household" ? householdDashboard(user) : employerDashboard(user);
   if (user.role === "admin") dom.portalContent.innerHTML = adminDashboard(user);
   if (user.role === "super_admin") dom.portalContent.innerHTML = superAdminDashboard(user);
 }
@@ -3703,6 +6858,14 @@ function handleSignupModeClick(event) {
   const button = event.target.closest("[data-signup-mode]");
   if (!button) return;
   setSignupMode(button.dataset.signupMode);
+  renderSignupRole();
+}
+
+function handleEmployerTypeClick(event) {
+  const button = event.target.closest("[data-signup-employer-type]");
+  if (!button) return;
+  setSignupRole("employer");
+  setSignupEmployerType(button.dataset.signupEmployerType);
   renderSignupRole();
 }
 
@@ -3742,6 +6905,13 @@ function handlePortalClicks(event) {
   const upload = event.target.closest("[data-upload]");
   if (upload) return markDocumentUploaded(upload.dataset.upload);
   if (event.target.closest("[data-save-profile]")) return saveProfile();
+  if (event.target.closest("[data-open-dispute]")) return openDisputeComposer();
+  if (event.target.closest("[data-close-dispute]")) {
+    closeDisputeModal();
+    renderPortal();
+    return;
+  }
+  if (event.target.closest("[data-submit-dispute]")) return submitDispute();
   if (event.target.closest("[data-worker-apply]")) return workerAction("apply");
   if (event.target.closest("[data-worker-save]")) return workerAction("save");
   if (event.target.closest("[data-worker-open-job]")) return workerAction("open-job");
@@ -3765,7 +6935,7 @@ function handlePortalClicks(event) {
   if (event.target.closest("[data-worker-job-search-apply]")) {
     const term = document.querySelector("#workerJobSearchTerm")?.value.trim() || "";
     const location = document.querySelector("#workerJobSearchLocation")?.value.trim() || "";
-    const country = document.querySelector("#workerJobSearchCountry")?.value || "Nepal";
+    const country = document.querySelector("#workerJobSearchCountry")?.value || "All Countries";
     setWorkerJobSearch(term, location, country);
     renderPortal();
     return;
@@ -3776,8 +6946,8 @@ function handlePortalClicks(event) {
     const countryInput = document.querySelector("#workerJobSearchCountry");
     if (termInput) termInput.value = "";
     if (locationInput) locationInput.value = "";
-    if (countryInput) countryInput.value = "Nepal";
-    setWorkerJobSearch("", "", "Nepal");
+    if (countryInput) countryInput.value = "All Countries";
+    setWorkerJobSearch("", "", "All Countries");
     renderPortal();
     return;
   }
@@ -3787,7 +6957,7 @@ function handlePortalClicks(event) {
     const locationInput = document.querySelector("#workerJobSearchLocation");
     if (locationInput) locationInput.value = location;
     const term = document.querySelector("#workerJobSearchTerm")?.value.trim() || "";
-    const country = document.querySelector("#workerJobSearchCountry")?.value || "Nepal";
+    const country = document.querySelector("#workerJobSearchCountry")?.value || "All Countries";
     setWorkerJobSearch(term, location, country);
     renderPortal();
     return;
@@ -3854,20 +7024,24 @@ function handlePortalClicks(event) {
   const workerJob = event.target.closest("[data-select-worker-job]");
   if (workerJob) {
     session.selectedWorkerJob = workerJob.dataset.selectWorkerJob;
+    const selectedApplication = (session.currentUser?.applications || []).find((item) =>
+      item.supabaseApplicationId && (session.currentUser?.jobs || []).some((job) =>
+        job.id === session.selectedWorkerJob && job.supabaseApplicationId === item.supabaseApplicationId
+      )
+    ) || (session.currentUser?.applications || []).find((item) => item.title === (session.currentUser?.jobs || []).find((job) => job.id === session.selectedWorkerJob)?.title);
+    if (selectedApplication?.chatThread) {
+      session.currentUser.chatStream = selectedApplication.chatThread;
+    }
     renderPortal();
     return;
   }
   const employerJob = event.target.closest("[data-select-employer-job]");
   if (employerJob) {
-    session.selectedEmployerJob = employerJob.dataset.selectEmployerJob;
-    renderPortal();
-    return;
+    return employerAction("select-job", employerJob.dataset.selectEmployerJob);
   }
   const applicant = event.target.closest("[data-select-applicant]");
   if (applicant) {
-    session.selectedApplicant = applicant.dataset.selectApplicant;
-    renderPortal();
-    return;
+    return employerAction("select-applicant", applicant.dataset.selectApplicant);
   }
   const queue = event.target.closest("[data-select-queue]");
   if (queue) {
@@ -3879,6 +7053,7 @@ function handlePortalClicks(event) {
   if (dispute) {
     session.selectedDispute = dispute.dataset.selectDispute;
     renderPortal();
+    return;
   }
 }
 
@@ -3889,6 +7064,8 @@ function bindEvents() {
     setSignupRole(button.dataset.signupRole);
     renderSignupRole();
   });
+
+  dom.signupEmployerTypeTabs?.addEventListener("click", handleEmployerTypeClick);
 
   dom.loginTabs?.addEventListener("click", (event) => {
     const button = event.target.closest("[data-login-role]");
@@ -3934,9 +7111,15 @@ function bindEvents() {
   });
 
   dom.heroWorker.addEventListener("click", () => openSignupRole("worker"));
-  dom.heroEmployer.addEventListener("click", () => openSignupRole("employer"));
+  dom.heroEmployer.addEventListener("click", () => openSignupRole("employer", "business"));
+  document.querySelector("#heroHome")?.addEventListener("click", () => openSignupRole("employer", "household"));
 
-  ["#signupName", "#signupContact", "#signupAssistedBy", "#signupVoiceLanguage", "#signupSkill"].forEach((selector) => {
+  ["#signupName", "#signupContact", "#signupAssistedBy", "#signupVoiceLanguage", "#signupSkill", "#signupCompany", "#signupHomeAddress"].forEach((selector) => {
+    document.querySelector(selector)?.addEventListener("input", () => renderSignupRole());
+    document.querySelector(selector)?.addEventListener("change", () => renderSignupRole());
+  });
+
+  ["#signupCountry"].forEach((selector) => {
     document.querySelector(selector)?.addEventListener("input", () => renderSignupRole());
     document.querySelector(selector)?.addEventListener("change", () => renderSignupRole());
   });
@@ -3945,12 +7128,12 @@ function bindEvents() {
     const cta = event.target.closest("[data-cta-role]");
     if (!cta) return;
     event.preventDefault();
-    openSignupRole(cta.dataset.ctaRole);
+    openSignupRole(cta.dataset.ctaRole, cta.dataset.signupEmployerType || "business");
   });
 
   dom.sendOtp.addEventListener("click", sendOtpFeedback);
 
-  dom.signupForm.addEventListener("submit", (event) => {
+  dom.signupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const session = getSession();
     const fullName = document.querySelector("#signupName").value.trim();
@@ -3960,9 +7143,13 @@ function bindEvents() {
     const voiceLanguage = document.querySelector("#signupVoiceLanguage")?.value || "Nepali";
     const payload = {
       role: session.signupRole,
+      accountType: session.signupRole === "employer" ? session.signupEmployerType : "",
       fullName,
       contact,
       company,
+      homeLabel: session.signupRole === "employer" && session.signupEmployerType === "household" ? company : "",
+      serviceAddress: document.querySelector("#signupHomeAddress")?.value.trim() || "",
+      countryCode: document.querySelector("#signupCountry")?.value || "NP",
       skill: document.querySelector("#signupSkill").value,
       notes: document.querySelector("#signupNotes").value.trim(),
       onboardingMode: session.signupMode,
@@ -3973,12 +7160,40 @@ function bindEvents() {
       dom.signupFeedback.textContent = "Please complete name and contact.";
       return;
     }
-    if (payload.role === "employer" && !company) {
+    if (payload.role === "employer" && session.signupEmployerType !== "household" && !company) {
       dom.signupFeedback.textContent = "Please enter the company name for employer registration.";
+      return;
+    }
+    if (payload.role === "employer" && session.signupEmployerType === "household" && !payload.serviceAddress) {
+      dom.signupFeedback.textContent = "Please enter the home or service address for household hiring.";
       return;
     }
     if (payload.role === "worker" && session.signupMode === "assisted" && !assistedBy) {
       dom.signupFeedback.textContent = "Enter the helper or agent name to continue assisted registration.";
+      return;
+    }
+    if (supabaseEnabled()) {
+      savePendingSupabaseSignup(payload);
+      const result = await requestSupabaseOtp(payload.contact, {
+        shouldCreateUser: true,
+        data: {
+          role: payload.role,
+          accountType: payload.accountType,
+          fullName: payload.fullName,
+          company: payload.company || "",
+          serviceAddress: payload.serviceAddress || "",
+          countryCode: payload.countryCode,
+          onboardingMode: payload.onboardingMode || "self"
+        }
+      });
+      dom.signupFeedback.textContent = result.ok
+        ? `Supabase verification started for ${payload.contact}. Complete the delivered OTP or magic link, then return to finalize the ${payload.role} account in the real backend.`
+        : `Supabase signup request failed: ${result.error}`;
+      if (result.ok) {
+        pushToast("Supabase signup", `Verification sent for ${payload.contact}.`);
+      }
+      renderToasts();
+      renderSignupRole();
       return;
     }
     createUser(payload);
@@ -3995,12 +7210,29 @@ function bindEvents() {
     renderSignupRole();
   });
 
-  dom.loginForm?.addEventListener("submit", (event) => {
+  dom.loginForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
     const session = getSession();
     const contact = document.querySelector("#loginContact")?.value.trim();
     if (!contact) {
       dom.loginFeedback.textContent = "Enter your registered phone or email first.";
+      return;
+    }
+    if (supabaseEnabled()) {
+      const result = await requestSupabaseOtp(contact, {
+        shouldCreateUser: false,
+        data: {
+          intent: "login",
+          role: session.loginRole
+        }
+      });
+      dom.loginFeedback.textContent = result.ok
+        ? `Supabase login verification sent to ${contact}. Complete the delivered OTP or magic link to sign in with the real backend.`
+        : `Supabase login failed: ${result.error}`;
+      if (result.ok) {
+        pushToast("Supabase login", `Verification sent for ${contact}.`);
+        renderToasts();
+      }
       return;
     }
     const user = loginUser(session.loginRole, contact);
@@ -4026,9 +7258,16 @@ function bindEvents() {
 
   dom.authBackdrop?.addEventListener("click", closeAuthModal);
   dom.authCancel?.addEventListener("click", closeAuthModal);
-  dom.authSubmit?.addEventListener("click", submitAuth);
+  dom.authSubmit?.addEventListener("click", () => { void submitAuth(); });
+  dom.authRequestOtp?.addEventListener("click", () => { void requestAuthOtp(); });
   dom.authCode?.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") submitAuth();
+    if (event.key === "Enter") void submitAuth();
+  });
+  dom.authContact?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      void requestAuthOtp();
+    }
   });
 
   window.addEventListener("keydown", (event) => {
@@ -4058,9 +7297,28 @@ function bindEvents() {
     const input = event.target?.closest?.("input[type='file']");
     if (!input) return;
     const file = input.files?.[0];
+    if (input.matches("[data-dispute-file-upload]")) {
+      if (!input.files?.length) return;
+      void uploadDisputeEvidenceFiles(input.files);
+      input.value = "";
+      return;
+    }
+    if (input.matches("[data-document-file-upload]")) {
+      if (!file) return;
+      void uploadDocumentAsset(input.dataset.documentFileUpload, file);
+      input.value = "";
+      return;
+    }
     if (!file) return;
-    if (input.matches("[data-preview-upload='worker-photo']")) return updateMediaPreview("worker-photo", file);
-    if (input.matches("[data-preview-upload='employer-logo']")) return updateMediaPreview("employer-logo", file);
+    if (input.matches("[data-preview-upload='worker-photo']")) {
+      void updateMediaPreview("worker-photo", file);
+      input.value = "";
+      return;
+    }
+    if (input.matches("[data-preview-upload='employer-logo']")) {
+      void updateMediaPreview("employer-logo", file);
+      input.value = "";
+    }
   });
 
   dom.portalContent.addEventListener("keydown", (event) => {
@@ -4081,6 +7339,7 @@ function bindEvents() {
   dom.portalExport.addEventListener("click", exportCurrentRole);
   dom.logoutButton.addEventListener("click", () => {
     logout();
+    window.dispatchEvent(new CustomEvent("workshift:logout"));
     renderPublicVisibility();
     renderToasts();
   });
@@ -4090,6 +7349,12 @@ function bindEvents() {
 
 
 // FILE: scripts/main.js
+
+let workerApplicationsChannel = null;
+let workerMessageChannels = [];
+let employerJobsChannel = null;
+let employerApplicationsChannels = [];
+let employerMessageChannels = [];
 
 function initTestimonials() {
   if (!dom.testimonialTrack || !dom.testimonialDots) return;
@@ -4189,8 +7454,12 @@ function runSmokeTests() {
 
   step("Worker document upload works", () => {
     document.querySelector("[data-portal-view='documents']").click();
-    document.querySelector("[data-upload='worker:wid']").click();
-    return getSession().currentUser.documents[0].status === "Uploaded";
+    const input = document.querySelector("[data-document-file-upload='worker:wid']");
+    const file = new File(["worker id"], "worker-id.png", { type: "image/png" });
+    Object.defineProperty(input, "files", { value: [file], configurable: true });
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+    return ["Uploading", "Uploaded"].includes(getSession().currentUser.documents[0].status)
+      && getSession().currentUser.documents[0].fileName === "worker-id.png";
   });
 
   step("Worker profile photo preview works", () => {
@@ -4407,6 +7676,34 @@ function runSmokeTests() {
         && updatedJob?.dailyRate === 145;
     });
 
+    step("Employer can open a dispute with evidence", () => {
+      document.querySelector("[data-portal-view='jobs']").click();
+      document.querySelector("[data-select-applicant]")?.click();
+      document.querySelector("[data-open-dispute]").click();
+      document.querySelector("#disputeReason").value = "Payment issue";
+      document.querySelector("#disputeResolution").value = "Partial refund";
+      document.querySelector("#disputeAmount").value = "145";
+      document.querySelector("#disputeSummary").value = "Worker completed only part of the shift and requested full payout.";
+      document.querySelector("#disputeEvidenceNotes").value = "Timesheet shows 3 hours only\nChat confirms early departure";
+      document.querySelector("#disputeEvidenceLinks").value = "payment-ref-001";
+      document.querySelector("[data-submit-dispute]").click();
+      return Array.isArray(getSession().currentUser.disputes)
+        && getSession().currentUser.disputes[0]?.status === "Open"
+        && Array.isArray(getSession().currentUser.disputes[0]?.evidence)
+        && getSession().currentUser.disputes[0].evidence.length >= 2;
+    });
+
+    step("Admin sees and can resolve a submitted dispute", () => {
+      document.querySelector("#logoutButton").click();
+      document.querySelector("#authRoleTabs [data-auth-role='admin']").click();
+      document.querySelector("#authCode").value = "ADMIN2026";
+      document.querySelector("#authSubmit").click();
+      document.querySelector("[data-select-dispute]")?.click();
+      const before = getSession().currentUser.disputes[0]?.status;
+      document.querySelector("[data-resolve]").click();
+      return before && getSession().currentUser.disputes[0]?.status === "Closed";
+    });
+
     step("Super admin access and settings work", () => {
       document.querySelector("#logoutButton").click();
       document.querySelector("#authRoleTabs [data-auth-role='super_admin']").click();
@@ -4427,6 +7724,261 @@ function runSmokeTests() {
   document.body.appendChild(report);
 }
 
+async function hydrateSupabaseRuntime() {
+  if (!supabaseEnabled()) return;
+
+  const liveJobs = await listSupabaseJobs();
+  setSupabaseMarketplaceJobs(liveJobs.map((job) => mapSupabaseJobToMarketplaceJob(job)));
+
+  const liveProfile = await ensureSupabaseProfileFromAuth();
+  if (!liveProfile) {
+    renderPortal();
+    return;
+  }
+
+  const user = mapSupabaseProfileToPortalUser(liveProfile);
+  if (!user) return;
+
+  if (user.role === "employer") {
+    const [employerPipeline, employerEscrows, disputes] = await Promise.all([
+      listSupabaseEmployerPipeline(),
+      listSupabaseEmployerEscrows(),
+      listSupabaseMyDisputes()
+    ]);
+    user.jobs = employerPipeline.map(({ job, applications }) => {
+      const mapped = mapSupabaseJobToEmployerJob({
+        ...job,
+        application_count: applications.length
+      });
+      mapped.shortlisted = applications.filter((application) => ["shortlisted", "invited", "hired", "rated"].includes(String(application.status || "").toLowerCase())).length;
+      const matchedEscrow = employerEscrows.find((escrow) => escrow.job_id === job.id);
+      if (matchedEscrow) {
+        mapped.escrow = ["funded", "released"].includes(String(matchedEscrow.status || "").toLowerCase());
+        mapped.escrowId = matchedEscrow.id;
+      }
+      return mapped;
+    });
+    user.applicants = employerPipeline.flatMap(({ job, applications }) =>
+      applications.map((application) => mapSupabaseApplicationToEmployerApplicant(application, job, application.messages))
+    );
+    user.hiring = user.applicants.map((application) => ({
+      candidate: application.name,
+      status: application.status
+    }));
+    user.profile.payments = employerEscrows.slice(0, 6).map((escrow) => mapSupabaseEscrowToAdminPayment(escrow));
+    const latestEscrow = employerEscrows[0] || null;
+    if (latestEscrow) {
+      user.escrow = {
+        funded: ["funded", "released"].includes(String(latestEscrow.status || "").toLowerCase()),
+        status: latestEscrow.status,
+        autoReleaseHours: 24,
+        nextRelease: latestEscrow.released_at || latestEscrow.refunded_at || "Pending release",
+        escrowId: latestEscrow.id
+      };
+    }
+    user.disputes = disputes;
+  }
+
+  if (user.role === "worker") {
+    const [workerApplications, workerEscrows, walletEntries, disputes] = await Promise.all([
+      listSupabaseWorkerApplicationsWithMessages(),
+      listSupabaseWorkerEscrows(),
+      listSupabaseWalletEntriesForCurrentProfile(),
+      listSupabaseMyDisputes()
+    ]);
+    user.applications = workerApplications.map((application) => mapSupabaseApplicationToWorkerApplication(application, application.messages));
+    user.jobs = workerApplications.map((application) => mapSupabaseApplicationToWorkerJob(application));
+    user.chatStream = user.applications[0]?.chatThread || [];
+    user.wallet = Math.max(0, summarizeSupabaseLedger(walletEntries));
+    user.weeklyEarnings = workerEscrows
+      .filter((escrow) => String(escrow.status || "").toLowerCase() === "released")
+      .reduce((sum, escrow) => sum + Number(escrow.net_amount || 0), 0);
+    user.monthlyEarnings = user.weeklyEarnings;
+    user.disputes = disputes;
+  }
+
+  if (user.role === "admin") {
+    const [queueRecords, disputeRecords, paymentRecords] = await Promise.all([
+      listSupabaseAdminQueue(),
+      listSupabaseDisputes(),
+      listSupabaseAdminPayments()
+    ]);
+    user.queue = queueRecords.map((item) => mapSupabaseReviewToQueueItem(item));
+    user.disputes = disputeRecords.map((item) => mapSupabaseDisputeToAdminItem(item));
+    user.payments = paymentRecords.map((item) => mapSupabaseEscrowToAdminPayment(item));
+  }
+
+  hydrateCurrentUser(user);
+  renderPublicVisibility();
+  renderPortal();
+  renderToasts();
+  await setupSupabaseLiveSubscriptions();
+}
+
+async function refreshEmployerSupabaseState() {
+  const session = getSession();
+  if (!supabaseEnabled() || session.currentUser?.role !== "employer") return;
+  const [employerPipeline, employerEscrows, disputes] = await Promise.all([
+    listSupabaseEmployerPipeline(),
+    listSupabaseEmployerEscrows(),
+    listSupabaseMyDisputes()
+  ]);
+  const jobs = employerPipeline.map(({ job, applications }) => {
+    const mapped = mapSupabaseJobToEmployerJob({
+      ...job,
+      application_count: applications.length
+    });
+    mapped.shortlisted = applications.filter((application) => ["shortlisted", "invited", "hired", "rated"].includes(String(application.status || "").toLowerCase())).length;
+    const matchedEscrow = employerEscrows.find((escrow) => escrow.job_id === job.id);
+    if (matchedEscrow) {
+      mapped.escrow = ["funded", "released"].includes(String(matchedEscrow.status || "").toLowerCase());
+      mapped.escrowId = matchedEscrow.id;
+    }
+    return mapped;
+  });
+  const applicants = employerPipeline.flatMap(({ job, applications }) =>
+    applications.map((application) => mapSupabaseApplicationToEmployerApplicant(application, job, application.messages))
+  );
+  const selectedJob = jobs.find((job) => job.id === session.selectedEmployerJob) || jobs[0] || null;
+  const selectedApplicant = applicants.find((applicant) =>
+    applicant.id === session.selectedApplicant
+    && (
+      applicant.jobId === selectedJob?.id
+      || applicant.jobSupabaseId === selectedJob?.supabaseId
+    )
+  ) || applicants.find((applicant) =>
+    applicant.jobId === selectedJob?.id
+    || applicant.jobSupabaseId === selectedJob?.supabaseId
+  ) || null;
+
+  hydrateCurrentUser({
+    ...session.currentUser,
+    jobs,
+    applicants,
+    hiring: applicants.map((application) => ({
+      candidate: application.name,
+      status: application.status
+    })),
+    profile: {
+      ...(session.currentUser.profile || {}),
+      payments: employerEscrows.slice(0, 6).map((escrow) => mapSupabaseEscrowToAdminPayment(escrow))
+    },
+    escrow: employerEscrows[0] ? {
+      funded: ["funded", "released"].includes(String(employerEscrows[0].status || "").toLowerCase()),
+      status: employerEscrows[0].status,
+      autoReleaseHours: 24,
+      nextRelease: employerEscrows[0].released_at || employerEscrows[0].refunded_at || "Pending release",
+      escrowId: employerEscrows[0].id
+    } : session.currentUser.escrow,
+    disputes,
+    chatStream: selectedApplicant?.chatThread || session.currentUser.chatStream || []
+  });
+
+  if (selectedJob?.id) session.selectedEmployerJob = selectedJob.id;
+  if (selectedApplicant?.id) session.selectedApplicant = selectedApplicant.id;
+  await setupSupabaseLiveSubscriptions();
+  renderPortal();
+  renderToasts();
+}
+
+async function refreshWorkerSupabaseState() {
+  const session = getSession();
+  if (!supabaseEnabled() || session.currentUser?.role !== "worker") return;
+  const [workerApplications, workerEscrows, walletEntries, disputes] = await Promise.all([
+    listSupabaseWorkerApplicationsWithMessages(),
+    listSupabaseWorkerEscrows(),
+    listSupabaseWalletEntriesForCurrentProfile(),
+    listSupabaseMyDisputes()
+  ]);
+  const jobs = workerApplications.map((application) => mapSupabaseApplicationToWorkerJob(application));
+  const applications = workerApplications.map((application) => mapSupabaseApplicationToWorkerApplication(application, application.messages));
+  const selectedJob = jobs.find((job) => job.id === session.selectedWorkerJob) || jobs[0] || null;
+  const selectedApplication = applications.find((application) => application.supabaseApplicationId === selectedJob?.supabaseApplicationId)
+    || applications[0]
+    || null;
+  hydrateCurrentUser({
+    ...session.currentUser,
+    jobs,
+    applications,
+    wallet: Math.max(0, summarizeSupabaseLedger(walletEntries)),
+    weeklyEarnings: workerEscrows
+      .filter((escrow) => String(escrow.status || "").toLowerCase() === "released")
+      .reduce((sum, escrow) => sum + Number(escrow.net_amount || 0), 0),
+    monthlyEarnings: workerEscrows
+      .filter((escrow) => String(escrow.status || "").toLowerCase() === "released")
+      .reduce((sum, escrow) => sum + Number(escrow.net_amount || 0), 0),
+    disputes,
+    chatStream: selectedApplication?.chatThread || session.currentUser.chatStream || []
+  });
+  await setupSupabaseLiveSubscriptions();
+  renderPortal();
+  renderToasts();
+}
+
+function clearWorkerLiveSubscriptions() {
+  if (workerApplicationsChannel) {
+    unsubscribeSupabaseChannel(workerApplicationsChannel);
+    workerApplicationsChannel = null;
+  }
+  workerMessageChannels.forEach((channel) => unsubscribeSupabaseChannel(channel));
+  workerMessageChannels = [];
+}
+
+function clearEmployerLiveSubscriptions() {
+  if (employerJobsChannel) {
+    unsubscribeSupabaseChannel(employerJobsChannel);
+    employerJobsChannel = null;
+  }
+  employerApplicationsChannels.forEach((channel) => unsubscribeSupabaseChannel(channel));
+  employerApplicationsChannels = [];
+  employerMessageChannels.forEach((channel) => unsubscribeSupabaseChannel(channel));
+  employerMessageChannels = [];
+}
+
+async function setupSupabaseLiveSubscriptions() {
+  const session = getSession();
+  clearWorkerLiveSubscriptions();
+  clearEmployerLiveSubscriptions();
+  if (!supabaseEnabled() || !session.currentUser?.id) return;
+
+  if (session.currentUser.role === "worker") {
+    workerApplicationsChannel = subscribeToSupabaseWorkerApplications(session.currentUser.id, () => {
+      void refreshWorkerSupabaseState();
+    });
+
+    const applications = Array.isArray(session.currentUser.applications) ? session.currentUser.applications : [];
+    workerMessageChannels = applications
+      .filter((application) => application.supabaseApplicationId)
+      .map((application) => subscribeToSupabaseApplicationMessages(application.supabaseApplicationId, () => {
+        void refreshWorkerSupabaseState();
+      }))
+      .filter(Boolean);
+    return;
+  }
+
+  if (session.currentUser.role !== "employer") return;
+
+  employerJobsChannel = subscribeToSupabaseEmployerJobs(session.currentUser.id, () => {
+    void refreshEmployerSupabaseState();
+  });
+
+  const jobs = Array.isArray(session.currentUser.jobs) ? session.currentUser.jobs : [];
+  employerApplicationsChannels = jobs
+    .filter((job) => job.supabaseId)
+    .map((job) => subscribeToSupabaseJobApplications(job.supabaseId, () => {
+      void refreshEmployerSupabaseState();
+    }))
+    .filter(Boolean);
+
+  const applicants = Array.isArray(session.currentUser.applicants) ? session.currentUser.applicants : [];
+  employerMessageChannels = applicants
+    .filter((application) => application.supabaseApplicationId)
+    .map((application) => subscribeToSupabaseApplicationMessages(application.supabaseApplicationId, () => {
+      void refreshEmployerSupabaseState();
+    }))
+    .filter(Boolean);
+}
+
 function init() {
   try {
     installSmokeErrorCapture();
@@ -4438,8 +7990,19 @@ function init() {
     renderPortal();
     renderToasts();
     runSmokeTests();
+    void hydrateSupabaseRuntime();
     window.__workshiftBooted = true;
     document.body.dataset.workshiftReady = "true";
+    window.addEventListener("workshift:logout", () => {
+      clearWorkerLiveSubscriptions();
+      clearEmployerLiveSubscriptions();
+    });
+    window.addEventListener("workshift:worker-live-sync", () => {
+      void setupSupabaseLiveSubscriptions();
+    });
+    window.addEventListener("workshift:hydrate-supabase", () => {
+      void hydrateSupabaseRuntime();
+    });
   } catch (error) {
     window.__workshiftBooted = false;
     if (typeof window.__workshiftShowIssue === "function") {
@@ -4450,4 +8013,3 @@ function init() {
 }
 
 init();
-

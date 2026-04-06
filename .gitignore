@@ -1,10 +1,15 @@
 .chrome-pass-a/
 .chrome-pass-b/
 .chrome-pass-c/
+.chrome-home-pass/
+.chrome-pass-z/
 .chrome-startup-check/
 pass-a.txt
 pass-b.txt
 pass-c.txt
+home-pass.txt
+pass-z.txt
 startup-check.txt
 
 .vercel
+supabase/config.local.js
