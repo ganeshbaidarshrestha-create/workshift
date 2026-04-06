@@ -1,0 +1,16 @@
+.git
+.gitignore
+.vercel
+.chrome-pass-a
+.chrome-pass-b
+.chrome-pass-c
+.chrome-home-pass
+.chrome-pass-z
+.chrome-startup-check
+pass-a.txt
+pass-b.txt
+pass-c.txt
+pass-z.txt
+home-pass.txt
+startup-check.txt
+blueprint_extracted.txt
