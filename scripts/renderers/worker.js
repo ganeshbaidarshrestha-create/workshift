@@ -99,6 +99,7 @@ export function workerDashboard(user) {
   const payoutAvailable = Number(user.wallet || 0);
   const payoutPending = Math.max(0, Number(user.weeklyEarnings || 0) - payoutAvailable);
   const lastPayout = withdrawal.schedule || "On demand";
+  const paymentGateway = countryRule.paymentGateway || countryRule.payoutRail;
   const hiringStages = ["Applied", "Shortlisted", "Invited", "Hired", "Completed", "Paid"];
   const currentStage = currentApplication?.status || workerJobStatus(user, currentJob).label;
   return `
@@ -323,7 +324,8 @@ export function workerDashboard(user) {
           <article class="info-card"><strong>Saved Jobs</strong><p>${savedJobs.map((item) => item.title).join(" | ") || "No saved jobs yet"}</p></article>
           <article class="info-card"><strong>Job Completion</strong><p>Timesheet ${shift.timesheet || "Not started"} / Stage ${shift.stage || "Queued"} / Proof ${shift.proofSubmitted ? "Uploaded" : "Pending"}</p></article>
           <article class="info-card"><strong>Earnings Dashboard</strong><p>Weekly ${formatCountryMoney(user.weeklyEarnings, user.countryCode || "NP")} / Monthly ${formatCountryMoney(user.monthlyEarnings, user.countryCode || "NP")} / Tax export via portal export.</p></article>
-          <article class="info-card"><strong>Wallet and Withdrawal</strong><p>${withdrawal.payoutMethod || "Bank transfer"} / ${withdrawal.schedule || "On demand"} / ${withdrawal.linkedAccount || "Not linked"}</p></article>
+          <article class="info-card"><strong>Wallet and Withdrawal</strong><p>${withdrawal.payoutMethod || countryRule.payoutRail} / ${withdrawal.schedule || "On demand"} / ${withdrawal.linkedAccount || "Not linked"}</p></article>
+          <article class="info-card"><strong>Local Payment System</strong><p>${paymentGateway}${user.countryCode === "NP" ? " / Nepal-first wallet and payout path" : ""}</p></article>
           <article class="info-card"><strong>Ratings and Reviews</strong><p>${reviews.map((review) => `${review.employer}: ${review.rating}/5`).join(" | ")}</p></article>
           <article class="info-card"><strong>Notifications</strong><p>${notifications.join(" | ")}</p></article>
           <article class="info-card"><strong>Reputation Score</strong><p>${reputation.score || 0} / 100 / ${reputation.tier || "Growing"}</p></article>

@@ -93,6 +93,7 @@ export function employerDashboard(user) {
   const hiredCount = allApplicants.filter((item) => ["Hired", "Rated"].includes(item.status)).length;
   const compareApplicant = comparisonTarget(user, applicant);
   const biddingHistory = Array.isArray(job.biddingHistory) ? job.biddingHistory : [];
+  const paymentGateway = countryRule.paymentGateway || countryRule.payoutRail;
   const searchSummary = [
     session.employerSearchSkill ? `skill "${session.employerSearchSkill}"` : "",
     session.employerSearchLocation ? `location "${session.employerSearchLocation}"` : "",
@@ -535,11 +536,11 @@ export function employerDashboard(user) {
 
       ${(activeView === "dashboard" || activeView === "jobs") ? `
       <section class="panel">
-        <h3>Stripe Escrow + Auto-Release</h3>
+        <h3>${user.countryCode === "NP" ? "eSewa + Escrow Auto-Release" : "Protected Escrow + Auto-Release"}</h3>
         <div class="document-grid">
           <article class="info-card"><strong>Escrow Status</strong><p>${escrow.status || "Pending"}</p></article>
           <article class="info-card"><strong>Auto Release</strong><p>${escrow.autoReleaseHours || 0}h / next ${escrow.nextRelease || "TBD"}</p></article>
-          <article class="info-card"><strong>Payment Rail</strong><p>Stripe escrow flow simulated for local prototype.</p></article>
+          <article class="info-card"><strong>Payment Rail</strong><p>${user.countryCode === "NP" ? "eSewa-first Nepal payment flow with protected escrow state in the product." : `${paymentGateway} payment flow simulated for local prototype.`}</p></article>
           <article class="info-card"><strong>Selected Job Payment</strong><p>${job.title} / ${job.escrow ? "Escrow funded" : "Awaiting funding"} / ${countryRule.payoutRail}</p></article>
         </div>
         <div class="button-row">

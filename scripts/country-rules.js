@@ -5,7 +5,8 @@ const COUNTRY_RULES = {
     currencyCode: "NPR",
     currencySymbol: "Rs",
     phoneAuthMode: "Phone OTP preferred",
-    payoutRail: "Mobile money or bank transfer",
+    payoutRail: "eSewa wallet or bank transfer",
+    paymentGateway: "eSewa",
     verificationRule: "Government ID, selfie, and local address or phone proof",
     dialCode: "+977"
   },

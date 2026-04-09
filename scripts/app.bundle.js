@@ -6,7 +6,8 @@ const COUNTRY_RULES = {
     currencyCode: "NPR",
     currencySymbol: "Rs",
     phoneAuthMode: "Phone OTP preferred",
-    payoutRail: "Mobile money or bank transfer",
+    payoutRail: "eSewa wallet or bank transfer",
+    paymentGateway: "eSewa",
     verificationRule: "Government ID, selfie, and local address or phone proof",
     dialCode: "+977"
   },
@@ -1606,7 +1607,7 @@ const workerTemplate = {
       { title: "Instant Hire: Hotel repair support", status: "Pending acceptance" }
     ],
     withdrawal: {
-      payoutMethod: "Mobile money",
+      payoutMethod: "eSewa wallet",
       schedule: "On demand",
       linkedAccount: "Linked"
     }
@@ -2186,7 +2187,7 @@ const superAdminTemplate = {
   ],
   payoutConfig: [
     { key: "Default Payout", value: "24 hours" },
-    { key: "Gateway", value: "Stripe + local rails" }
+    { key: "Gateway", value: "eSewa first in Nepal + expandable local rails" }
   ],
   globalSettings: [
     { key: "Default Currency", value: "USD" },
@@ -5267,6 +5268,7 @@ function workerDashboard(user) {
   const payoutAvailable = Number(user.wallet || 0);
   const payoutPending = Math.max(0, Number(user.weeklyEarnings || 0) - payoutAvailable);
   const lastPayout = withdrawal.schedule || "On demand";
+  const paymentGateway = countryRule.paymentGateway || countryRule.payoutRail;
   const hiringStages = ["Applied", "Shortlisted", "Invited", "Hired", "Completed", "Paid"];
   const currentStage = currentApplication?.status || workerJobStatus(user, currentJob).label;
   return `
@@ -5491,7 +5493,8 @@ function workerDashboard(user) {
           <article class="info-card"><strong>Saved Jobs</strong><p>${savedJobs.map((item) => item.title).join(" | ") || "No saved jobs yet"}</p></article>
           <article class="info-card"><strong>Job Completion</strong><p>Timesheet ${shift.timesheet || "Not started"} / Stage ${shift.stage || "Queued"} / Proof ${shift.proofSubmitted ? "Uploaded" : "Pending"}</p></article>
           <article class="info-card"><strong>Earnings Dashboard</strong><p>Weekly ${formatCountryMoney(user.weeklyEarnings, user.countryCode || "NP")} / Monthly ${formatCountryMoney(user.monthlyEarnings, user.countryCode || "NP")} / Tax via portal export.</p></article>
-          <article class="info-card"><strong>Wallet and Withdrawal</strong><p>${withdrawal.payoutMethod || "Bank transfer"} / ${withdrawal.schedule || "On demand"} / ${withdrawal.linkedAccount || "Not linked"}</p></article>
+          <article class="info-card"><strong>Wallet and Withdrawal</strong><p>${withdrawal.payoutMethod || countryRule.payoutRail} / ${withdrawal.schedule || "On demand"} / ${withdrawal.linkedAccount || "Not linked"}</p></article>
+          <article class="info-card"><strong>Local Payment System</strong><p>${paymentGateway}${user.countryCode === "NP" ? " / Nepal-first wallet and payout path" : ""}</p></article>
           <article class="info-card"><strong>Ratings and Reviews</strong><p>${reviews.map((review) => `${review.employer}: ${review.rating}/5`).join(" | ")}</p></article>
           <article class="info-card"><strong>Notifications</strong><p>${notifications.join(" | ")}</p></article>
           <article class="info-card"><strong>Reputation Score</strong><p>${reputation.score || 0} / 100 / ${reputation.tier || "Growing"}</p></article>
@@ -5694,6 +5697,7 @@ function employerDashboard(user) {
   const hiredCount = allApplicants.filter((item) => ["Hired", "Rated"].includes(item.status)).length;
   const compareApplicant = comparisonTarget(user, applicant);
   const biddingHistory = Array.isArray(job.biddingHistory) ? job.biddingHistory : [];
+  const paymentGateway = countryRule.paymentGateway || countryRule.payoutRail;
   const searchSummary = [
     session.employerSearchSkill ? `skill "${session.employerSearchSkill}"` : "",
     session.employerSearchLocation ? `location "${session.employerSearchLocation}"` : "",
@@ -6136,11 +6140,11 @@ function employerDashboard(user) {
 
       ${(activeView === "dashboard" || activeView === "jobs") ? `
       <section class="panel">
-        <h3>Stripe Escrow + Auto-Release</h3>
+        <h3>${user.countryCode === "NP" ? "eSewa + Escrow Auto-Release" : "Protected Escrow + Auto-Release"}</h3>
         <div class="document-grid">
           <article class="info-card"><strong>Escrow Status</strong><p>${escrow.status || "Pending"}</p></article>
           <article class="info-card"><strong>Auto Release</strong><p>${escrow.autoReleaseHours || 0}h / next ${escrow.nextRelease || "TBD"}</p></article>
-          <article class="info-card"><strong>Payment Rail</strong><p>Stripe escrow flow simulated for local prototype.</p></article>
+          <article class="info-card"><strong>Payment Rail</strong><p>${user.countryCode === "NP" ? "eSewa-first Nepal payment flow with protected escrow state in the product." : `${paymentGateway} payment flow simulated for local prototype.`}</p></article>
           <article class="info-card"><strong>Selected Job Payment</strong><p>${job.title} / ${job.escrow ? "Escrow funded" : "Awaiting funding"} / ${countryRule.payoutRail}</p></article>
         </div>
         <div class="button-row">
@@ -6290,6 +6294,7 @@ function householdDashboard(user) {
   const bookedCount = jobs.filter((item) => ["Ongoing", "Completed"].includes(item.status)).length;
   const trustCategories = ["Nanny", "Elder Care", "Housekeeper", "Childcare"];
   const highTrustMode = trustCategories.includes(job.category);
+  const paymentGateway = countryRule.paymentGateway || countryRule.payoutRail;
 
   return `
     <div class="stack">
@@ -6401,6 +6406,7 @@ function householdDashboard(user) {
           <article class="info-card"><strong>Service Address</strong><p>${job.serviceAddress || user.serviceAddress || "Add your address in the booking wizard."}</p></article>
           <article class="info-card"><strong>Booking Mode</strong><p>${job.bookingMode || "Direct booking"} / ${job.payUnit || "Fixed job"}</p></article>
           <article class="info-card"><strong>Escrow</strong><p>${user.escrow?.status || "Pending"} / auto release ${user.escrow?.autoReleaseHours || 12}h</p></article>
+          <article class="info-card"><strong>Payment Method</strong><p>${user.countryCode === "NP" ? `eSewa-first household payment flow / ${countryRule.payoutRail}` : paymentGateway}</p></article>
           <article class="info-card"><strong>High-Trust Services</strong><p>${highTrustMode ? "Background-check friendly, repeat-family preferred, emergency contact recommended." : "Photo proof, tools note, and arrival confirmation supported."}</p></article>
         </div>
         <div class="button-row">

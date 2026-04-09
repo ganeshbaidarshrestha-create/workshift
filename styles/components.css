@@ -286,6 +286,86 @@ h4 { font-size: 1rem; }
   line-height: 1;
 }
 
+.left-heading {
+  text-align: left;
+}
+
+.care-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.92fr) minmax(0, 1.08fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.care-section {
+  padding-top: 40px;
+}
+
+.care-visual {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.care-photo {
+  width: 100%;
+  min-height: 340px;
+  max-height: 460px;
+  object-fit: cover;
+  display: block;
+}
+
+.care-photo-copy {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+}
+
+.care-copy {
+  display: grid;
+  gap: 18px;
+  align-content: center;
+}
+
+.care-service-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.care-service-card {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(197, 97, 47, 0.12);
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,246,238,0.92));
+  box-shadow: 0 14px 34px rgba(22, 24, 29, 0.08);
+}
+
+.care-service-card span,
+.care-service-card small {
+  color: var(--mid);
+}
+
+.care-rate-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.care-rate-strip span {
+  display: inline-flex;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(15, 118, 110, 0.16);
+  color: var(--dark);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 .portrait-card {
   position: absolute;
   width: 270px;

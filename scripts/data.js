@@ -78,7 +78,7 @@ export const workerTemplate = {
       { title: "Instant Hire: Hotel repair support", status: "Pending acceptance" }
     ],
     withdrawal: {
-      payoutMethod: "Mobile money",
+      payoutMethod: "eSewa wallet",
       schedule: "On demand",
       linkedAccount: "Linked"
     }
@@ -658,7 +658,7 @@ export const superAdminTemplate = {
   ],
   payoutConfig: [
     { key: "Default Payout", value: "24 hours" },
-    { key: "Gateway", value: "Stripe + local rails" }
+    { key: "Gateway", value: "eSewa first in Nepal + expandable local rails" }
   ],
   globalSettings: [
     { key: "Default Currency", value: "USD" },

@@ -60,6 +60,7 @@ export function householdDashboard(user) {
   const bookedCount = jobs.filter((item) => ["Ongoing", "Completed"].includes(item.status)).length;
   const trustCategories = ["Nanny", "Elder Care", "Housekeeper", "Childcare"];
   const highTrustMode = trustCategories.includes(job.category);
+  const paymentGateway = countryRule.paymentGateway || countryRule.payoutRail;
 
   return `
     <div class="stack">
@@ -171,6 +172,7 @@ export function householdDashboard(user) {
           <article class="info-card"><strong>Service Address</strong><p>${job.serviceAddress || user.serviceAddress || "Add your address in the booking wizard."}</p></article>
           <article class="info-card"><strong>Booking Mode</strong><p>${job.bookingMode || "Direct booking"} / ${job.payUnit || "Fixed job"}</p></article>
           <article class="info-card"><strong>Escrow</strong><p>${user.escrow?.status || "Pending"} / auto release ${user.escrow?.autoReleaseHours || 12}h</p></article>
+          <article class="info-card"><strong>Payment Method</strong><p>${user.countryCode === "NP" ? `eSewa-first household payment flow / ${countryRule.payoutRail}` : paymentGateway}</p></article>
           <article class="info-card"><strong>High-Trust Services</strong><p>${highTrustMode ? "Background-check friendly, repeat-family preferred, emergency contact recommended." : "Photo proof, tools note, and arrival confirmation supported."}</p></article>
         </div>
         <div class="button-row">
